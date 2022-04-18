@@ -1,11 +1,11 @@
-import { Component } from "solid-js";
-import { AheadLogo, Hailey } from "../../assets/icons/others";
-import { NavLink, useLocation } from "solid-app-router";
+import { Component } from "solid-js"
+import { AheadLogo, Hailey } from "@/assets/icons/logo"
+import { NavLink, useLocation } from "solid-app-router"
 
 const Verify: Component = () => {
-	const searchParams = useLocation();
-	const params = new URLSearchParams(searchParams.search);
-	const email = params.get("email");
+	const searchParams = useLocation()
+	const params = new URLSearchParams(searchParams.search)
+	const email = params.get("email")
 
 	return (
 		<section class="min-h-screen flex items-center justify-center">
@@ -25,14 +25,15 @@ const Verify: Component = () => {
 					</div>
 					<div class="flex flex-col gap-y-2">
 						<div class="flex flex-row gap-x-1">
-                            <h3 class="text-xl text-slate-600">
-                                We’ve sent a <b class="text-slate-700"> secure log in</b> link to
-                            </h3>
-                            <h4 class="text-xl underline text-indigo-700">
-                                {email || "example.gmail.com"},
-                            </h4>
-                        </div>
-                        <h4 class="text-lg text-slate-500">No Email Try again!</h4>
+							<h3 class="text-xl text-slate-600">
+								We’ve sent a <b class="text-slate-700"> secure log in</b> link
+								to
+							</h3>
+							<h4 class="text-xl underline text-indigo-700">
+								{email || "example.gmail.com"},
+							</h4>
+						</div>
+						<h4 class="text-lg text-slate-500">No Email Try again!</h4>
 					</div>
 				</div>
 				<div class="mt-2 mb-2">
@@ -46,7 +47,7 @@ const Verify: Component = () => {
 				</div>
 			</div>
 		</section>
-	);
-};
+	)
+}
 
-export default Verify;
+export default Verify

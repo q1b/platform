@@ -12,6 +12,12 @@
       "unplugin-icons/types/solid",
     ],
     "noEmit": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+    }
   }
 }

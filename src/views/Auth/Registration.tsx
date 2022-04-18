@@ -1,41 +1,41 @@
-import { createFormActions, Errors } from "solid-form-action";
-import axiosApi from "../../api";
-import { useLocation, useNavigate } from "solid-app-router";
-import { AheadLogo, Hailey } from "../../assets/icons/others";
-import { Component, createSignal, Show, Suspense } from "solid-js";
+import { createFormActions, Errors } from "solid-form-action"
+import axiosApi from "../../api"
+import { useLocation, useNavigate } from "solid-app-router"
+import { AheadLogo, Hailey } from "@/assets/icons/logo"
+import { Component, createSignal, Show, Suspense } from "solid-js"
 
 const Register: Component = () => {
-	const [isLoading, setLoadingState] = createSignal(false);
-	const navigate = useNavigate();
-	const searchParams = useLocation();
-	const params = new URLSearchParams(searchParams.search);
-	const token = params.get("token");
-	console.log(token);
+	const [isLoading, setLoadingState] = createSignal(false)
+	const navigate = useNavigate()
+	const searchParams = useLocation()
+	const params = new URLSearchParams(searchParams.search)
+	const token = params.get("token")
+	console.log(token)
 	const registerUser = async (values: {
-		username: string;
-		fullname: string;
-		workspace: string;
+		username: string
+		fullname: string
+		workspace: string
 	}) => {
 		try {
-			setLoadingState(true);
-			const userId = localStorage.getItem("stytch_user_id");
+			setLoadingState(true)
+			const userId = localStorage.getItem("stytch_user_id")
 			const res = await axiosApi.post(`signup?stytch_user_id=${userId}`, {
 				username: values.username,
 				fullname: values.fullname,
-			});
-			const data = res.data;
-			localStorage.setItem("access_token", data.access_token);
-			localStorage.setItem("refresh_token", data.refresh_token);
-			localStorage.setItem("user_id", data.user_id);
-			await createWorkspace(values.workspace);
-			navigate(`/`, { replace: false });
+			})
+			const data = res.data
+			localStorage.setItem("access_token", data.access_token)
+			localStorage.setItem("refresh_token", data.refresh_token)
+			localStorage.setItem("user_id", data.user_id)
+			await createWorkspace(values.workspace)
+			navigate(`/`, { replace: false })
 		} catch (e) {
-			localStorage.clear();
-			console.log(e);
+			localStorage.clear()
+			console.log(e)
 		} finally {
-			setLoadingState(false);
+			setLoadingState(false)
 		}
-	};
+	}
 	const {
 		actions: { username, fullname, workspace },
 		form,
@@ -48,27 +48,27 @@ const Register: Component = () => {
 			workspace: "",
 		},
 		validate: (values) => {
-			const errs: Errors<typeof values> = {};
+			const errs: Errors<typeof values> = {}
 			if (values.username.length === 0) {
-				errs.username = "Username is required";
+				errs.username = "Username is required"
 			}
 			if (values.fullname.length === 0) {
-				errs.fullname = "Fullname is required";
+				errs.fullname = "Fullname is required"
 			}
 			if (values.workspace.length === 0) {
-				errs.workspace = "Workspace is required";
+				errs.workspace = "Workspace is required"
 			}
-			return errs;
+			return errs
 		},
 		onSubmit: async (values) => {
-			registerUser(values);
+			registerUser(values)
 		},
-	});
+	})
 
 	const createWorkspace = async (name: string) => {
 		// TODO: need to add video quota fields for handle dynamic video quota for specific workspace.
-		await axiosApi.post(`workspace`, { name, generated_videos_quota: 200 });
-	};
+		await axiosApi.post(`workspace`, { name, generated_videos_quota: 200 })
+	}
 
 	const planCheckout = async () => {
 		// TODO: need to redirect to plan selection here
@@ -76,31 +76,31 @@ const Register: Component = () => {
 			plan_id: 1,
 			success_url: "http://localhost:3001",
 			cancel_url: "http://localhost:3001/cancel",
-		};
-		const res = await axiosApi.post(`checkout`, body);
-		console.log("planCheckout", res);
-	};
+		}
+		const res = await axiosApi.post(`checkout`, body)
+		console.log("planCheckout", res)
+	}
 
 	const validateUser = async (token: null | string) => {
 		if (token) {
-			setLoadingState(true);
-			const res = await axiosApi.post("tokenauth", { token });
-			setLoadingState(false);
-			console.log("VALIDATE RESPONSE", res);
-			const data = res.data;
+			setLoadingState(true)
+			const res = await axiosApi.post("tokenauth", { token })
+			setLoadingState(false)
+			console.log("VALIDATE RESPONSE", res)
+			const data = res.data
 			if (data.found) {
-				localStorage.setItem("access_token", data.access_token);
-				localStorage.setItem("refresh_token", data.refresh_token);
-				localStorage.setItem("user_id", data.user_id);
-				navigate(`/`, { replace: false });
+				localStorage.setItem("access_token", data.access_token)
+				localStorage.setItem("refresh_token", data.refresh_token)
+				localStorage.setItem("user_id", data.user_id)
+				navigate(`/`, { replace: false })
 			} else {
-				localStorage.setItem("stytch_user_id", data.stytch_user_id);
-				navigate(`/signup`, { replace: false });
+				localStorage.setItem("stytch_user_id", data.stytch_user_id)
+				navigate(`/signup`, { replace: false })
 			}
 		}
-	};
+	}
 
-	createSignal(() => validateUser(token));
+	createSignal(() => validateUser(token))
 
 	return (
 		<section class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -122,7 +122,10 @@ const Register: Component = () => {
 				<form use:form>
 					<div class="mb-3">
 						<div class="rounded-md shadow-sm -space-y-px">
-							<label htmlFor="username" class="sr-only">
+							<label
+								htmlFor="username"
+								class="sr-only"
+							>
 								Username
 							</label>
 							<input
@@ -138,15 +141,16 @@ const Register: Component = () => {
 								placeholder="Username"
 							/>
 							{errors.username && (
-								<span class="ml-2 text-red-700">
-									{errors.username}
-								</span>
+								<span class="ml-2 text-red-700">{errors.username}</span>
 							)}
 						</div>
 					</div>
 					<div class="mb-3">
 						<div class="rounded-md shadow-sm -space-y-px">
-							<label htmlFor="fullname" class="sr-only">
+							<label
+								htmlFor="fullname"
+								class="sr-only"
+							>
 								Full Name
 							</label>
 							<input
@@ -162,9 +166,7 @@ const Register: Component = () => {
 								placeholder="fullname"
 							/>
 							{errors.fullname && (
-								<span class="ml-2 text-red-700">
-									{errors.fullname}
-								</span>
+								<span class="ml-2 text-red-700">{errors.fullname}</span>
 							)}
 						</div>
 					</div>
@@ -189,9 +191,7 @@ const Register: Component = () => {
 								placeholder="Workspace"
 							/>
 							{errors.workspace && (
-								<span class="ml-2 text-red-700">
-									{errors.workspace}
-								</span>
+								<span class="ml-2 text-red-700">{errors.workspace}</span>
 							)}
 						</div>
 					</div>
@@ -220,7 +220,7 @@ const Register: Component = () => {
 				</form>
 			</main>
 		</section>
-	);
-};
+	)
+}
 
-export default Register;
+export default Register
