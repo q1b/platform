@@ -21,8 +21,8 @@ const Workspace = () => {
 				fetched_folders.status === "fulfilled" &&
 				fetched_files.status === "fulfilled"
 			) {
-				console.log(fetched_folders.value.data)
-				console.log(fetched_files.value.data)
+				// console.log(fetched_folders.value.data)
+				// console.log(fetched_files.value.data)
 				initFoldersForWorkspace({
 					fetched_folders: fetched_folders.value.data,
 					fetched_files: fetched_files.value.data,
