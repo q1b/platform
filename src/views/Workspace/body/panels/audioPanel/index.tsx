@@ -4,10 +4,9 @@ import {
 	createReaction,
 	createSignal,
 	Index,
-	onMount,
 	Setter,
 } from "solid-js"
-import { activeActor, AudioHeader } from "./AudioHeader"
+import { activeActor, AudioHeader, setActiveActor } from "./AudioHeader"
 import * as CSV from "./CSVTable"
 import csv_store, { initStoreFromCSV, initStoreFromRes } from "./store"
 import initRes from "./res"
@@ -24,6 +23,7 @@ import {
 	setFileActor,
 	setFileAudioBatchId,
 } from "@/views/Workspace/store/handlers"
+
 const fetchCsvData = async ({
 	actor_id,
 	audio_batch_id,
@@ -42,6 +42,7 @@ const fetchCsvData = async ({
 		return []
 	}
 }
+
 const uploadCsv = async ({
 	ev,
 	actor_id,
@@ -61,7 +62,7 @@ const uploadCsv = async ({
 				name: "audio batch " + new Date().getTime(),
 			})
 
-			console.log("loaded batch audio_batch", batchData)
+			// console.log("loaded batch audio_batch", batchData)
 
 			audio_batch_id = batchData.data.id
 			// await axiosApi.put(`video_instance?id=${file_id}`, { audio_batch_id: batchData.data.id, actor_id: activeActor().value });
@@ -71,7 +72,7 @@ const uploadCsv = async ({
 				actor_id,
 			})
 
-			console.log("FILE UPDATED WITH NEW AUDIO BATCH ACTOR ID\n", uploadRes)
+			// console.log("FILE UPDATED WITH NEW AUDIO BATCH ACTOR ID\n", uploadRes)
 
 			setFileActor({
 				folder_id,
@@ -85,7 +86,7 @@ const uploadCsv = async ({
 			})
 		}
 		const buffer = new Blob(ev, { type: "audio/webm" })
-		console.log("AUDIOBATCHID", audio_batch_id)
+		// console.log("AUDIOBATCHID", audio_batch_id)
 		const formData = new FormData()
 		formData.append("file", buffer)
 		const resBatchData = await postAudioBatchData({
@@ -163,7 +164,6 @@ export const CSVUploadBtn = (props: {
 export const AudioPanel = () => {
 	initStoreFromCSV(initRes)
 	const [csvData, setCSVData] = createSignal()
-
 	createEffect(async () => {
 		if (store.activeFile.audio_batch_id) {
 			console.log("Start fetching CSV DATA")
@@ -177,12 +177,14 @@ export const AudioPanel = () => {
 		}
 	})
 	createEffect(() => {
-		console.log("CSV DATA" + new Date(), csvData())
+		// console.log("CSV DATA" + new Date(), csvData())
 		if (csvData()) initStoreFromRes(csvData())
 	})
 	return (
 		<div class="w-full h-full flex flex-col p-4">
-			<AudioHeader>
+			<AudioHeader
+				onActorChange={(arg: { label: string; value: string }) => {}}
+			>
 				<CSVUploadBtn
 					folder_id={store.activeFile.folder_id}
 					file_id={store.activeFile.file_id}

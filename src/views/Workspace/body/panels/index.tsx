@@ -24,22 +24,6 @@ export const Panels = () => {
 	const next = () => to((current, offset) => current + skip * offset)
 	const prev = () => to((current, offset) => current - skip * offset)
 	onMount(() => {
-/*
-		// Temporary fix for getting the folders and files display
-		// TODO Remove this hack
-		const t_workspace_id = location.pathname.replace("/workspace/", "")
-		let t_folder_id = await addFolder({
-			name: 'Folder' + Math.round(Math.random() * 10),
-			workspace_id: t_workspace_id
-		});
-		console.log('t_folder_id: ', t_folder_id);
-		await addFile({
-			name: 'File' + Math.round(Math.random() * 10),
-			folder_id: t_folder_id
-		})
-*/
-
-
 		const tabbableCandidates = getTabbableCandidates(panelsContainer)
 		const observer = new IntersectionObserver((entities, oberser) =>
 			entities.forEach((entry) =>

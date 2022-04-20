@@ -39,7 +39,7 @@ axiosApi.interceptors.response.use(
 )
 
 export default axiosApi
-// user
+
 export const fetchUserDetails = async (): Promise<UserDetails> =>
 	await axiosApi.get("user")
 
@@ -175,6 +175,7 @@ export const fetchSegments = async ({ file_id }: { file_id: string }) =>
     remove ✅ 
 */
 export const fetchVideos = async () => await axiosApi.get(`video`)
+
 export const postVideo = async ({
 	duration,
 	formData,
@@ -182,10 +183,13 @@ export const postVideo = async ({
 	duration: string
 	formData: FormData
 }) => await axiosApi.post(`upload_video?length=${duration}`, formData)
+
 export const fetchVideo = async ({ video_id }: { video_id: string }) =>
 	await axiosApi.get(`video?id=${video_id}`)
+
 export const retrieveVideo = async ({ video_id }: { video_id: string }) =>
 	await axiosApi.get(`fetch_video?id=${video_id}`, { responseType: "blob" })
+
 export const deleteVideo = async ({ video_id }: { video_id: string }) =>
 	await axiosApi.delete(`video?id=${video_id}`)
 

@@ -111,6 +111,10 @@ const RequiredIcons = [
 		name: "User",
 	},
 	{
+		path: "ic:round-stop-circle",
+		name: "Stop",
+	},
+	{
 		path: "ic:round-folder",
 		name: "Folder",
 	},

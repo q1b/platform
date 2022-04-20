@@ -11,6 +11,7 @@ import {
 } from "@/assets/icons"
 
 import { Button } from "@/ui/Buttons"
+import { store } from "@/views/Workspace/store"
 
 import {
 	Listbox,
@@ -33,12 +34,12 @@ export const [activeActor, setActiveActor] = createSignal(undefined)
 
 export const AudioHeader = (props) => {
 	const [actorModel, setActorModel] = createSignal(false)
+	const [actors] = createResource(fetchActors)
 	const [ACTORS, setACTORS] = createStore<{
 		actors: { label: string; value: string }[]
 	}>({
 		actors: [],
 	})
-	const [actors] = createResource(fetchActors)
 	const trigger = createReaction(async () => {
 		if (actors()) {
 			const actorsArr: {
@@ -52,7 +53,14 @@ export const AudioHeader = (props) => {
 					label: actorDetail.name,
 				}))
 			)
-			setActiveActor(ACTORS.actors.at(0))
+			if (store.activeFile.actor_id) {
+				const initActor = ACTORS.actors.find((actor) => {
+					actor.value === store.activeFile.actor_id
+				})
+				setActiveActor(initActor)
+			} else {
+				setActiveActor(ACTORS.actors.at(0))
+			}
 		}
 	})
 	trigger(() => actors())
@@ -141,7 +149,10 @@ export const AudioHeader = (props) => {
 							value: string
 							label: string
 						}>
-							onChange={setActiveActor}
+							onChange={async (el) => {
+								setActiveActor(el)
+								if (props?.onActorChange) await props.onActorChange(el)
+							}}
 							value={activeActor()}
 						>
 							<ListboxButton
@@ -212,7 +223,7 @@ export const AudioHeader = (props) => {
 															onClick={(el) => {
 																el.preventDefault()
 																el.stopPropagation()
-																console.log("BUTTON")
+																console.log("Delete Actor BUTTON")
 															}}
 															stylied
 															class="group"

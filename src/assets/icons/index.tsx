@@ -1,6 +1,6 @@
 
 import { ComponentProps, splitProps } from "solid-js"
-export type IconProps<P = {}> = P & {
+type IconProps<P = {}> = P & {
     size?: number
     basic?: boolean
 }
@@ -659,6 +659,36 @@ export const UserIcon = (props: IconProps<ComponentProps<"svg">>) => {
     }
     return (
         <HeroiconsOutlineUser
+            shape-rendering="geometricPrecision"
+            class={
+                local?.class
+                    ? local?.basic
+                        ? local.class +
+                          " group-active:scale-100 group-hover:scale-105 transition-transform"
+                        : local.class
+                    : local.basic
+                    ? "w-6 h-6 group-active:scale-100 group-hover:scale-105 transition-transform"
+                    : "w-6 h-6"
+            }
+            width={`${local.size || 24}px`}
+            height={`${local.size || 24}px`}
+            {...others}
+        />
+    )
+}
+import IcRoundStopCircle from "~icons/ic/round-stop-circle";
+export const StopIcon = (props: IconProps<ComponentProps<"svg">>) => {
+    const [local, others] = splitProps(props, [
+        "size",
+        "class",
+        "shape-rendering",
+        "basic",
+    ])
+    if (typeof local.basic === "undefined") {
+        local.basic = true
+    }
+    return (
+        <IcRoundStopCircle
             shape-rendering="geometricPrecision"
             class={
                 local?.class

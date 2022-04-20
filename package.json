@@ -1,7 +1,7 @@
 {
-	"name": "vite-template-solid",
+	"name": "solid-platform-ui",
 	"version": "0.0.0",
-	"description": "",
+	"description": "Awesome tool to get AI generated VIdeos",
 	"scripts": {
 		"start": "vite",
 		"dev": "vite",

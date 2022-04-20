@@ -1,5 +1,5 @@
 import { DeleteIcon } from "@/assets/icons"
-import { MicrophoneIconButton, PlayIconButton } from "@/ui/IconButtons"
+import { AudioMicrophoneButton, PlayIconButton } from "@/ui/IconButtons"
 import {
 	children,
 	ComponentProps,
@@ -64,7 +64,7 @@ export const Cell = (props: ComponentProps<"div">) => {
 					fallback={
 						<>
 							<span class="w-5">🔴</span>
-							<MicrophoneIconButton
+							<AudioMicrophoneButton
 								colors={[
 									{
 										fill: "#923CF8",

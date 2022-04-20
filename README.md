@@ -2,7 +2,7 @@
 
 # Platform UI 🔥
 
-<!-- 🅰️ 🅱️😜😉👩‍🚀👋💖👍🤔🥰😶🦋🐌⭐✅❎➕🤞❌🤜 📁🗄️🎻 👯‍♀️ -->
+<!-- 🅰️🅱️😜😉👩‍🚀👋💖👍🤔🥰😶🦋🐌⭐✅❎➕🤞❌🤜📁🗄️🎻👯️ -->
 
 ## Project Structure 🗃️ 👇
 
@@ -29,6 +29,22 @@
 <!-- ├─ **index.html** \ -->
 <!-- ├─ **package.json** \ -->
 <!-- ├─ **postcss.config.js** \ -->
+
+> Note: this is repo and following things are priority as of now,
+
+- Time this week
+
+✅ File Explorer
+
+❔ Audio Section
+Making Author also, robust handling all cases So, avoid future bugs.
+Cell Audio Recording is also, API Posting Fetching
+Yet, large CSV don't work due to there processing stop the thread we have to fix this, I have some ideas, like using service worker to process, or some web assembly stuff to process, For now We can skip it to make a MVP.
+
+❔ Video Section
+RetriveVideo from our api if available if not, show the option to createNewVideo
+Implement Upload Video option for user, to api then fetch it from the api,
+Handle segments in the client side, to tell the api where are variable lies to replace them, in the video, and there duration accordingly,
 
 ### Assets
 
@@ -189,23 +205,23 @@ store str
 
 ```ts
 type File = {
-    // fetched from API
-    id: string
-    folder_id: string
-    name: string
-    actor_id: string
-    video_id: string
-    audio_batch_id: string
+	// fetched from API
+	id: string
+	folder_id: string
+	name: string
+	actor_id: string
+	video_id: string
+	audio_batch_id: string
 }
 
 // locally used by app
 type ClientOptionsFile<P = {}> = P & {
-    isactive: boolean
-    isopen: boolean
-    tab: {
-        type: "video" | "audio"
-    }
-    activeTable: string[][]
+	isactive: boolean
+	isopen: boolean
+	tab: {
+		type: "video" | "audio"
+	}
+	activeTable: string[][]
 }
 ```
 

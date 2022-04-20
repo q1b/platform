@@ -5,4 +5,14 @@ import Menu from "./menu"
 import Lock from "./lock"
 import LogIn from "./logIn"
 import PlayIconButton from "./play"
-export { Expand, PlayIconButton, LogIn, Vol, Lock, Menu, MicrophoneIconButton }
+import AudioMicrophoneButton from "./audio_microphone"
+export {
+	Expand,
+	PlayIconButton,
+	LogIn,
+	Vol,
+	Lock,
+	Menu,
+	MicrophoneIconButton,
+	AudioMicrophoneButton,
+}
