@@ -1,243 +1,34 @@
-🌈 Started on 👉 👩‍🚀 **23-3-2022**
+## Usage
 
-# Platform UI 🔥
+Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
 
-<!-- 🅰️🅱️😜😉👩‍🚀👋💖👍🤔🥰😶🦋🐌⭐✅❎➕🤞❌🤜📁🗄️🎻👯️ -->
+This is the reason you see a `pnpm-lock.yaml`. That being said, any package manager will work. This file can be safely be removed once you clone a template.
 
-## Project Structure 🗃️ 👇
-
-<!-- &ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;├─ [**widgets/**](#widgets) \ -->
-
-\
-
-├─📂**src/** \
-&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;├─📂 [**assets/**](#assets) \
-&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;├─ ... \
-&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;├─ [**icons/**](#icons) \
-&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;└─ ... \
-&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;├─ [**funcs/**](#func) \
-&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;├─ [**store/**](#store) \
-&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;├─ [**ui/**](#ui) \
-&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;├─ [**views/**](#views) \
-&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;├─ **App.tsx** \
-&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;├─ **index.tsx** \
-&ThinSpace;|&nbsp;&nbsp;&nbsp;&nbsp;└─ **tailwind.css** \
-├─ **tailwind.config.js** \
-├─ **tsconfig.json** \
-└─ **vite.config.ts**
-
-<!-- ├─ **index.html** \ -->
-<!-- ├─ **package.json** \ -->
-<!-- ├─ **postcss.config.js** \ -->
-
-> Note: this is repo and following things are priority as of now,
-
-- Time this week
-
-✅ File Explorer
-
-❔ Audio Section
-Making Author also, robust handling all cases So, avoid future bugs.
-Cell Audio Recording is also, API Posting Fetching
-Yet, large CSV don't work due to there processing stop the thread we have to fix this, I have some ideas, like using service worker to process, or some web assembly stuff to process, For now We can skip it to make a MVP.
-
-❔ Video Section
-RetriveVideo from our api if available if not, show the option to createNewVideo
-Implement Upload Video option for user, to api then fetch it from the api,
-Handle segments in the client side, to tell the api where are variable lies to replace them, in the video, and there duration accordingly,
-
-### Assets
-
-This contain logo, icons, images, videos and other static stuff
-
-#### Icons
-
-To make using icons fun not confusing as I am importing all **icons** available in [https://icones.js.org/](https://icones.js.org/) through antfu's **unplugin-icons** npm package, which it basically consist of open source icon libraries So, It's huge, and using all of them is **impossible as well**.
-
-> Basically A Icon is used to represent some brand, user-action, sometimes emotions, and expression So,
-
-**Import only the icon, _only when needed and only once_, in a common file which acts as a global source of icons for your whole project.**
-
-So, here is a basic example
-
-```js
-// ./src/assets/icon/index.tsx
-export { default as Add } from "~icons/heroicons-outline/plus-circle"
+```bash
+$ npm install # or pnpm install or yarn install
 ```
 
-```tsx
-// ./src/ui/Header.tsx
-import { Add } from "../assets/icon"
-// use it 👇
-function Header() {
-    return (
-        <>
-            ...
-            <Add class="text-white w-6 h-6" >
-        </>
-    )
-}
-```
+### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
 
-### API
+## Available Scripts
 
-```
-├─📂api/
-│  ├─utils.ts
-│  └─index.ts
-```
+In the project directory, you can run:
 
-### Funcs
+### `npm dev` or `npm start`
 
-This is special section as it is going to contain reuseable functions which we need, and used many times in codebases, or going to use it multiple times.
+Runs the app in the development mode.<br>
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-```
-├─📂funcs/
-│  ├─animate.ts
-│  ├─debounce.ts
-│  ├─thottle.ts
-│  └─cvtCSV.ts
-```
+The page will reload if you make edits.<br>
 
-### UI
+### `npm run build`
 
-This is going to contain User Interface logic, Basically It's going to define reuseable components.
+Builds the app for production to the `dist` folder.<br>
+It correctly bundles Solid in production mode and optimizes the build for the best performance.
 
-```
-├─📂ui/
-│  ├─theme/
-│  ├─animation/
-│  ├─listbox/
-│  ├─buttons/
-│  ├─dialog/
-│  └─toast/
-```
+The build is minified and the filenames include the hashes.<br>
+Your app is ready to be deployed!
 
-### Views
+## Deployment
 
-This is where we will have our routes setup and different url or pages also co-exists with routes defination.
-
-#### Auth
-
-For Authenthecation of User we have
-
-When user land on the page, and if user is not authenthecated already,
-we will Show them CheckIn Page
-Then, we will send API request to server in order to check if user is already registered or not,
-If User is registered we will Show them Verify Page, where they have to check their Gmail Account and Click Link from there,
-Else User is sended to Registration Page, AFTER REGISTRATION DONE We Will send them to Verify Page,
-After, User Clicked the Link Provided in GMAIL,
-
-we will get their token, basis on which we will revalidate them when ever they come again on CheckIn Page,
-
-```
-├─📂auth/
-│  ├─📠check-in.tsx
-│  ├─📲registration.tsx
-│  └─⏳verification.tsx
-...
-```
-
-#### user ⚙️ settings
-
-This is where user will able to change it's username email address, handling price and can see other information like current plan.
-
-#### Control Panel
-
-This is where a user spend second most of time after workspace, to set there user settings, profile or manage subscriptions and pricing.
-
-```
-├─...
-├─📂controlPanel/
-│  ├─📂body/
-│  │  ├─📂header/
-│  │  │  ├─ actions.tsx
-│  │  │  └─ index.tsx
-│  │  ├─📂recents/
-│  │  │  └─ index.tsx
-│  │  └─📂all/
-│  │     └─ index.tsx
-│  └─📁store/
-├─...
-└─...
-```
-
-#### Workspace 🗂️
-
-This will contain whole studio (single-workspace) logic for our app,
-
-```
-├─...
-├─📂workspace/
-│  ├─📂body/
-│  │  ├─📂header/
-│  │  │  ├─tab.tsx
-│  │  │  ├─actions.tsx
-│  │  │  └─index.tsx
-│  │  ├─📂tabs/
-│  │  │  └─index.tsx
-│  │  ├─📯audioPage/
-│  │  │  ├─header.tsx
-│  │  │  ├─table.tsx
-│  │  │  └─index.tsx
-│  │  └─🎥videoPage/
-│  │     ├─📺canvas.tsx
-│  │     ├─⚒️controls.tsx
-│  │     ├─🎙️recorder.tsx
-│  │     └─index.tsx
-│  ├─📁sidenav/
-│  │  ├─header.tsx
-│  │  ├─panel.tsx
-│  │  └─index.tsx
-│  └─📁store/
-├─...
-└─...
-```
-
-##### 🕊️ Sidenav
-
-##### AudioPage
-
-main parts
-csv, table, audioRecorder, author
-
-store str
-
-```ts
-type File = {
-	// fetched from API
-	id: string
-	folder_id: string
-	name: string
-	actor_id: string
-	video_id: string
-	audio_batch_id: string
-}
-
-// locally used by app
-type ClientOptionsFile<P = {}> = P & {
-	isactive: boolean
-	isopen: boolean
-	tab: {
-		type: "video" | "audio"
-	}
-	activeTable: string[][]
-}
-```
-
-##### VideoPage
-
-main parts
-displaying the recorded video,
-controlling the recorded video,
-recording a new video or uploading a video,
-
-##### Connected Part
-
-sharing the table data with video page
-
-<!-- Features Already Ported  -->
-
-<!-- Way to go -->
-
-<!-- Special Thanks to -->
+You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
