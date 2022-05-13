@@ -2,9 +2,6 @@ import type { Component } from 'solid-js';
 
 import styles from './App.module.css';
 
-import './helpers/env';
-
-console.log(import.meta.env.VITE_API_URL);
 
 const App: Component = () => {
   return (
