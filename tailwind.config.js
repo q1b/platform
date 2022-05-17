@@ -64,6 +64,9 @@ module.exports = {
 		"./src/ui/**/*.tsx",
 		"./src/assets/icons/*.tsx",
 	],
+	variants: {
+		visibility: ["group-hover","active","group-active"],
+	},
 	theme: {
 		extend: {
 			colors: {
