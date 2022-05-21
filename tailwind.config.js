@@ -60,12 +60,13 @@ const metalGray = {
 }
 module.exports = {
 	content: [
+		"./src/*.tsx",
 		"./src/views/**/*.tsx",
 		"./src/ui/**/*.tsx",
 		"./src/assets/icons/*.tsx",
 	],
 	variants: {
-		visibility: ["group-hover","active","group-active"],
+		visibility: ["group-hover", "active", "group-active"],
 	},
 	theme: {
 		extend: {
@@ -129,5 +130,8 @@ module.exports = {
 			},
 		},
 	},
-	plugins: [require("@tailwindcss/forms"), require("@tailwindcss/line-clamp")],
+	plugins: [
+		// require("@tailwindcss/forms"),
+		require("@tailwindcss/line-clamp"),
+	],
 }

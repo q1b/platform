@@ -1,6 +1,6 @@
 import { action } from '@storybook/addon-actions';
 
-import {FolderMenu} from '../ui/FileExplorer/FolderMenu';
+import {FolderMenu} from '@/ui/FileExplorer/FolderMenu';
 
 export default {
   title: 'Folder Menu',

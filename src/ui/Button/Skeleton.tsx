@@ -1,7 +1,6 @@
 import {
 	children as solidifyChildren,
 	ComponentProps,
-	PropsWithChildren,
 	splitProps,
 } from "solid-js"
 
@@ -9,8 +8,8 @@ type ButtonProps<P = {}> = P & {
 	stylied?: boolean
 }
 
-export const Button = (
-	props: PropsWithChildren<ButtonProps<ComponentProps<"button">>>
+export const ButtonSkeleton = (
+	props: ButtonProps<ComponentProps<"button">>
 ) => {
 	const children = solidifyChildren(() => props.children)
 	const [local, others] = splitProps(props, ["class", "stylied", "children"])

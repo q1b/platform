@@ -6,6 +6,7 @@
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
+    "build:icon": "node ./scripts/icons/index.js",
     "build-storybook": "build-storybook -s public",
     "storybook": "start-storybook -p 9009 -s public",
     "serve": "vite preview"

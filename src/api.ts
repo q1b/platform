@@ -1,13 +1,13 @@
 import axios from "axios"
 import { UserDetails, Workspace } from "./views/ControlPanel/index.type"
 
-import './helpers/env';
+import "./helpers/env"
 
-const baseURL = import.meta.env.VITE_API_URL;
+const baseURL = import.meta.env.VITE_API_URL
 
 const axiosApi = axios.create({
 	// baseURL: "https://api.hailey.ai/api",
-    baseURL: baseURL
+	baseURL: baseURL,
 })
 
 // Request interceptor for API calls
@@ -52,6 +52,8 @@ export const fetchUserDetails = async (): Promise<UserDetails> =>
 // workspaces
 export const fetchWorkspaces = async (): Promise<Workspace[]> =>
 	await axiosApi.get("workspace")
+
+export const fetchPlans = async () => await axiosApi.get("plans")
 
 // Folders
 /* 
