@@ -1,13 +1,21 @@
-import axios from "axios"
-import { UserDetails, Workspace } from "./views/ControlPanel/index.type"
+import axios, { AxiosResponse } from "axios"
+import {
+	Actor,
+	File,
+	Folder,
+	Plan,
+	Segment,
+	TemplateVideo,
+	User,
+	Workspace,
+} from "./api.type"
 
 import "./helpers/env"
 
 const baseURL = import.meta.env.VITE_API_URL
 
 const axiosApi = axios.create({
-	// baseURL: "https://api.hailey.ai/api",
-	baseURL: baseURL,
+	baseURL,
 })
 
 // Request interceptor for API calls
@@ -26,7 +34,7 @@ axiosApi.interceptors.request.use(
 )
 
 // if a 401 happens, when token is expired
-axiosApi.interceptors.response.use(
+const interceptorId = axiosApi.interceptors.response.use(
 	(response) => response,
 	async (error) => {
 		const originalRequest = error.config
@@ -34,7 +42,7 @@ axiosApi.interceptors.response.use(
 		if (error && error.response && error.response.status === 401) {
 			originalRequest._retry = true
 
-			axios.interceptors.response.eject()
+			axios.interceptors.response.eject(interceptorId)
 
 			originalRequest.headers.token = "jscanvas"
 
@@ -46,14 +54,34 @@ axiosApi.interceptors.response.use(
 
 export default axiosApi
 
-export const fetchUserDetails = async (): Promise<UserDetails> =>
+export const fetchPlans = async (): Promise<AxiosResponse<Plan[]>> =>
+	await axiosApi.get("plans")
+
+export const fetchCheckoutLink = async (body: {
+	plan_id: string
+	success_url: string
+	cancel_url: string
+}): Promise<AxiosResponse<{ url: string }>> =>
+	await axiosApi.post("checkout", body)
+
+export const fetchUserDetails = async (): Promise<AxiosResponse<User>> =>
 	await axiosApi.get("user")
 
-// workspaces
-export const fetchWorkspaces = async (): Promise<Workspace[]> =>
-	await axiosApi.get("workspace")
+export const updateUsername = async ({
+	username,
+}: {
+	username: string
+}): Promise<AxiosResponse<User>> => await axiosApi.put("user", { username })
 
-export const fetchPlans = async () => await axiosApi.get("plans")
+export const updateFullname = async ({
+	fullname,
+}: {
+	fullname: string
+}): Promise<AxiosResponse<User>> => await axiosApi.put("user", { fullname })
+
+// workspaces
+export const fetchWorkspaces = async (): Promise<AxiosResponse<Workspace[]>> =>
+	await axiosApi.get("workspace")
 
 // Folders
 /* 
@@ -66,9 +94,14 @@ export const fetchFolders = async ({
 	workspace_id,
 }: {
 	workspace_id: string
-}) => await axiosApi.get(`folder?workspace_id=${workspace_id}`)
+}): Promise<AxiosResponse<Folder[]>> =>
+	await axiosApi.get(`folder?workspace_id=${workspace_id}`)
 
-export const fetchFolder = async ({ folder_id }: { folder_id: string }) =>
+export const fetchFolder = async ({
+	folder_id,
+}: {
+	folder_id: string
+}): Promise<AxiosResponse<Folder>> =>
 	await axiosApi.get(`folder?id=${folder_id}`)
 
 export const addFolder = async ({
@@ -77,7 +110,8 @@ export const addFolder = async ({
 }: {
 	name: string
 	workspace_id: string
-}) => await axiosApi.post("folder", { name, workspace_id })
+}): Promise<AxiosResponse<Folder>> =>
+	await axiosApi.post("folder", { name, workspace_id })
 
 export const renameFolder = async ({
 	folder_id,
@@ -85,9 +119,14 @@ export const renameFolder = async ({
 }: {
 	folder_id: string
 	name: string
-}) => await axiosApi.put(`folder?id=${folder_id}`, { name })
+}): Promise<AxiosResponse<Folder>> =>
+	await axiosApi.put(`folder?id=${folder_id}`, { name })
 
-export const removeFolder = async ({ folder_id }: { folder_id: string }) =>
+export const removeFolder = async ({
+	folder_id,
+}: {
+	folder_id: string
+}): Promise<AxiosResponse<Folder>> =>
 	await axiosApi.delete(`folder?id=${folder_id}`)
 
 // Files
@@ -104,13 +143,18 @@ export const fetchFiles = async ({
 }: {
 	folder_id?: string
 	workspace_id?: string
-}) => {
+}): Promise<AxiosResponse<File[]>> => {
 	if (folder_id)
 		return await axiosApi.get(`video_instance?folder_id=${folder_id}`)
 	if (workspace_id)
 		return await axiosApi.get(`video_instance?workspace_id=${workspace_id}`)
 }
-export const fetchFile = async ({ file_id }: { file_id: string }) =>
+
+export const fetchFile = async ({
+	file_id,
+}: {
+	file_id: string
+}): Promise<AxiosResponse<File>> =>
 	await axiosApi.get(`video_instance?id=${file_id}`)
 
 export const addFile = async ({
@@ -119,7 +163,7 @@ export const addFile = async ({
 }: {
 	name: string
 	folder_id: string
-}) =>
+}): Promise<AxiosResponse<File>> =>
 	await axiosApi.post("video_instance", {
 		name,
 		folder_id,
@@ -131,9 +175,14 @@ export const renameFile = async ({
 }: {
 	file_id: string
 	name: string
-}) => await axiosApi.put(`video_instance?id=${file_id}`, { name })
+}): Promise<AxiosResponse<File>> =>
+	await axiosApi.put(`video_instance?id=${file_id}`, { name })
 
-export const removeFile = async ({ file_id }: { file_id: string }) =>
+export const removeFile = async ({
+	file_id,
+}: {
+	file_id: string
+}): Promise<AxiosResponse<File>> =>
 	await axiosApi.delete(`video_instance?id=${file_id}`)
 
 export const updateFileAudioData = async ({
@@ -150,7 +199,7 @@ export const updateFileAudioData = async ({
 		actor_id,
 	})
 
-export const updateFileVideoInstanceId = async ({
+export const updateFileTemplateVideoId = async ({
 	file_id,
 	video_id,
 }: {
@@ -181,12 +230,20 @@ export const postSegment = async (segment: {
 	audio_variable_column_id: number
 	variable_time_marker_start: string
 	variable_time_marker_end: string
-}) => await axiosApi.post("segment", segment)
+}): Promise<AxiosResponse<Segment>> => await axiosApi.post("segment", segment)
 
-export const fetchSegment = async ({ segment_id }: { segment_id: string }) =>
+export const fetchSegment = async ({
+	segment_id,
+}: {
+	segment_id: string
+}): Promise<AxiosResponse<Segment>> =>
 	await axiosApi.get(`segment?id=${segment_id}`)
 
-export const fetchSegments = async ({ file_id }: { file_id: string }) =>
+export const fetchSegments = async ({
+	file_id,
+}: {
+	file_id: string
+}): Promise<AxiosResponse<Segment[]>> =>
 	await axiosApi.get(`segment?video_instance_id=${file_id}`)
 
 // Video
@@ -196,7 +253,17 @@ export const fetchSegments = async ({ file_id }: { file_id: string }) =>
     Rename ✅
     remove ✅ 
 */
-export const fetchVideos = async () => await axiosApi.get(`video`)
+export const fetchVideos = async (): Promise<AxiosResponse<TemplateVideo[]>> =>
+	await axiosApi.get(`video`)
+
+export const fetchGeneratedVideo = async ({
+	generated_video_id,
+}: {
+	generated_video_id: string
+}) =>
+	await axiosApi.get(`fetch_generated_video?id=${generated_video_id}`, {
+		responseType: "blob",
+	})
 
 export const postVideo = async ({
 	duration,
@@ -204,24 +271,45 @@ export const postVideo = async ({
 }: {
 	duration: string
 	formData: FormData
-}) => await axiosApi.post(`upload_video?length=${duration}`, formData)
+}): Promise<AxiosResponse<TemplateVideo>> =>
+	await axiosApi.post(`upload_video?length=${duration}`, formData)
 
-export const fetchVideo = async ({ video_id }: { video_id: string }) =>
+export const fetchVideo = async ({
+	video_id,
+}: {
+	video_id: string
+}): Promise<AxiosResponse<TemplateVideo>> =>
 	await axiosApi.get(`video?id=${video_id}`)
 
 export const retrieveVideo = async ({ video_id }: { video_id: string }) =>
 	await axiosApi.get(`fetch_video?id=${video_id}`, { responseType: "blob" })
 
-export const deleteVideo = async ({ video_id }: { video_id: string }) =>
+export const deleteVideo = async ({
+	video_id,
+}: {
+	video_id: string
+}): Promise<AxiosResponse<TemplateVideo>> =>
 	await axiosApi.delete(`video?id=${video_id}`)
 
 // actor
-export const addActor = async ({ name }: { name: string }) =>
+export const addActor = async ({
+	name,
+}: {
+	name: string
+}): Promise<AxiosResponse<Actor>> =>
 	await axiosApi.post("actor", { name: name })
-export const fetchActors = async () => await axiosApi.get(`actor`)
-export const fetchActor = async ({ actor_id }: { actor_id: string }) =>
-	await axiosApi.get(`actor?id=${actor_id}`)
-export const deleteActor = async ({ actor_id }: { actor_id: string }) =>
+export const fetchActors = async (): Promise<AxiosResponse<Actor[]>> =>
+	await axiosApi.get(`actor`)
+export const fetchActor = async ({
+	actor_id,
+}: {
+	actor_id: string
+}): Promise<AxiosResponse<Actor>> => await axiosApi.get(`actor?id=${actor_id}`)
+export const deleteActor = async ({
+	actor_id,
+}: {
+	actor_id: string
+}): Promise<AxiosResponse<Actor>> =>
 	await axiosApi.delete(`actor?id=${actor_id}`)
 
 // audio_batch
@@ -252,14 +340,16 @@ export const postAudioBatchData = async ({
 	)
 
 export const fetchCSVFromAudioBatchData = async ({
+	video_instance_id,
 	audio_batch_id,
 	actor_id,
 }: {
+	video_instance_id: string
 	actor_id: string
 	audio_batch_id: string
 }) =>
 	await axiosApi.get(
-		`audio_batch_data?audio_batch_id=${audio_batch_id}&actor_id=${actor_id}`
+		`audio_batch_data?video_instance_id=${video_instance_id}&audio_batch_id=${audio_batch_id}&actor_id=${actor_id}`
 	)
 
 export const fetchAudio = async ({ audio_id }: { audio_id: string }) =>

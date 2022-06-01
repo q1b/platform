@@ -12,7 +12,7 @@ export const Billings = () => {
 			</div>
 			<div class="flex flex-col gap-y-2">
 				<h1 class="text-2xl font-semibold pl-2">Primary Card</h1>
-				<InputButton placeholder="Visa-ending with 3048" />
+				<InputButton isupdating={false} placeholder="Visa-ending with 3048" />
 			</div>
 			<div class="flex flex-col gap-y-2 pl-2">
 				<h1 class="text-2xl font-semibold">Billing History</h1>

@@ -1,4 +1,4 @@
-import { PencilIcon, SearchIcon } from "@/assets/icons"
+import { LoadingIcon, PencilIcon, SearchIcon } from "@/assets/icons"
 
 import {
 	ComponentProps,
@@ -11,10 +11,16 @@ import {
 
 type FolderProps<P = {}> = P & {
 	placeholder: string
+	isupdating: boolean
 }
 
 export const InputButton = (props: FolderProps<ComponentProps<"input">>) => {
-	const [local, others] = splitProps(props, ["children", "ref", "placeholder"])
+	const [local, others] = splitProps(props, [
+		"children",
+		"ref",
+		"placeholder",
+		"isupdating",
+	])
 	/* Just Background and Text Colors */
 	// const visuals = `bg-white group-hover:bg-slate-200 group-active:bg-slate-300 transition-colors`
 	let inputRef: HTMLInputElement
@@ -41,7 +47,11 @@ export const InputButton = (props: FolderProps<ComponentProps<"input">>) => {
 		>
 			<input
 				type="text"
-				ref={inputRef}
+				ref={(el) => {
+					// @ts-ignore
+					props?.ref ? props.ref(el) : null
+					inputRef = el
+				}}
 				class={`w-full bg-transparent focus:outline-none font-medium`}
 				tabIndex={0}
 				{...others}
@@ -50,10 +60,15 @@ export const InputButton = (props: FolderProps<ComponentProps<"input">>) => {
 			/>
 			<span class="flex items-center justify-center">
 				<Show
-					when={!active()}
-					fallback={<PencilIcon class="w-4 h-4" />}
+					when={!props.isupdating}
+					fallback={<LoadingIcon class="w-4 h-4" />}
 				>
-					<PencilIcon class="w-4 h-4" />
+					<Show
+						when={!active()}
+						fallback={<PencilIcon class="w-4 h-4" />}
+					>
+						<PencilIcon class="w-4 h-4" />
+					</Show>
 				</Show>
 			</span>
 		</div>

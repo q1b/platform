@@ -63,6 +63,7 @@ module.exports = {
 		"./src/*.tsx",
 		"./src/views/**/*.tsx",
 		"./src/ui/**/*.tsx",
+		"./src/ui2/**/*.tsx",
 		"./src/assets/icons/*.tsx",
 	],
 	variants: {

@@ -1,53 +1,135 @@
-import { useNavigate, useRoutes } from "solid-app-router"
-import type { RouteDefinition } from "solid-app-router/dist/types"
-import { Component, createSelector, createSignal, lazy } from "solid-js"
-import { SidenavBtn } from "./ui/Sidenav/ActionBtn"
+import { AxiosResponse } from "axios"
+import * as Server from "./api"
+import {
+	useNavigate,
+	Routes,
+	Route,
+	useRouteData,
+	useSearchParams,
+	useLocation,
+} from "solid-app-router"
 
-const routes: RouteDefinition[] = [
-	{
-		path: "/settings",
-		component: lazy(() => import("@/views/Settings/index")),
-		children: [
-			{
-				path: "/",
-				component: lazy(() => import("@/views/Settings/Profile")),
-			},
-			{
-				path: "/profile",
-				component: lazy(() => import("@/views/Settings/Profile")),
-			},
-			{
-				path: "/billings",
-				component: lazy(() => import("@/views/Settings/Billings")),
-			},
-			{
-				path: "/ai_studio",
-				component: lazy(() => import("@/views/Settings/AIStudio")),
-			},
-		],
-	},
-	{
-		path: "/workspace",
-		component: lazy(() => import("@/views/workspace/default")),
-	},
-	{
-		path: "/workspace/:id",
-		component: lazy(() => import("@/views/Workspace/[id]")),
-		children: [
-			{
-				path: "/",
-				component: lazy(() => import("@/views/Workspace/[id]/index")),
-			},
-		],
-	},
-]
+import {
+	Component,
+	createReaction,
+	createResource,
+	createSelector,
+	createSignal,
+	For,
+	lazy,
+	Resource,
+	Show,
+	Switch,
+	untrack,
+} from "solid-js"
+
+import { createStore } from "solid-js/store"
+import { fetchFiles, fetchFolders } from "./api"
+
+import { User, Workspace } from "./api.type"
+import { createPath, ROUTE } from "./routing"
+import { SidenavBtn } from "./ui/Sidenav/ActionBtn"
+import { Portal } from "solid-js/web"
+import { PaymentSuccessModal } from "./views/Redirects/PaymentSuccess"
+import { PaymentFailModal } from "./views/Redirects/PaymentFail"
+
+const CheckInPage = lazy(() => import("@/views/Auth/Check-in"))
+const LoungePage = lazy(() => import("@/views/Auth/Lounge"))
+const VerificationPage = lazy(() => import("@/views/Auth/Verification"))
+const RegistrationPage = lazy(() => import("@/views/Auth/Registration"))
+
+const SettingsLayout = lazy(() => import("@/views/Settings"))
+const ProfilePage = lazy(() => import("@/views/Settings/Profile"))
+const BillingsPage = lazy(() => import("@/views/Settings/Billings"))
+const AIStudioPage = lazy(() => import("@/views/Settings/AIStudio"))
+
+const WorkspacePage = lazy(() => import("@/views/Workspace"))
+
+const fetchWorkspaceDetails = async (workspace_id: string) => {
+	return await Promise.allSettled([
+		fetchFolders({ workspace_id }),
+		fetchFiles({ workspace_id }),
+	])
+}
+
+const WorkspaceData = ({ params, navigate, location, data }) => {
+	/** Data function https://github.com/solidjs/solid-app-router#data-functions */
+	const [details] = createResource(
+		() => params.workspace_id,
+		fetchWorkspaceDetails
+	)
+	return details
+}
+
+const EditorPage = lazy(() => import("@/views/Editor"))
+
+export const [globalStore, setGlobalStore] = createStore<{
+	user?: User
+	workspaces: Workspace[]
+}>({
+	workspaces: [],
+})
+
+export const updateUsername = async (username: string) => {
+	await Server.updateUsername({ username })
+	setGlobalStore("user", "username", username)
+}
+
+export const updateFullname = async (fullname: string) => {
+	await Server.updateFullname({ fullname })
+	setGlobalStore("user", "fullname", fullname)
+}
+
+export const [activeWorkspace, setActiveWorkspace] =
+	createSignal("workspace_id")
 
 const App: Component = () => {
-	const [active, setActive] = createSignal("settings")
-	const isActive = createSelector(active)
+	const searchParams = useLocation()
+	const params = new URLSearchParams(searchParams.search)
+	const success = params.get("success")
+	const [modal, setModal] = createSignal(success !== null)
+	// const openModal = () => setModal(true)
+	const closeModal = () => setModal(false)
+
+	const isActive = createSelector(activeWorkspace)
 	const navigate = useNavigate()
-	const Routes = useRoutes(routes)
 	const [notificationCount, setNotificationCount] = createSignal(0)
+	const data: Resource<
+		[
+			PromiseSettledResult<AxiosResponse<User>>,
+			PromiseSettledResult<AxiosResponse<Workspace[]>>
+		]
+	> = useRouteData()
+	createReaction(async () => {
+		if (data()) {
+			const [user, workspaces] = data()
+			if (user.status === "fulfilled" && workspaces.status === "fulfilled") {
+				console.log("user :- ", user)
+				setGlobalStore("user", user.value.data)
+				console.log("workspaces :- ", workspaces)
+				setGlobalStore("workspaces", workspaces.value.data)
+				if (workspaces.value.data[0]?.id) {
+					if (searchParams.pathname === "/") {
+						navigate(
+							createPath({
+								path: ROUTE.WORKSPACE,
+								params: {
+									workspace_id: workspaces.value.data[0]?.id,
+								},
+							})
+						)
+						setActiveWorkspace(workspaces.value.data[0]?.id)
+					}
+				}
+			}
+		} else {
+			navigate(
+				createPath({
+					path: ROUTE.CHECKIN,
+				})
+			)
+		}
+	})(() => data())
 	return (
 		<div class="bg-white min-h-screen w-full flex items-center">
 			<nav class="min-h-screen shrink-0 w-16 overflow-hidden flex flex-col bg-slate-200">
@@ -60,64 +142,75 @@ const App: Component = () => {
 						id="user workspaces"
 						class="grow py-2"
 					>
-						<SidenavBtn
-							active={isActive("workspace")}
-							notificationCount={notificationCount}
-							svg
-							class="bg-blue-900 group-hover:bg-[#27257B] group-focus:bg-[#27257b]"
-							classList={{
-								"bg-[#27257b]": isActive("workspace"),
-							}}
-							onClick={() => {
-								navigate("/workspace")
-								setActive("workspace")
-							}}
-						>
-							<svg
-								width="24"
-								height="24"
-								viewBox="0 0 24 24"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
-							>
-								<path
-									d="M7 6.5H4V5.6C4 5.25 4.25 5 4.6 5H6.4C6.75 5 7 5.25 7 5.6V6.5Z"
-									fill="#546E7A"
-								/>
-								<path
-									d="M20 20H4C2.9 20 2 19.1 2 18V11H22V18C22 19.1 21.1 20 20 20Z"
-									fill="#168DB3"
-								/>
-								<path
-									d="M6.35 11C6.15 11.65 6 12.3 6 13C6 16.3 8.7 19 12 19C15.3 19 18 16.3 18 13C18 12.3 17.85 11.65 17.65 11H6.35Z"
-									fill="#42257A"
-								/>
-								<path
-									d="M4 6H20C21.1 6 22 6.9 22 8V11H2V8C2 6.9 2.9 6 4 6Z"
-									fill="#78909C"
-								/>
-								<path
-									d="M16.9496 6.55005H7.09961L8.79961 4.00005C8.99961 3.70005 9.29961 3.55005 9.64961 3.55005H14.4496C14.7996 3.55005 15.0996 3.70005 15.2996 4.00005L16.9496 6.55005Z"
-									fill="#78909C"
-								/>
-								<path
-									d="M17.6496 11C16.8496 8.65 14.5996 7 11.9996 7C9.39961 7 7.14961 8.65 6.34961 11H17.6496Z"
-									fill="#455A64"
-								/>
-								<path
-									d="M12 17.5C14.4853 17.5 16.5 15.4853 16.5 13C16.5 10.5147 14.4853 8.5 12 8.5C9.51472 8.5 7.5 10.5147 7.5 13C7.5 15.4853 9.51472 17.5 12 17.5Z"
-									fill="#73C0D9"
-								/>
-								<path
-									d="M14.4995 11.5C13.8995 10.8 12.9995 10.4 12.0995 10.4C11.1995 10.4 10.2995 10.8 9.69952 11.5C9.44952 11.75 9.49952 12.15 9.74952 12.4C9.99952 12.65 10.3995 12.6 10.6495 12.35C11.3995 11.5 12.7995 11.5 13.5495 12.35C13.6995 12.5 13.8495 12.55 14.0495 12.55C14.1995 12.55 14.3495 12.5 14.4995 12.4C14.6995 12.2 14.7495 11.75 14.4995 11.5Z"
-									fill="#A9D8E7"
-								/>
-								<path
-									d="M18 7.5H20.5V9.5H18V7.5Z"
-									fill="#DBE2E5"
-								/>
-							</svg>
-						</SidenavBtn>
+						<For each={globalStore.workspaces}>
+							{(workspace) => (
+								<SidenavBtn
+									active={isActive(workspace.id)}
+									notificationCount={notificationCount}
+									svg
+									class="bg-blue-900 group-hover:bg-[#27257B] group-focus:bg-[#27257b]"
+									classList={{
+										"bg-[#27257b]": isActive(workspace.id),
+									}}
+									onClick={() => {
+										navigate(
+											createPath({
+												path: ROUTE.WORKSPACE,
+												params: {
+													workspace_id: workspace.id,
+												},
+											})
+										)
+										setActiveWorkspace(workspace.id)
+									}}
+								>
+									<svg
+										width="24"
+										height="24"
+										viewBox="0 0 24 24"
+										fill="none"
+										xmlns="http://www.w3.org/2000/svg"
+									>
+										<path
+											d="M7 6.5H4V5.6C4 5.25 4.25 5 4.6 5H6.4C6.75 5 7 5.25 7 5.6V6.5Z"
+											fill="#546E7A"
+										/>
+										<path
+											d="M20 20H4C2.9 20 2 19.1 2 18V11H22V18C22 19.1 21.1 20 20 20Z"
+											fill="#168DB3"
+										/>
+										<path
+											d="M6.35 11C6.15 11.65 6 12.3 6 13C6 16.3 8.7 19 12 19C15.3 19 18 16.3 18 13C18 12.3 17.85 11.65 17.65 11H6.35Z"
+											fill="#42257A"
+										/>
+										<path
+											d="M4 6H20C21.1 6 22 6.9 22 8V11H2V8C2 6.9 2.9 6 4 6Z"
+											fill="#78909C"
+										/>
+										<path
+											d="M16.9496 6.55005H7.09961L8.79961 4.00005C8.99961 3.70005 9.29961 3.55005 9.64961 3.55005H14.4496C14.7996 3.55005 15.0996 3.70005 15.2996 4.00005L16.9496 6.55005Z"
+											fill="#78909C"
+										/>
+										<path
+											d="M17.6496 11C16.8496 8.65 14.5996 7 11.9996 7C9.39961 7 7.14961 8.65 6.34961 11H17.6496Z"
+											fill="#455A64"
+										/>
+										<path
+											d="M12 17.5C14.4853 17.5 16.5 15.4853 16.5 13C16.5 10.5147 14.4853 8.5 12 8.5C9.51472 8.5 7.5 10.5147 7.5 13C7.5 15.4853 9.51472 17.5 12 17.5Z"
+											fill="#73C0D9"
+										/>
+										<path
+											d="M14.4995 11.5C13.8995 10.8 12.9995 10.4 12.0995 10.4C11.1995 10.4 10.2995 10.8 9.69952 11.5C9.44952 11.75 9.49952 12.15 9.74952 12.4C9.99952 12.65 10.3995 12.6 10.6495 12.35C11.3995 11.5 12.7995 11.5 13.5495 12.35C13.6995 12.5 13.8495 12.55 14.0495 12.55C14.1995 12.55 14.3495 12.5 14.4995 12.4C14.6995 12.2 14.7495 11.75 14.4995 11.5Z"
+											fill="#A9D8E7"
+										/>
+										<path
+											d="M18 7.5H20.5V9.5H18V7.5Z"
+											fill="#DBE2E5"
+										/>
+									</svg>
+								</SidenavBtn>
+							)}
+						</For>
 					</div>
 					<div
 						id="Main Navigations [Settings,Profile...]"
@@ -132,8 +225,12 @@ const App: Component = () => {
 								"bg-slate-900": isActive("settings"),
 							}}
 							onClick={() => {
-								navigate("/settings")
-								setActive("settings")
+								navigate(
+									createPath({
+										path: ROUTE.PROFILE,
+									})
+								)
+								setActiveWorkspace("settings")
 							}}
 						>
 							<svg
@@ -160,7 +257,63 @@ const App: Component = () => {
 					</div>
 				</div>
 			</nav>
-			<Routes />
+			<Routes>
+				<Route
+					path={ROUTE.CHECKIN}
+					component={CheckInPage}
+				/>
+				<Route
+					path={ROUTE.LOUNGE}
+					component={LoungePage}
+				/>
+				<Route
+					path={ROUTE.VERIFICATION}
+					component={VerificationPage}
+				/>
+				<Route
+					path={ROUTE.REGISTRATION}
+					component={RegistrationPage}
+				/>
+
+				<Route
+					path={ROUTE.WORKSPACE}
+					component={WorkspacePage}
+					data={WorkspaceData}
+				/>
+
+				<Route
+					path={ROUTE.EDITOR}
+					component={EditorPage}
+				/>
+
+				<Route
+					path="/settings"
+					component={SettingsLayout}
+				>
+					<Route
+						path={"profile"}
+						component={ProfilePage}
+					/>
+					<Route
+						path={"billings"}
+						component={BillingsPage}
+					/>
+					<Route
+						path={"ai_studio"}
+						component={AIStudioPage}
+					/>
+				</Route>
+			</Routes>
+			<Show when={modal()}>
+				<Portal>
+					<Show
+						when={success === "true"}
+						fallback={<PaymentFailModal closeEvent={closeModal} />}
+					>
+						<PaymentSuccessModal closeEvent={closeModal} />
+					</Show>
+				</Portal>
+			</Show>
 		</div>
 	)
 }

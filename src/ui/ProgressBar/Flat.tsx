@@ -66,7 +66,6 @@ const ProgressBar = (params: ParentProps<ProgressBarProps>) => {
 		params
 	)
 	const {
-		completed,
 		bgColor,
 		baseBgColor,
 		height,
@@ -126,7 +125,7 @@ const ProgressBar = (params: ParentProps<ProgressBarProps>) => {
 		return initCompletedOnAnimationStr
 	}
 
-	const fillerWidth = getFillerWidth(maxCompleted, completed)
+	const fillerWidth = getFillerWidth(maxCompleted, props.completed)
 
 	const [initWidth, setInitWidth] = createSignal<string>(
 		initCompletedOnAnimationStr
@@ -169,7 +168,9 @@ const ProgressBar = (params: ParentProps<ProgressBarProps>) => {
 	}
 
 	const completedStr =
-		typeof completed === "number" ? `${completed}%` : `${completed}`
+		typeof props.completed === "number"
+			? `${props.completed}%`
+			: `${props.completed}`
 	const labelStr = customLabel ? customLabel : completedStr
 
 	createEffect(() => {

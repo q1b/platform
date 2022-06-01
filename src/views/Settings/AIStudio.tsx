@@ -1,6 +1,125 @@
 import { ProgressBar } from "@/ui/ProgressBar"
+import { Plan } from "@/api.type"
+import { onMount, createSignal, Show } from "solid-js"
+import { fetchCheckoutLink, fetchPlans } from "@/api"
+import { globalStore } from "@/App"
+import { Link } from "solid-app-router"
+import { LoadingIcon } from "@/assets/icons"
+
+const plans: {
+	plan: Plan["name"]
+	description: string
+	features: string[]
+}[] = [
+	{
+		plan: "Free plan",
+		description: "Get started with BHuman with an affordable plan",
+		features: ["300 VIDEOS A MONTH", "LIMITED ANALYTICS"],
+	},
+	{
+		plan: "Growth",
+		description: "Get started with BHuman with an affordable plan",
+		features: ["1000 VIDEOS A MONTH", "FULL ANALYTICS"],
+	},
+	{
+		plan: "Ultimate",
+		description: "Get started with BHuman with an affordable plan",
+		features: ["1000 VIDEOS A MONTH", "FULL ANALYTICS"],
+	},
+]
+
+// 	["free",[
+// 		"300 VIDEOS A MONTH",
+// 		"LIMITED ANALYTICS",
+// 	]],
+// 	["Scale",["1000 VIDEOS A MONTH","FULL ANALYTICS"]]
+// ]
+
+const generateBody = ({ plan_id }: { plan_id: string }) => ({
+	plan_id,
+	success_url: "http://localhost:3000/?success=true",
+	cancel_url: "http://localhost:3000/?success=false",
+})
+
+const PriceButton = (props: {
+	variant: "current" | "upgrade"
+	plan_id: string
+}) => {
+	const [isLoading, setLoadingState] = createSignal(false)
+	const [href, setHref] = createSignal("")
+	if (props.variant === "current") {
+		return (
+			<button class="py-5 px-9 flex items-center justify-center bg-slate-200 hover:bg-slate-300 rounded-full w-full">
+				<span class="text-lg leading-none">Current</span>
+			</button>
+		)
+	}
+	return (
+		<button
+			onClick={async () => {
+				setLoadingState(true)
+				const res = await fetchCheckoutLink(
+					generateBody({
+						plan_id: props.plan_id,
+					})
+				)
+				setHref(res.data.url)
+				location.href = href()
+				setLoadingState(false)
+			}}
+			class="py-5 px-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 rounded-full w-full"
+		>
+			<Show
+				when={!isLoading()}
+				fallback={<LoadingIcon class="w-5 h-5 text-white" />}
+			>
+				<span class="text-lg leading-none text-white">Upgrade</span>
+			</Show>
+		</button>
+	)
+}
 
 export const AIStudio = () => {
+	let [freeTier, setFreeTier] = createSignal<Partial<Plan>>({
+		quota: 0,
+		price: "0",
+		name: "Free plan",
+	})
+	let [scaleTier, setScaleTier] = createSignal<Partial<Plan>>({
+		quota: 0,
+		price: "0",
+		name: "Scale",
+	})
+	let [growthTier, setGrowthTier] = createSignal<Partial<Plan>>({
+		quota: 0,
+		price: "0",
+		name: "Growth",
+	})
+	let [ultimateTier, setUltimateTier] = createSignal<Partial<Plan>>({
+		quota: 0,
+		price: "0",
+		name: "Ultimate",
+	})
+
+	let [progress, setProgress] = createSignal(0)
+	onMount(async () => {
+		const Plans = await fetchPlans()
+		setFreeTier(Plans.data.find((plan) => plan.name === "Free plan"))
+		setGrowthTier(Plans.data.find((plan) => plan.name === "Growth"))
+		setScaleTier(Plans.data.find((plan) => plan.name === "Scale"))
+		setUltimateTier(Plans.data.find((plan) => plan.name === "Ultimate"))
+		setProgress(
+			Math.floor(
+				globalStore.user?.generated_videos_used /
+					globalStore.user?.generated_videos_quota
+			)
+		)
+		console.log("Progress", progress())
+		console.log("FREE TIER", freeTier())
+		console.log("Growth TIER", growthTier())
+		console.log("Ultimate TIER", ultimateTier())
+	})
+
 	return (
 		<section class="p-8 grow flex flex-col">
 			<div class="flex flex-col gap-y-8 mb-4">
@@ -9,7 +128,7 @@ export const AIStudio = () => {
 					<div class="flex items-center">
 						<ProgressBar.CircularProgressbar
 							radius={36}
-							progress={() => 80}
+							progress={progress}
 							strokeWidth={7}
 							trackStrokeWidth={7.1}
 							strokeLinecap="round"
@@ -24,14 +143,17 @@ export const AIStudio = () => {
 								my-0
 								text-slate-800 select-none font-semibold"
 							>
-								<div>80%</div>
+								<div>{progress() === NaN ? "0" : progress()}%</div>
 							</div>
 						</ProgressBar.CircularProgressbar>
 						<div class="flex flex-col items-start pb-2">
-							<h2 class="font-semibold leading-4 mb-1.5"> Growth </h2>
-							<p class="text-[13px] font-medium mb-2"> 235 of 300 used </p>
+							<h2 class="font-semibold leading-4 mb-1.5"> Free Tier </h2>
+							<p class="text-[13px] font-medium mb-2">
+								{globalStore.user?.generated_videos_used} of
+								{globalStore.user?.generated_videos_quota} used
+							</p>
 							<ProgressBar.FlatProgressBar
-								completed={80}
+								completed={progress()}
 								borderRadius="10px"
 								bgColor="#4EADF1"
 								height="6px"
@@ -47,61 +169,58 @@ export const AIStudio = () => {
 				<h2 class="text-xl font-extrabold">Plans</h2>
 				<main class="grid grid-cols-3 place-items-center gap-4 p-4 ">
 					<div class="flex flex-col items-center">
-						<span class="text-sm font-bold uppercase mb-4">
-							additional videos at 60 cents
-						</span>
 						<div class="flex flex-col py-5 px-4 max-w-[248px] bg-slate-100 rounded-lg">
 							<div class="flex flex-col mb-4">
-								<h2 class="text-xl font-semibold">Growth</h2>
+								<h2 class="text-xl font-semibold">{growthTier().name}</h2>
 								<p class="text-slate-500">
 									Get started with BHuman with an affordable plan
 								</p>
 							</div>
 							<ul class="list-disc list-inside mb-6">
-								<li class="font-semibold uppercase">300 videos a month</li>
+								<li class="font-semibold uppercase">
+									{growthTier().quota} videos a month
+								</li>
 								<li class="font-semibold uppercase">Limited Analytics</li>
 							</ul>
 							<div class="inline-flex items-end border-t-2 border-slate-200 gap-x-1 mb-7 pt-0.5">
-								<p class="text-3xl font-bold">39$</p>{" "}
+								<p class="text-3xl font-bold">{growthTier().price}$</p>{" "}
 								<span class="inline pb-1">/month</span>
 							</div>
 							<div>
-								<button class="py-5 px-9 flex items-center justify-center bg-slate-200 hover:bg-slate-300 rounded-full w-full">
-									<span class="text-lg leading-none">Current</span>
-								</button>
+								<PriceButton
+									plan_id={growthTier().id}
+									variant="upgrade"
+								/>
 							</div>
 						</div>
 					</div>
 					<div class="flex flex-col items-center">
-						<span class="text-sm font-bold uppercase mb-4">
-							additional videos at 45 cents
-						</span>
 						<div class="flex flex-col py-5 px-4 max-w-[248px] bg-slate-100 rounded-lg">
 							<div class="flex flex-col mb-4">
-								<h2 class="text-xl font-semibold">Scale</h2>
+								<h2 class="text-xl font-semibold">{scaleTier().name}</h2>
 								<p class="text-slate-500">
 									Get started with BHuman with an affordable plan
 								</p>
 							</div>
 							<ul class="list-disc list-inside mb-6">
-								<li class="font-semibold uppercase">1000 videos a month</li>
+								<li class="font-semibold uppercase">
+									{scaleTier().quota} videos a month
+								</li>
 								<li class="font-semibold uppercase">Full Analytics</li>
 							</ul>
 							<div class="inline-flex items-end border-t-2 border-slate-200 gap-x-1 mb-7 pt-0.5">
-								<p class="text-3xl font-bold">99$</p>{" "}
+								<p class="text-3xl font-bold">{scaleTier().price}$</p>{" "}
 								<span class="inline pb-1">/month</span>
 							</div>
 							<div>
-								<button class="py-5 px-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 rounded-full w-full">
-									<span class="text-lg leading-none text-white">Upgrade</span>
-								</button>
+								<PriceButton
+									plan_id={scaleTier().id}
+									variant="upgrade"
+								/>
 							</div>
 						</div>
 					</div>
 					<div class="flex flex-col items-center">
-						<span class="text-sm font-bold uppercase mb-4">
-							$150 monthly ACCESS FEE
-						</span>
 						<div class="flex flex-col py-5 px-4 max-w-[248px] bg-slate-100 rounded-lg">
 							<div class="flex flex-col mb-4">
 								<h2 class="text-xl font-semibold">Ultimate</h2>
@@ -110,7 +229,7 @@ export const AIStudio = () => {
 								</p>
 							</div>
 							<ul class="list-disc list-inside mb-6">
-								<li class="font-semibold uppercase">300 videos a month</li>
+								<li class="font-semibold uppercase">UNLIMTED videos</li>
 								<li class="font-semibold uppercase">Limited Analytics</li>
 							</ul>
 							<div class="inline-flex items-end border-t-2 border-slate-200 gap-x-1 mb-7 pt-0.5">
@@ -118,9 +237,10 @@ export const AIStudio = () => {
 								<span class="inline pb-1">/render</span>
 							</div>
 							<div>
-								<button class="py-5 px-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 rounded-full w-full">
-									<span class="text-lg leading-none text-white">Upgrade</span>
-								</button>
+								<PriceButton
+									plan_id={ultimateTier().id}
+									variant="upgrade"
+								/>
 							</div>
 						</div>
 					</div>
