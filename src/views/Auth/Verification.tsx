@@ -16,13 +16,13 @@ const Verify: Component = () => {
 			setIsValidating(true)
 			try {
 				const res = await axiosApi.post("tokenauth", { token })
-				setIsValidating(false)
 				console.log("VALIDATE RESPONSE", res)
 				const data = res.data
 				if (data.found) {
 					localStorage.setItem("access_token", data.access_token)
 					localStorage.setItem("refresh_token", data.refresh_token)
 					localStorage.setItem("user_id", data.user_id)
+					setIsValidating(false)
 					navigate(ROUTE.HOME, { replace: false })
 				} else {
 					localStorage.setItem("stytch_user_id", data.stytch_user_id)
