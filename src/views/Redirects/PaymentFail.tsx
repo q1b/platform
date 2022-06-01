@@ -1,6 +1,8 @@
 import { easings } from "@/ui/helpers/easings"
 import { onMount } from "solid-js"
 
+
+
 export const PaymentFailModal = (props: { closeEvent: any }) => {
 	let overlayRef: HTMLElement
 	let panelRef: HTMLElement
