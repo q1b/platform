@@ -8,8 +8,6 @@ import { ROUTE } from "@/routing"
 const Register: Component = () => {
 	const [isLoading, setLoadingState] = createSignal(false)
 	const navigate = useNavigate()
-	const params = useParams()
-	const token = params?.access_token
 	const registerUser = async (values: {
 		username: string
 		fullname: string

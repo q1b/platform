@@ -9,7 +9,7 @@ export enum ROUTE {
 	CHECKIN = "/check-in",
 	LOUNGE = "/lounge/:email_id",
 	VERIFICATION = "/verify",
-	REGISTRATION = `/register/:access_token`,
+	REGISTRATION = `/register`,
 
 	/* HOME */
 	HOME = `/`,
