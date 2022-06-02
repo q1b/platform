@@ -1,8 +1,9 @@
 import { Component, createEffect, createSignal, Show } from "solid-js"
 import { useLocation, useNavigate } from "solid-app-router"
-import axiosApi from "@/api"
+import axiosApi, { fetchUserDetails, fetchWorkspaces } from "@/api"
 import { LoadingIcon } from "@/assets/icons"
 import { ROUTE } from "@/routing"
+import { setGlobalStore } from "@/App"
 
 const Verify: Component = () => {
 	const [isValidating, setIsValidating] = createSignal(false)
@@ -14,15 +15,31 @@ const Verify: Component = () => {
 	const validateUser = async (token: null | string) => {
 		if (token) {
 			setIsValidating(true)
+			console.log("Validating")
 			try {
 				const res = await axiosApi.post("tokenauth", { token })
 				console.log("VALIDATE RESPONSE", res)
 				const data = res.data
 				if (data.found) {
+					console.log("You are already Registered! 🥳")
 					localStorage.setItem("access_token", data.access_token)
 					localStorage.setItem("refresh_token", data.refresh_token)
 					localStorage.setItem("user_id", data.user_id)
+					const [user, workspaces] = await Promise.allSettled([
+						fetchUserDetails(),
+						fetchWorkspaces(),
+					])
+					if (
+						user.status === "fulfilled" &&
+						workspaces.status === "fulfilled"
+					) {
+						setGlobalStore({
+							user: user.value.data,
+							workspaces: workspaces.value.data,
+						})
+					}
 					setIsValidating(false)
+					console.log("Going to Home Route")
 					navigate(ROUTE.HOME, { replace: false })
 				} else {
 					localStorage.setItem("stytch_user_id", data.stytch_user_id)

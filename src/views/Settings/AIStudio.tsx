@@ -37,8 +37,8 @@ const plans: {
 
 const generateBody = ({ plan_id }: { plan_id: string }) => ({
 	plan_id,
-	success_url: "http://localhost:3000/?success=true",
-	cancel_url: "http://localhost:3000/?success=false",
+	success_url: "https://app.bhuman.ai/?success=true",
+	cancel_url: "https://app.bhuman.ai/?success=false",
 })
 
 const PriceButton = (props: {
