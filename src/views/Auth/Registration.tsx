@@ -64,7 +64,7 @@ const Register: Component = () => {
 
 	const createWorkspace = async (name: string) => {
 		// TODO: need to add video quota fields for handle dynamic video quota for specific workspace.
-		await axiosApi.post(`workspace`, { name, generated_videos_quota: 200 })
+		await axiosApi.post(`workspace`, { name, generated_videos_quota: 15 })
 	}
 
 	// const planCheckout = async () => {
