@@ -1,3 +1,4 @@
+import MichaelImg from "@/assets/Michael_lulo_image_40X40.png"
 import { ProgressBar } from "@/ui/ProgressBar"
 import { Plan } from "@/api.type"
 import { onMount, createSignal, Show } from "solid-js"
@@ -167,7 +168,7 @@ export const AIStudio = () => {
 			</div>
 			<div class="flex flex-col">
 				<h2 class="text-xl font-extrabold">Plans</h2>
-				<main class="grid grid-cols-3 place-items-center gap-4 p-4 ">
+				<main class="grid grid-cols-3 place-items-center gap-4 p-4 mb-11">
 					<div class="flex flex-col items-center">
 						<div class="flex flex-col py-5 px-4 max-w-[248px] bg-slate-100 rounded-lg">
 							<div class="flex flex-col mb-4">
@@ -245,7 +246,7 @@ export const AIStudio = () => {
 						</div>
 					</div>
 				</main>
-				<div class="flex justify-center text-lg w-full items-center">
+				<div class="flex justify-center text-lg w-full items-center mb-2">
 					<span class="text-slate-500">
 						Want to downgrade to the free plan (15 videos / month)?
 					</span>
@@ -254,6 +255,23 @@ export const AIStudio = () => {
 						class="inline-block px-1 underline text-blue-500"
 					>
 						Click here
+					</a>
+				</div>
+				<div class="flex justify-center text-lg w-full items-center">
+					<img
+						src={MichaelImg}
+						alt="our VP photo"
+						class="w-10 mr-2 h-10 rounded-full"
+					/>
+					<span class="text-slate-600">Looking for enterprise?</span>
+					<span class="text-slate-500">
+						Please email Michael lulo, our VP of Sales, at
+					</span>
+					<a
+						href=""
+						class="inline-block px-1 underline text-blue-500"
+					>
+						Michael@BHuman.ai
 					</a>
 				</div>
 			</div>
