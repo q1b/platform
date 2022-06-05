@@ -39,7 +39,6 @@ export const CustomizableProgressbar = (
 	const props = mergeProps(
 		{
 			radius: 100,
-			progress: () => 0,
 			steps: 100,
 			cut: 0,
 			rotate: -90,
@@ -70,64 +69,40 @@ export const CustomizableProgressbar = (
 		params
 	)
 
-	const {
-		radius,
-		progress,
-		steps,
-		cut,
-		rotate,
-		strokeWidth,
-		strokeColor,
-		fillColor,
-		strokeLinecap,
-		transition,
-		pointerRadius,
-		pointerStrokeWidth,
-		pointerStrokeColor,
-		pointerFillColor,
-		trackStrokeColor,
-		trackStrokeWidth,
-		trackStrokeLinecap,
-		trackTransition,
-		counterClockwise,
-		inverse,
-		initialAnimation,
-		initialAnimationDelay,
-		className,
-	} = props
-
 	const [animationInited, setAnimationInited] = createSignal(false)
 
 	onMount(() => {
 		console.log(props)
-		if (initialAnimation) {
-			setTimeout(() => setAnimationInited(true), initialAnimationDelay)
+		if (props.initialAnimation) {
+			setTimeout(() => setAnimationInited(true), props.initialAnimationDelay)
 		}
 	})
 
 	const getProgress = () =>
-		initialAnimation && !animationInited() ? 0 : progress()
+		props.initialAnimation && !animationInited() ? 0 : props.progress()
 
 	const getStrokeDashoffset = (strokeLength: number) => {
 		const progress = getProgress()
-		const progressLength = (strokeLength / steps!) * (steps! - progress)
+		const progressLength =
+			(strokeLength / props.steps!) * (props.steps! - progress)
 
-		if (inverse) {
-			return counterClockwise ? 0 : progressLength - strokeLength
+		if (props.inverse) {
+			return props.counterClockwise ? 0 : progressLength - strokeLength
 		}
 
-		return counterClockwise ? -1 * progressLength : progressLength
+		return props.counterClockwise ? -1 * progressLength : progressLength
 	}
 
 	const getStrokeDashArray = (strokeLength: number, circumference: number) => {
 		const progress = getProgress()
-		const progressLength = (strokeLength / steps!) * (steps! - progress)
+		const progressLength =
+			(strokeLength / props.steps!) * (props.steps! - progress)
 
-		if (inverse) {
+		if (props.inverse) {
 			return `${progressLength}, ${circumference}`
 		}
 
-		return counterClockwise
+		return props.counterClockwise
 			? `${strokeLength * (progress / 100)}, ${circumference}`
 			: `${strokeLength}, ${circumference}`
 	}
@@ -136,7 +111,7 @@ export const CustomizableProgressbar = (
 		strokeLength: number,
 		circumference: number
 	) => {
-		if (initialAnimation && !animationInited()) {
+		if (props.initialAnimation && !animationInited()) {
 			return `0, ${circumference}`
 		}
 
@@ -144,34 +119,37 @@ export const CustomizableProgressbar = (
 	}
 
 	const getExtendedWidth = () => {
-		const pointerWidth = pointerRadius! + pointerStrokeWidth!
+		const pointerWidth = props.pointerRadius! + props.pointerStrokeWidth!
 
-		if (pointerWidth > strokeWidth! && pointerWidth > trackStrokeWidth!) {
+		if (
+			pointerWidth > props.strokeWidth! &&
+			pointerWidth > props.trackStrokeWidth!
+		) {
 			return pointerWidth * 2
-		} else if (strokeWidth! > trackStrokeWidth!) {
-			return strokeWidth! * 2
+		} else if (props.strokeWidth! > props.trackStrokeWidth!) {
+			return props.strokeWidth! * 2
 		}
 
-		return trackStrokeWidth! * 2
+		return props.trackStrokeWidth! * 2
 	}
 
 	const getPointerAngle = () => {
 		const progress = getProgress()
 
-		return counterClockwise
-			? ((360 - cut!) / steps!) * (steps! - progress)
-			: ((360 - cut!) / steps!) * progress
+		return props.counterClockwise
+			? ((360 - props.cut!) / props.steps!) * (props.steps! - progress)
+			: ((360 - props.cut!) / props.steps!) * progress
 	}
 
-	const d = 2 * radius
+	const d = 2 * props.radius
 	const width = d + getExtendedWidth()
 
-	const circumference = 2 * Math.PI * radius
-	const strokeLength = (circumference / 360) * (360 - cut!)
+	const circumference = 2 * Math.PI * props.radius
+	const strokeLength = (circumference / 360) * (360 - props.cut!)
 
 	return (
 		<div
-			class={`RCP ${className}`}
+			class={`RCP ${props.className}`}
 			style={{
 				position: "relative",
 				width: `${width}px`,
@@ -181,55 +159,55 @@ export const CustomizableProgressbar = (
 				width={width}
 				height={width}
 				viewBox={`0 0 ${width} ${width}`}
-				style={{ transform: `rotate(${rotate}deg)` }}
+				style={{ transform: `rotate(${props.rotate}deg)` }}
 			>
-				<Show when={trackStrokeWidth! > 0}>
+				<Show when={props.trackStrokeWidth! > 0}>
 					<circle
 						cx={width / 2}
 						cy={width / 2}
-						r={radius}
+						r={props.radius}
 						fill="none"
-						stroke={trackStrokeColor}
-						stroke-width={trackStrokeWidth}
+						stroke={props.trackStrokeColor}
+						stroke-width={props.trackStrokeWidth}
 						stroke-dasharray={getTrackStrokeDashArray(
 							strokeLength,
 							circumference
 						)}
-						stroke-linecap={trackStrokeLinecap as "round"}
+						stroke-linecap={props.trackStrokeLinecap as "round"}
 						class="RCP__track"
-						style={{ transition: trackTransition }}
+						style={{ transition: props.trackTransition }}
 					/>
 				</Show>
-				<Show when={strokeWidth! > 0}>
+				<Show when={props.strokeWidth! > 0}>
 					<circle
 						cx={width / 2}
 						cy={width / 2}
-						r={radius}
-						fill={fillColor}
-						stroke={strokeColor}
-						stroke-width={strokeWidth}
+						r={props.radius}
+						fill={props.fillColor}
+						stroke={props.strokeColor}
+						stroke-width={props.strokeWidth}
 						stroke-dasharray={getStrokeDashArray(strokeLength, circumference)}
 						stroke-dashoffset={getStrokeDashoffset(strokeLength)}
-						stroke-linecap={strokeLinecap as "round"}
+						stroke-linecap={props.strokeLinecap as "round"}
 						class="RCP__progress"
-						style={{ transition }}
+						style={{ transition: props.transition }}
 					/>
 				</Show>
-				<Show when={pointerRadius! > 0}>
+				<Show when={props.pointerRadius! > 0}>
 					<circle
 						cx={d}
 						cy="50%"
-						r={pointerRadius}
-						fill={pointerFillColor}
-						stroke={pointerStrokeColor}
-						stroke-width={pointerStrokeWidth}
+						r={props.pointerRadius}
+						fill={props.pointerFillColor}
+						stroke={props.pointerStrokeColor}
+						stroke-width={props.pointerStrokeWidth}
 						class="RCP__pointer"
 						style={{
 							transformOrigin: "50% 50%",
 							transform: `rotate(${getPointerAngle()}deg) translate(${
 								getExtendedWidth() / 2
 							}px)`,
-							transition,
+							transition: props.transition,
 						}}
 					/>
 				</Show>
