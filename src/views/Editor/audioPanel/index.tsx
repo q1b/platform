@@ -519,8 +519,9 @@ export const AudioPanel = () => {
 								)
 							}}
 						</Index>
+						{/* <CSV.Column></CSV.Column> */}
 						<CSV.Column class="flex flex-col w-max">
-							<CSV.ColumnHeader class="bg-transparent px-3 py-1">
+							<CSV.ColumnHeader class="bg-transparent invisible px-3 py-1">
 								&nbsp;
 							</CSV.ColumnHeader>
 							<CSV.CellsContainer class="flex flex-col -translate-x-1 translate-y pl-0.5 z-0">
@@ -662,9 +663,9 @@ export const AudioPanel = () => {
 						setGeneratedVideos(generated_videos)
 						console.log("Generated Videos", generated_videos)
 					}}
-					class="bg-blue-500 px-2 py-1 text-white hover:bg-white hover:text-blue-500 transition-colors"
+					class="bg-blue-500 px-2 py-1 text-white hover:bg-sky-400 hover:text-blue-500 transition-colors"
 				>
-					Load As CSV
+					Load Videos
 				</Button>
 			</div>
 			<Show when={videoPlayerModel()}>

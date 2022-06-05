@@ -298,6 +298,7 @@ export const addActor = async ({
 	name: string
 }): Promise<AxiosResponse<Actor>> =>
 	await axiosApi.post("actor", { name: name })
+
 export const fetchActors = async (): Promise<AxiosResponse<Actor[]>> =>
 	await axiosApi.get(`actor`)
 export const fetchActor = async ({
