@@ -70,16 +70,16 @@ const Access = () => {
 						id="user-email-Showoff"
 						class="flex flex-col gap-y-2"
 					>
-						<AheadLogo
+						{/* <AheadLogo
 							width={42.666666666666664}
 							height={36}
-						/>
+						/> */}
 						<h2 class="text-3xl font-extrabold text-slate-900">
 							Continue ahead
 						</h2>
 						<h2 class="flex gap-x-2">
 							<span class="text-xl font-semibold text-slate-700">
-								to access hailey
+								to access BHuman
 							</span>
 							<Hailey />
 						</h2>

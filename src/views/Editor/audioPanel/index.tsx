@@ -1,4 +1,8 @@
-import { Client, setAudioData } from "@/views/Workspace/api"
+import {
+	Client,
+	setAudioData,
+	setFileImageColumnId,
+} from "@/views/Workspace/api"
 import {
 	Accessor,
 	createEffect,
@@ -31,6 +35,8 @@ import axiosApi, {
 
 import {
 	DownloadFillIcon,
+	ExclamationCircleFillIcon,
+	ExclamationCircleOutlineIcon,
 	DownloadOutlineIcon,
 	LoadingIcon,
 	UploadIcon,
@@ -86,6 +92,8 @@ const uploadCsv = async ({
 	folder_id: string
 }) => {
 	try {
+		let image_column_id = 0
+
 		if (!audio_batch_id) {
 			const batchData = await axiosApi.post("audio_batch", {
 				name: "audio batch " + new Date().getTime(),
@@ -107,14 +115,72 @@ const uploadCsv = async ({
 			formData,
 		})
 
+		setFileImageColumnId({
+			file_id: Client.store.activeFile.file_id,
+			folder_id: Client.store.activeFile.folder_id,
+			image_column_id,
+		})
+
 		let csvResponse = await fetchCSVFromAudioBatchData({
 			video_instance_id: Client.store.activeFile.file_id,
 			audio_batch_id: resBatchData.data.audio_batch_id,
 			actor_id,
 		})
+		console.log("CSV RESPONSE can be here!", csvResponse)
 
 		return csvResponse
-	} catch (error) {}
+	} catch (error) {
+		console.error("UPLOADING CSV FAILED", error)
+	}
+}
+
+const getGeneratedVideos = async (): Promise<
+	{
+		video_url: string | undefined
+		video_id: string
+		response_state: "Failed" | "Processing" | "Success"
+	}[]
+> => {
+	const res = await exportGeneratedVideoAsCSV({
+		file_id: Client.store.activeFile.file_id,
+	})
+	console.log("Response", res)
+	console.log("EXPORTED CSV", res.data)
+	const csv_str = res.data
+	if (csv_str === "") return []
+	const csv_lines = csv_str.split("\n")
+	console.log("CSV _ LINES", csv_lines)
+	const generated_videos: {
+		video_url: string | undefined
+		video_id: string
+		response_state: "Failed" | "Processing" | "Success"
+	}[] = []
+	for (let index = 0; index < csv_lines.length; index++) {
+		const line = csv_lines[index].split(",")
+		const last:
+			| "Failed"
+			| "Processing"
+			| Omit<string, "Failed" | "Processing"> = line.at(-1)
+		let response_type: "Failed" | "Processing" | "Success"
+		let video_id: string
+		if (last !== "") {
+			if (last === "Failed") {
+				response_type = "Failed"
+			} else if (last === "Processing") {
+				response_type = "Processing"
+			} else {
+				response_type = "Success"
+				video_id = line.at(0)
+			}
+		}
+		const obj = {
+			video_url: undefined,
+			video_id,
+			response_state: response_type,
+		}
+		if (response_type !== undefined) generated_videos.push(obj)
+	}
+	return generated_videos
 }
 
 type CSVFileState =
@@ -153,17 +219,11 @@ export const AudioPanel = () => {
 	const openVideoPlayerModel = () => setVideoPlayerModelState(true)
 	const closeVideoPlayerModel = () => setVideoPlayerModelState(false)
 
-	// createEffect(() => {
-	// 	if (store.activeFile.video_url) {
-	// 		setGeneratedVideoModelURL(store.activeFile.video_url)
-	// 		openVideoPlayerModel()
-	// 	}
-	// }, 2000)
-
 	const AudioMediaRecorder = useReactMediaRecorder({
 		video: false,
 		audio: true,
 	})
+
 	const initActor = () => {
 		if (Client.store.activeFile?.actor_id) {
 			const initActor = ACTORS().find((actor) => {
@@ -233,7 +293,7 @@ export const AudioPanel = () => {
 					Client.store.activeFile.video_duration,
 					"\n"
 				)
-				setGeneratedVideos([])
+				setGeneratedVideos(await getGeneratedVideos())
 				setGeneratedVideoModelURL("")
 				setCSVFileState("checking")
 				initActor()
@@ -256,20 +316,21 @@ export const AudioPanel = () => {
 								file_id: Client.store.activeFile.file_id,
 							}),
 						])
-					if (
-						videoResponse.status === "fulfilled" &&
-						csvResponse.status === "fulfilled" &&
-						segResponse.status === "fulfilled"
-					) {
-						initStoreFromRes(csvResponse.value.data)
-						// console.log("AUDIOBATCHDATA #CSV, RESPONSE", csvResponse.value.data)
-						console.log("SEGMENTS #BAR, RESPONSE", segResponse.value.data)
-						let duration_time = timeToSec(
+					let duration_time: number
+					if (videoResponse.status === "fulfilled") {
+						duration_time = timeToSec(
 							decodeTime.fromMilliSecondsFormat(
 								videoResponse.value.data[0].length
 							)
 						)
-						if (segResponse.value.data[0]) {
+					}
+					if (csvResponse.status === "fulfilled") {
+						initStoreFromRes(csvResponse.value.data)
+						if (
+							segResponse.status === "fulfilled" &&
+							segResponse.value.data[0] &&
+							duration_time
+						) {
 							console.log("SEGMENT LOADED, res", segResponse)
 							bakeBarDetails({
 								segments: segResponse.value.data,
@@ -290,26 +351,25 @@ export const AudioPanel = () => {
 							})
 							setBarDetails(new_barDetails)
 						}
-						console.log("Segments", segResponse.value.data)
 						triggerBarDetailsUpdate(() => CSVFileState())
 						setCSVFileState("available")
-					} else {
-						setCSVFileState("notUploadedYet")
-					}
+					} else setCSVFileState("notUploadedYet")
 				} else {
 					setCSVFileState("notUploadedYet")
 				}
 			}
 		)
 	)
-	createEffect(
-		on(
-			() => barDetails,
-			() => {
-				console.log(barDetails[1])
-			}
-		)
-	)
+
+	// createEffect(
+	// 	on(
+	// 		() => barDetails,
+	// 		() => {
+	// 			console.log(barDetails[1])
+	// 		}
+	// 	)
+	// )
+
 	const handleFile = async (csv_file: Blob) => {
 		setCSVFileState("uploading")
 		const csvRes = await uploadCsv({
@@ -322,7 +382,9 @@ export const AudioPanel = () => {
 					? Client.store.activeFile.audio_batch_id
 					: undefined,
 		})
+
 		initStoreFromRes(csvRes.data)
+
 		const new_barDetails: BarDetailsOptions[] = []
 		csv_store.table.columns.forEach((column, i) => {
 			const element = document.createElement("div")
@@ -457,14 +519,7 @@ export const AudioPanel = () => {
 						</FileUpload.Region>
 					}
 				>
-					<CSV.Table
-						style={
-							{
-								// width: `${document.body.getBoundingClientRect().width - 600}px`,
-							}
-						}
-						class="mt-4 flex rounded-lg overflow-auto w-max"
-					>
+					<CSV.Table class="mt-4 flex rounded-lg overflow-auto w-max">
 						<Index each={csv_store.table.columns}>
 							{(column, x) => {
 								let isFirstColumn = x === 0
@@ -530,11 +585,20 @@ export const AudioPanel = () => {
 										let isFirstHeader = i === 0
 										let isLastHeader =
 											i === csv_store.table.columns[0].cells.length - 1
+
 										console.log(video())
+
 										const [isAvailable, setIsAvailable] = createSignal(
 											video().response_state === "Success"
 										)
-										const [isLoading, setLoadingState] = createSignal(false)
+
+										const [isLoading, setLoadingState] = createSignal(
+											video().response_state === "Processing"
+										)
+
+										const [isFailed, setFailedState] = createSignal(
+											video().response_state === "Failed"
+										)
 
 										const [isLoaded, setLoadedState] = createSignal(
 											!!video().video_url
@@ -542,7 +606,7 @@ export const AudioPanel = () => {
 
 										return (
 											<button
-												class="bg-slate-800 hover:bg-white flex items-center justify-center group transition-colors duration-100"
+												class="bg-blue-400 hover:bg-sky-300 flex items-center justify-center group transition-colors duration-100"
 												classList={{
 													"rounded-tr-lg": isFirstHeader,
 													"rounded-br-lg": isLastHeader,
@@ -581,20 +645,41 @@ export const AudioPanel = () => {
 												<Switch
 													fallback={<span class="w-[31px] h-[31px]"></span>}
 												>
+													<Match when={isFailed()}>
+														<span
+															title="video can't be processed"
+															class="p-1 relative text-white group-hover:text-sky-800 transition-colors"
+														>
+															<ExclamationCircleOutlineIcon
+																size={27}
+																class="group-hover:opacity-0 group-hover:scale-75 transition-[transform,opacity] duration-500 ease-snappy"
+															/>
+															<ExclamationCircleFillIcon
+																size={27}
+																class="absolute opacity-0 scale-0 -translate-y-full group-hover:opacity-100 group-hover:scale-100 group-active:scale-90 transition-[opacity,transform] duration-500 ease-swift"
+															/>
+														</span>
+													</Match>
 													<Match when={isLoaded()}>
-														<span class="p-1 relative text-white/80 group-hover:text-blue-600 transition-colors">
+														<span
+															title="play the video"
+															class="p-1 relative text-white group-hover:text-sky-800 transition-colors"
+														>
 															<VideoPlayerOutlineIcon
 																size={27}
-																class="group-hover:opacity-0 group-hover:scale-75 transition-[transform] duration-1000 ease-snappy"
+																class="group-hover:opacity-0 group-hover:scale-75 transition-[transform,opacity] duration-500 ease-snappy"
 															/>
 															<VideoPlayerFillIcon
 																size={27}
-																class="absolute opacity-0 scale-75 -translate-y-full group-hover:opacity-100 group-hover:scale-100 group-active:scale-90 transition-[opacity,transform] duration-1000 ease-swift"
+																class="absolute opacity-0 scale-0 -translate-y-full group-hover:opacity-100 group-hover:scale-100 group-active:scale-90 transition-[opacity,transform] duration-500 ease-swift"
 															/>
 														</span>
 													</Match>
 													<Match when={isLoading()}>
-														<span class="p-1 text-white group-hover:bg-purple-500">
+														<span
+															title="video is loading"
+															class="p-1 text-white group-hover:text-white"
+														>
 															<LoadingIcon
 																size={27}
 																class=""
@@ -602,15 +687,21 @@ export const AudioPanel = () => {
 														</span>
 													</Match>
 													<Match when={isAvailable()}>
-														<span class="relative p-1 text-white/80 group-hover:text-blue-600 transition-colors">
+														<span
+															title="download video"
+															class="relative p-1 text-white group-hover:text-white transition-colors"
+														>
 															<DownloadOutlineIcon
 																size={27}
-																class="group-hover:opacity-0 group-hover:scale-75 transition-[transform] duration-1000 ease-snappy"
+																class="group-hover:opacity-0 group-hover:scale-75 transition-[transform,opacity] duration-500 ease-snappy"
 															/>
 															<DownloadFillIcon
 																size={27}
-																class="absolute opacity-0 scale-75 -translate-y-full group-hover:opacity-100 group-hover:scale-100 group-active:scale-90 transition-[opacity,transform] duration-1000 ease-swift"
+																class="absolute opacity-0 scale-0 -translate-y-full group-hover:opacity-100 group-hover:scale-100 group-active:scale-90 transition-[opacity,transform] duration-500 ease-swift"
 															/>
+															{/* <div class="absolute w-auto p-2 m-2 min-w-max left-8 rounded-md shadow-md text-white bg-slate-800 text-xs font-bold transition-all duration-100 scale-0 group-hover:scale-100 origin-left">
+																hellow
+															</div> */}
 														</span>
 													</Match>
 												</Switch>
@@ -624,49 +715,18 @@ export const AudioPanel = () => {
 				</Show>
 			</div>
 			<div class="">
+				{/* <Show when={generatedVideos[0]?.response_state === "Processing"}> */}
 				<Button
 					stylied
 					onClick={async () => {
-						const res = await exportGeneratedVideoAsCSV({
-							file_id: Client.store.activeFile.file_id,
-						})
-						console.log("EXPORTED CSV", res.data)
-						const csv_str = res.data
-						const csv_lines = csv_str.split("\n")
-						console.log("CSV _ LINES", csv_lines)
-						const generated_videos = []
-						for (let index = 0; index < csv_lines.length; index++) {
-							const line = csv_lines[index].split(",")
-							const last:
-								| "Failed"
-								| "Processing"
-								| Omit<string, "Failed" | "Processing"> = line.at(-1)
-							let response_type: "Failed" | "Processing" | "Success"
-							let video_id: string
-							if (last !== "") {
-								if (last === "Failed") {
-									response_type = "Failed"
-								} else if (last === "Processing") {
-									response_type = "Processing"
-								} else {
-									response_type = "Success"
-									video_id = line.at(0)
-								}
-							}
-							const obj = {
-								video_url: undefined,
-								video_id,
-								response_state: response_type,
-							}
-							if (video_id !== undefined) generated_videos.push(obj)
-						}
-						setGeneratedVideos(generated_videos)
-						console.log("Generated Videos", generated_videos)
+						const generatedVideos = await getGeneratedVideos()
+						setGeneratedVideos(generatedVideos)
 					}}
 					class="bg-blue-500 px-2 py-1 text-white hover:bg-sky-400 hover:text-blue-500 transition-colors"
 				>
-					Load Videos
+					Refersh GeneratedVideos
 				</Button>
+				{/* </Show> */}
 			</div>
 			<Show when={videoPlayerModel()}>
 				<Portal>

@@ -57,12 +57,23 @@ export default axiosApi
 export const fetchPlans = async (): Promise<AxiosResponse<Plan[]>> =>
 	await axiosApi.get("plans")
 
+export const fetchPlan = async ({
+	plan_id,
+}: {
+	plan_id: string
+}): Promise<Plan> => (await axiosApi.get(`plans?id=${plan_id}`)).data[0]
+
 export const fetchCheckoutLink = async (body: {
 	plan_id: string
 	success_url: string
 	cancel_url: string
 }): Promise<AxiosResponse<{ url: string }>> =>
 	await axiosApi.post("checkout", body)
+
+export const fetchCustomerPortalLink = async () =>
+	await axiosApi.post("customer_portal", {
+		return_url: "http://localhost:3000/settings/billings",
+	})
 
 export const fetchUserDetails = async (): Promise<AxiosResponse<User>> =>
 	await axiosApi.get("user")
@@ -198,6 +209,14 @@ export const updateFileAudioData = async ({
 		audio_batch_id,
 		actor_id,
 	})
+
+export const updateFileImageColumnId = async ({
+	file_id,
+	image_column_id,
+}: {
+	file_id: string
+	image_column_id: number
+}) => await axiosApi.put(`video_instance?id=${file_id}`, { image_column_id })
 
 export const updateFileTemplateVideoId = async ({
 	file_id,
@@ -353,10 +372,18 @@ export const fetchCSVFromAudioBatchData = async ({
 		`audio_batch_data?video_instance_id=${video_instance_id}&audio_batch_id=${audio_batch_id}&actor_id=${actor_id}`
 	)
 
+export const fetchImage = async ({ image_id }: { image_id: string }) =>
+	await axiosApi.get(`fetch_image?id=${image_id}`, {
+		responseType: "blob",
+	})
+
 export const fetchAudio = async ({ audio_id }: { audio_id: string }) =>
 	await axiosApi.get(`fetch_audio?id=${audio_id}`, {
 		responseType: "blob",
 	})
+
+export const fetchImageData = async ({ image_id }: { image_id: string }) =>
+	await axiosApi.get(`image?image_id=${image_id}`)
 
 export const fetchAudioData = async ({
 	name,
@@ -365,6 +392,14 @@ export const fetchAudioData = async ({
 	name: string
 	actor_id: string
 }) => await axiosApi.get(`audio?actor_id=${actor_id}&&name=${name}`)
+
+export const postImage = async ({
+	image_id,
+	formData,
+}: {
+	image_id: string
+	formData: FormData
+}) => await axiosApi.post(`upload_image?image_id=${image_id}`, formData)
 
 // audio
 export const postAudio = async ({

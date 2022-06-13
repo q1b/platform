@@ -116,9 +116,9 @@ export const AIStudio = () => {
 			)
 		)
 		console.log("Progress", progress())
-		console.log("FREE TIER", freeTier())
-		console.log("Growth TIER", growthTier())
-		console.log("Ultimate TIER", ultimateTier())
+		// console.log("FREE TIER", freeTier())
+		// console.log("Growth TIER", growthTier())
+		// console.log("Ultimate TIER", ultimateTier())
 	})
 
 	return (

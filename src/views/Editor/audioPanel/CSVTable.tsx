@@ -1,4 +1,10 @@
-import { fetchAudio, renameAudio, postAudio, deleteAudio } from "@/api"
+import axiosApi, {
+	fetchAudio,
+	renameAudio,
+	postAudio,
+	deleteAudio,
+	fetchAudioData,
+} from "@/api"
 
 import { DeleteIcon, LoadingIcon, UploadIcon } from "@/assets/icons"
 import { ReactMediaRecorderRenderProps } from "@/helpers/audioMediaRecorder"
@@ -9,6 +15,7 @@ import {
 	Accessor,
 	children,
 	ComponentProps,
+	createEffect,
 	createReaction,
 	createSignal,
 	onCleanup,
@@ -117,6 +124,13 @@ export const Cell = (props: CellProps<ComponentProps<"div">>) => {
 	const [isPlaying, setPlayingState] = createSignal<boolean>(false)
 
 	const [second, setSecond] = createSignal(0)
+	// createEffect(async () => {
+	// 	console.log("ACTOR", activeActor())
+	// 	const AudioData = await axiosApi.get(
+	// 		`audio?actor_id=${activeActor().value}`
+	// 	)
+	// 	console.log(AudioData)
+	// })
 
 	onMount(async () => {
 		setAPIState("checking")
@@ -358,4 +372,21 @@ export const Cell = (props: CellProps<ComponentProps<"div">>) => {
 			</div>
 		</div>
 	)
+}
+
+// type ImageCellProps<P = {}> = P & {
+// 	currentRecordingCell: Accessor<string>
+// 	setCurrentRecordingCell: Setter<string>
+// 	Recorder: ReactMediaRecorderRenderProps
+// 	cell: {
+// 		readonly x: number
+// 		readonly y: number
+// 		readonly label: string
+// 		readonly audioURL: string
+// 		readonly audioId: string
+// 	}
+// }
+
+export const ImageCell = () => {
+	return <div></div>
 }

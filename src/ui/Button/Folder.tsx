@@ -44,7 +44,7 @@ export const Folder = (props: FolderProps<ComponentProps<"button">>) => {
 			id={props?.id}
 			onMouseEnter={() => setHoverState(true)}
 			onMouseLeave={() => setHoverState(false)}
-			class="flex max-w-60 hover:bg-slate-200 transition-colors group rounded-md overflow-clip"
+			class="flex max-w-60 hover:bg-slate-200 select-none transition-colors group rounded-md overflow-clip"
 		>
 			<button
 				class={`w-full py-1.5 flex items-center pl-2 gap-x-1.5`}

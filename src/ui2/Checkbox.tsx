@@ -10,7 +10,7 @@ export const CheckBox = (props: { value: () => boolean; toggle: any }) => {
 
 	return (
 		<div
-			class="flex items-center justify-center bg-slate-100 rounded-md gap-x-2 px-2"
+			class="flex items-center justify-center bg-slate-100 rounded-md gap-x-2 py-1 px-2"
 			classList={{
 				"bg-green-200": value(),
 			}}

@@ -1,4 +1,4 @@
-import { createStore, produce } from "solid-js/store"
+import { createStore, produce, unwrap } from "solid-js/store"
 
 /* Table will contain Columns and some metadata about all Cells */
 /* Each Column will contain Header & Cells */
@@ -198,6 +198,8 @@ export const updateCellAudioURL = (x: number, y: number, audioURL: string) => {
 }
 export const initStoreFromRes = (
 	res: {
+		image_id: string
+		image_url: string
 		audio_id: string
 		audio_url: string
 		column_id: number
@@ -237,6 +239,7 @@ export const initStoreFromRes = (
 		})
 	)
 	console.log("NEWNEWNEW\nNEWNEWNEW\n,", csv_store)
+	console.log(unwrap(csv_store))
 }
 
 export const initStoreFromCSV = (csv: string[][]) => {
@@ -358,3 +361,31 @@ export const [csv_store, setCSVStore] = createStore<Store>({
 // );
 
 export default csv_store
+
+// const [output, setOutput] = createSignal<string>();
+// createSignaledWorker({
+//     input,
+//     output: setOutput,
+//     func:function cvt(store: Store):string {
+//           let ld: string[][] = [[]]
+//           store.table.columns.forEach((col,j) => {
+//               ld[0].push(col.label)
+//               col.cells.forEach((cell, i) => {
+//                   if (ld[i + 1] === undefined) {
+//                       ld.push([cell.label])
+//                   } else {
+//                       ld[i + 1].push(cell.label)
+//                   }
+//               })
+//           })
+//           const header = ld[0].join(',')
+//           let cells = ''
+//           for(let i = 1; i < ld.length; i++){
+//               const row = ld[i];
+//               let row_cells = row.join(',')
+//               if(i!==1) row_cells ='\n'+row_cells;
+//               cells += row_cells;
+//           }
+//           return header+'\n'+cells;
+//       }
+//   })

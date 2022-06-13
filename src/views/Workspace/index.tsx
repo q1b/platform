@@ -223,7 +223,7 @@ export const Workspace = () => {
 									<FolderBtn
 										id={folder?.id}
 										onAdd={() => {}}
-										options
+										options={false}
 										active={isActiveFolder(folder?.id)}
 										label={folder?.name}
 										onClick={() => {

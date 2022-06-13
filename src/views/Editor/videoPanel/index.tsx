@@ -1,4 +1,5 @@
 import {
+	CheckIcon,
 	ChevronDownIcon,
 	ChevronLeftIcon,
 	ChevronRightIcon,
@@ -56,6 +57,11 @@ import {
 	store,
 } from "@/views/Workspace/api/client/client"
 import { ProgressBar } from "@/ui/ProgressBar"
+import {
+	convertMilliSecToProgress,
+	convertProgressToMilliSec,
+	responseFromMilliSeconds,
+} from "../timeV2"
 
 // got help from here,
 // https://stackoverflow.com/questions/29285056/get-video-duration-when-input-a-video-file
@@ -187,6 +193,8 @@ const uploadVideo = async ({
 const [VideoFileState, setVideoFileState] =
 	createSignal<VideoFileState>("unchecked")
 
+export const [duration, setDuration] = createSignal<number>(0)
+
 export const VideoPanel = () => {
 	let previewContainerRef: HTMLDivElement
 	const [videoModel, setVideoModel] = createSignal<boolean>(false)
@@ -232,7 +240,6 @@ export const VideoPanel = () => {
 	const [mediaBlob, setMediaBlob] = createSignal<Blob[] | undefined>()
 
 	const [isLoaded, setIsLoaded] = createSignal<boolean>(false)
-	const [duration, setDuration] = createSignal<number>(0)
 	const [currentTime, setCurrentTime] = createSignal<number>(0)
 
 	const openVideoModel = () => setVideoModel(true)
@@ -660,55 +667,137 @@ export const VideoPanel = () => {
 							<ChevronRightIcon basic />
 						</button>
 					</div>
-
-					<Button
-						onClick={async () => {
-							barDetails.forEach(async (bar, column_id) => {
-								console.log("NUMBER oF BARS __ -", bar)
-								let variable_time_marker_start =
-									getFormatedTime.fromMilliSeconds(
-										progToSec({
-											progress: bar.progressStamps[0] * 100,
-											duration: duration(),
-										}) * 1000
-									)
-								let variable_time_marker_end = getFormatedTime.fromMilliSeconds(
-									progToSec({
-										progress: bar.progressStamps[1] * 100,
-										duration: duration(),
-									}) * 1000
-								)
-								let formatedDur = getFormatedTime.fromMilliSeconds(
-									duration() * 1000
-								)
-								const postSeg = {
-									audio_variable_name: bar.name,
-									audio_variable_column_id: column_id,
-									video_instance_id: Client.store.activeFile.file_id,
-									variable_time_marker_start: variable_time_marker_start,
-									variable_time_marker_end: variable_time_marker_end,
-									prefix_time_marker_start: "00:00:00:00",
-									prefix_time_marker_end: variable_time_marker_start,
-									suffix_time_marker_start: variable_time_marker_end,
-									suffix_time_marker_end: formatedDur,
+					{(() => {
+						const [loading, setLoading] = createSignal(false)
+						const states = {
+							idle: "idle",
+							loading: "loading",
+							loaded: "loaded",
+							error: "error",
+						}
+						const [state, setState] = createSignal(states["idle"])
+						createEffect(
+							on(state, (v, p) => {
+								console.log("st", v)
+								switch (v) {
+									case states["idle"]:
+										break
+									case states["loading"]:
+										break
+									case states["loaded"]:
+										setTimeout(() => setState(states["idle"]), 2000)
+										break
+									case states["error"]:
+										setTimeout(() => setState(states["idle"]), 2000)
+										break
+									default:
+										console.log("NO STATE SATISFIED!")
 								}
-								console.log(postSeg)
-								console.log("uploading the Segments")
-								const postRes = await postSegment(postSeg)
-								console.log("uploaded the Segments, res ", postRes.data)
 							})
-							console.log("Triggering the pipeline ")
-							const pipelineRes = await postPipeline({
-								lipsync_with_image: false,
-								file_id: Client.store.activeFile.file_id,
-							})
-							console.log("Triggering complete, res", pipelineRes.data)
-						}}
-						stylied
-						class="px-2 leading-6 pt-0.5 pb-1 bg-blue-500 text-white hover:bg-blue-400  focus-visible:ring-blue-300 focus-visible:ring-offset-cyan-50"
-					>
-						Generate Video
-					</Button>
+						)
+						return (
+							<Button
+								onClick={async () => {
+									if (state() === states["idle"]) {
+										setState(states["loading"])
+										const duration_in_milliseconds = duration() * 1000
+										barDetails.forEach(async (bar, column_id) => {
+											let variable_time_marker_start = responseFromMilliSeconds(
+												convertProgressToMilliSec({
+													duration_in_milliseconds,
+													progress: bar.progressStamps[0],
+												})
+											)
+											let variable_time_marker_end = responseFromMilliSeconds(
+												convertProgressToMilliSec({
+													duration_in_milliseconds,
+													progress: bar.progressStamps[1],
+												})
+											)
+											console.log(
+												"Start",
+												variable_time_marker_start,
+												"\nEND",
+												variable_time_marker_end
+											)
+											const postSeg = {
+												audio_variable_name: bar.name,
+												audio_variable_column_id: column_id,
+												video_instance_id: Client.store.activeFile.file_id,
+												variable_time_marker_start: variable_time_marker_start,
+												variable_time_marker_end: variable_time_marker_end,
+												prefix_time_marker_start: "00:00:00:00",
+												prefix_time_marker_end: "00:00:00:10",
+												suffix_time_marker_start: "00:00:00:20",
+												suffix_time_marker_end: "00:00:00:30",
+											}
+											// console.log(postSeg)
+											console.log("uploading the Segments")
+											const postRes = await postSegment(postSeg)
+											console.log("uploaded the Segments, res ", postRes.data)
+										})
+										console.log("Triggering the pipeline ")
+										try {
+											const pipelineRes = await postPipeline({
+												lipsync_with_image: false,
+												file_id: Client.store.activeFile.file_id,
+											})
+											console.log("Triggering complete, res", pipelineRes.data)
+											setState(states["loaded"])
+										} catch (error) {
+											console.log(error)
+											setState(states["error"])
+										}
+									}
+								}}
+								stylied
+								class="px-2 relative leading-6 pt-0.5 pb-1 bg-blue-500 text-white hover:bg-blue-400  focus-visible:ring-blue-300 focus-visible:ring-offset-cyan-50"
+								classList={{
+									"bg-blue-500 hover:bg-blue-400  focus-visible:ring-blue-300 focus-visible:ring-offset-cyan-50":
+										state() !== states["error"],
+									"bg-rose-500 hover:bg-red-400  focus-visible:ring-blue-300 focus-visible:ring-offset-rose-50":
+										state() === states["error"],
+								}}
+							>
+								<span
+									class="absolute inset-0 flex items-center justify-center gap-x-1"
+									classList={{
+										visible: state() === states["loading"],
+										invisible: state() !== states["loading"],
+									}}
+								>
+									<LoadingIcon class="w-4 h-4" /> Loading
+								</span>
+								<span
+									class="absolute inset-0 flex items-center justify-center gap-x-1"
+									classList={{
+										visible: state() === states["error"],
+										invisible: state() !== states["error"],
+									}}
+								>
+									error!
+								</span>
+								<span
+									class="absolute inset-0 flex items-center justify-center gap-x-1"
+									classList={{
+										visible: state() === states["loaded"],
+										invisible: state() !== states["loaded"],
+									}}
+								>
+									<CheckIcon class="w-4 h-4 text-white" /> Generating
+								</span>
+								<span
+									class="inline-flex items-center"
+									classList={{
+										visible: state() === states["idle"],
+										invisible: state() !== states["idle"],
+									}}
+								>
+									Generate Video
+								</span>
+							</Button>
+						)
+					})()}
 				</div>
 				<div
 					id="time-marker"

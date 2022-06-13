@@ -209,6 +209,22 @@ const RequiredIcons = [
 		name: "Click",
 	},
 	{
+		path: "fluent:copy-link-24-regular",
+		name: "CopyLinkOutline",
+	},
+	{
+		path: "fluent:copy-link-24-filled",
+		name: "CopyLinkFill",
+	},
+	{
+		path: "heroicons-outline/exclamation-circle",
+		name: "ExclamationCircleOutline",
+	},
+	{
+		path: "heroicons-solid/exclamation-circle",
+		name: "ExclamationCircleFill",
+	},
+	{
 		path: "ic:outline-visibility",
 		name: "Visibility",
 	},

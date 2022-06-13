@@ -90,6 +90,26 @@ export {
 	changeTab,
 } from "./client/client"
 
+export const setFileImageColumnId = async ({
+	image_column_id,
+	file_id,
+	folder_id,
+}: {
+	image_column_id: number
+	file_id: string
+	folder_id: string
+}) => {
+	const res = await Server.updateFileImageColumnId({
+		image_column_id,
+		file_id,
+	})
+	Client.setFileImageColumnID({
+		file_id,
+		folder_id,
+		image_column_id,
+	})
+}
+
 export const setFileTemplateVideoId = async ({
 	video_id,
 	file_id,
@@ -109,6 +129,7 @@ export const setFileTemplateVideoId = async ({
 		folder_id,
 	})
 }
+
 export const setAudioData = async ({
 	file_id,
 	folder_id,

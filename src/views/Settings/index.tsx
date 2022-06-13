@@ -1,14 +1,15 @@
+import { fetchPlan } from "@/api"
+import { globalStore } from "@/App"
 import { Folder } from "@/ui/Button/Folder"
 import { FreeVideoBtnWithDialog } from "@/ui/FreeVideoBtn&Dialog"
 import { Outlet, useNavigate } from "solid-app-router"
-import { createSelector, createSignal } from "solid-js"
+import { createResource, createSelector, createSignal } from "solid-js"
 
 export const Settings = () => {
 	const [active, setActive] = createSignal("Profile")
+
 	const isActive = createSelector(active)
 	const navigate = useNavigate()
-
-	console.log("Mounted")
 
 	return (
 		<>

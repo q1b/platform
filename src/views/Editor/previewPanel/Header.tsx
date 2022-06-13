@@ -2,7 +2,10 @@ import { DownloadOutlineIcon } from "@/assets/icons"
 import { FreeVideoBtnWithDialog } from "@/ui/FreeVideoBtn&Dialog"
 import { Button } from "@/ui2/Buttons"
 import { CheckBox } from "@/ui2/Checkbox"
+import { Client } from "@/views/Workspace/api"
 import { createSignal, Show } from "solid-js"
+import csv_store from "../audioPanel/store"
+import { generatedVideos } from "../audioPanel/store/generated_videos"
 
 import {
 	selectCalendy,
@@ -23,6 +26,43 @@ export const Header = () => {
 			<div class="flex gap-x-2">
 				<Button
 					stylied
+					onClick={() => {
+						let ld: string[][] = [[]]
+						csv_store.table.columns.forEach((col, j) => {
+							ld[0].push(col.label)
+							col.cells.forEach((cell, i) => {
+								if (ld[i + 1] === undefined) {
+									ld.push([cell.label])
+								} else {
+									ld[i + 1].push(cell.label)
+								}
+							})
+						})
+						const header = [...ld[0], "video link"].join(",")
+						let cells = ""
+						for (let i = 1; i < ld.length; i++) {
+							const video_link = (video_id) =>
+								`https://ai-videos-j5zfsbg4x-bhuman-app.vercel.app/video/${video_id}?` +
+								(getCalendyLink() !== undefined
+									? `calendlyUrl=${getCalendyLink()}&`
+									: ``) +
+								`instanceId=${Client.store.activeFile.file_id}`
+							const row = [
+								...ld[i],
+								video_link(generatedVideos[i - 1].video_id),
+							]
+							let row_cells = row.join(",")
+							if (i !== 1) row_cells = "\n" + row_cells
+							cells += row_cells
+						}
+						const csv_str = header + "\n" + cells
+						let hiddenElement = document.createElement("a")
+						hiddenElement.href =
+							"data:text/csv;charset=utf-8," + encodeURI(csv_str)
+						hiddenElement.target = "_blank"
+						hiddenElement.download = "output.csv"
+						hiddenElement.click()
+					}}
 					class="bg-blue-400 text-white px-2 py-1 flex items-center group gap-x-0.5"
 				>
 					<DownloadOutlineIcon

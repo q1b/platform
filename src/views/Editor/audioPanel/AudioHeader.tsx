@@ -51,12 +51,16 @@ export const AudioHeader = (props) => {
 				id: string
 				name: string
 			}[] = actors()?.data
-			setACTORS(
-				actorsArr.map((actorDetail) => ({
-					value: actorDetail.id,
-					label: actorDetail.name,
-				}))
-			)
+			if (actors().data.length !== 0) {
+				setACTORS(
+					actorsArr.map((actorDetail) => ({
+						value: actorDetail.id,
+						label: actorDetail.name,
+					}))
+				)
+			} else {
+				setActorModel(true)
+			}
 		}
 	})
 	trigger(() => actors())

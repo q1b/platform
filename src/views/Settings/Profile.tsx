@@ -59,7 +59,15 @@ export const Profile = () => {
 	return (
 		<section class="p-8 grow flex flex-col place-content-between">
 			<div class="flex flex-col gap-y-8">
-				<form use:username_form>
+				<div class="flex flex-col gap-y-2">
+					<h1 class="text-2xl font-semibold pl-1.5">Username</h1>
+					<div class="flex w-60 group items-center py-1.5 px-2 rounded-md place-content-between">
+						<h2 class="w-full bg-transparent focus:outline-none font-medium">
+							{globalStore?.user?.username}
+						</h2>
+					</div>
+				</div>
+				{/* <form use:username_form>
 					<div class="flex flex-col gap-y-2">
 						<label
 							for="folder_name"
@@ -77,7 +85,7 @@ export const Profile = () => {
 							placeholder={usernameVal}
 						/>
 					</div>
-				</form>
+				</form> */}
 				<form use:fullname_form>
 					<div class="flex flex-col gap-y-2">
 						<label
@@ -91,7 +99,7 @@ export const Profile = () => {
 							name="last_name"
 							isupdating={is_fullname_loading()}
 							ref={fullname}
-							placeholder={fullnameVal}
+							placeholder={globalStore?.user?.fullname}
 						/>
 					</div>
 				</form>

@@ -34,6 +34,7 @@ export const [store, setStore] = createStore<{
 		video_url: string | undefined
 		video_duration: number | undefined
 		segments: { name: string; progressStamps: [number, number] }[] | undefined
+		image_column_id: number | undefined
 		video_id: string | undefined
 		actor_id: string | undefined
 	}
@@ -49,6 +50,7 @@ export const [store, setStore] = createStore<{
 		video_duration: undefined,
 		video_url: undefined,
 		segments: undefined,
+		image_column_id: undefined,
 		video_id: undefined,
 		actor_id: undefined,
 	},
@@ -155,12 +157,14 @@ export const pushFile = ({
 	id,
 	actor_id,
 	audio_batch_id,
+	image_column_id,
 	video_id,
 }: {
 	name: string
 	id: string
 	actor_id?: string | undefined
 	audio_batch_id?: string | undefined
+	image_column_id?: number | undefined
 	video_id?: string | undefined
 }) => {
 	let isactive = false
@@ -175,6 +179,7 @@ export const pushFile = ({
 				isopen,
 				folder_id: folders[folders.length - 1].id,
 				actor_id,
+				image_column_id,
 				audio_batch_id,
 				video_id,
 				active_tab: Tab.Video,
@@ -201,6 +206,7 @@ export const addFile = ({
 	name: string
 	id: string
 	actor_id?: string | undefined
+	image_column_id?: string | undefined
 	audio_batch_id?: string | undefined
 	video_id?: string | undefined
 }) => {
@@ -224,12 +230,34 @@ export const addFile = ({
 				table: {
 					columns: [],
 				},
+				image_column_id: undefined,
 				video_url: undefined,
 				video_duration: undefined,
 				segments: undefined,
 			})
 		})
 	)
+}
+
+export const setFileImageColumnID = ({
+	folder_id,
+	file_id,
+	image_column_id,
+}: {
+	folder_id: string
+	file_id: string
+	image_column_id: number
+}) => {
+	setStore(
+		"folders",
+		(folder) => folder.id === folder_id,
+		"files",
+		(file) => file.id === file_id,
+		"image_column_id",
+		image_column_id
+	)
+	if (store.activeFile.file_id === file_id)
+		setStore("activeFile", "image_column_id", image_column_id)
 }
 
 export const setFileActor = ({
@@ -472,6 +500,7 @@ export const getActiveFile = ({
 	actor_id: string
 	video_id: string
 	video_url: string
+	image_column_id: number
 	segments: readonly {
 		readonly name: string
 		readonly progressStamps: readonly [number, number]
@@ -483,6 +512,7 @@ export const getActiveFile = ({
 		name,
 		audio_batch_id,
 		actor_id,
+		image_column_id,
 		video_id,
 		active_tab,
 		video_url,
@@ -495,6 +525,7 @@ export const getActiveFile = ({
 		name,
 		audio_batch_id,
 		actor_id,
+		image_column_id,
 		video_id,
 		active_tab,
 		video_url,

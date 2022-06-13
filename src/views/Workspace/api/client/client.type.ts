@@ -13,10 +13,11 @@ export type File = {
 	// fetched from API
 	id: string
 	folder_id: string
+	image_column_id: number | null
 	name: string
-	actor_id?: string
-	video_id?: string
-	audio_batch_id?: string
+	actor_id: string | null
+	video_id: string | null
+	audio_batch_id: string | null
 }
 
 export enum Tab {
