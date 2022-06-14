@@ -724,7 +724,7 @@ export const AudioPanel = () => {
 					}}
 					class="bg-blue-500 px-2 py-1 text-white hover:bg-sky-400 hover:text-blue-500 transition-colors"
 				>
-					Refersh GeneratedVideos
+					Refersh Generate dVideos
 				</Button>
 				{/* </Show> */}
 			</div>

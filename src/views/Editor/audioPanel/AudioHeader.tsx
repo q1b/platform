@@ -11,6 +11,7 @@ import {
 } from "@/assets/icons"
 
 import { Button } from "@/ui2/Buttons"
+import { Client } from "@/views/Workspace/api"
 
 import {
 	Listbox,
@@ -46,6 +47,7 @@ export const AudioHeader = (props) => {
 	const [actorModel, setActorModel] = createSignal(false)
 	const [actors] = createResource(fetchActors)
 	const trigger = createReaction(async () => {
+		console.log("Running I am running")
 		if (actors()) {
 			const actorsArr: {
 				id: string
@@ -60,6 +62,12 @@ export const AudioHeader = (props) => {
 				)
 			} else {
 				setActorModel(true)
+			}
+			if (activeActor() === undefined) {
+				const actor_id = Client.store.activeFile.actor_id
+				if (actor_id)
+					setActiveActor(ACTORS().find((ac) => ac.value === actor_id))
+				else if (actors().data.length !== 0) setActiveActor(ACTORS()[0])
 			}
 		}
 	})
