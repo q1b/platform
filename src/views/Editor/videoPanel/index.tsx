@@ -62,6 +62,7 @@ import {
 	convertProgressToMilliSec,
 	responseFromMilliSeconds,
 } from "../timeV2"
+import { AxiosError } from "axios"
 
 // got help from here,
 // https://stackoverflow.com/questions/29285056/get-video-duration-when-input-a-video-file
@@ -745,7 +746,11 @@ export const VideoPanel = () => {
 											console.log("Triggering complete, res", pipelineRes.data)
 											setState(states["loaded"])
 										} catch (error) {
-											console.log(error)
+											const err = error as AxiosError
+											if (err.response) {
+												console.log(err.response.status)
+												console.log(err.response.data)
+											}
 											setState(states["error"])
 										}
 									}

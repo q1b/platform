@@ -92,7 +92,7 @@ const uploadCsv = async ({
 	folder_id: string
 }) => {
 	try {
-		let image_column_id = 0
+		let image_column_id = null
 
 		if (!audio_batch_id) {
 			const batchData = await axiosApi.post("audio_batch", {
@@ -106,6 +106,7 @@ const uploadCsv = async ({
 				folder_id,
 			})
 		}
+
 		const buffer = new Blob(ev, { type: "audio/webm" })
 		// console.log("AUDIOBATCHID", audio_batch_id)
 		const formData = new FormData()
@@ -724,7 +725,7 @@ export const AudioPanel = () => {
 					}}
 					class="bg-blue-500 px-2 py-1 text-white hover:bg-sky-400 hover:text-blue-500 transition-colors"
 				>
-					Refersh Generate dVideos
+					Refersh Generate Videos
 				</Button>
 				{/* </Show> */}
 			</div>
