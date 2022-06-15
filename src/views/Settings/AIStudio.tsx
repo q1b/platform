@@ -103,6 +103,7 @@ export const AIStudio = () => {
 	})
 
 	let [progress, setProgress] = createSignal(0)
+
 	onMount(async () => {
 		const Plans = await fetchPlans()
 		setFreeTier(Plans.data.find((plan) => plan.name === "Free plan"))
@@ -111,8 +112,9 @@ export const AIStudio = () => {
 		setUltimateTier(Plans.data.find((plan) => plan.name === "Ultimate"))
 		setProgress(
 			Math.floor(
-				globalStore.user?.generated_videos_used /
-					globalStore.user?.generated_videos_quota
+				46
+				// globalStore.user?.generated_videos_used /
+				// 	globalStore.user?.generated_videos_quota
 			)
 		)
 		console.log("Progress", progress())
@@ -120,7 +122,9 @@ export const AIStudio = () => {
 		// console.log("Growth TIER", growthTier())
 		// console.log("Ultimate TIER", ultimateTier())
 	})
-
+	setTimeout(() => {
+		setProgress(84)
+	}, 5000)
 	return (
 		<section class="p-8 grow flex flex-col">
 			<div class="flex flex-col gap-y-8 mb-4">
@@ -150,7 +154,7 @@ export const AIStudio = () => {
 						<div class="flex flex-col items-start pb-2">
 							<h2 class="font-semibold leading-4 mb-1.5"> Free Tier </h2>
 							<p class="text-[13px] font-medium mb-2">
-								{globalStore.user?.generated_videos_used} of
+								{globalStore.user?.generated_videos_used} of{" "}
 								{globalStore.user?.generated_videos_quota} used
 							</p>
 							<ProgressBar.FlatProgressBar

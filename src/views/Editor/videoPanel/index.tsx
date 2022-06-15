@@ -24,6 +24,7 @@ import { Client } from "@/views/Workspace/api/index"
 import axiosApi, {
 	deleteVideo,
 	fetchFile,
+	fetchSegments,
 	fetchVideo,
 	postPipeline,
 	postSegment,
@@ -702,42 +703,53 @@ export const VideoPanel = () => {
 									if (state() === states["idle"]) {
 										setState(states["loading"])
 										const duration_in_milliseconds = duration() * 1000
-										barDetails.forEach(async (bar, column_id) => {
-											let variable_time_marker_start = responseFromMilliSeconds(
-												convertProgressToMilliSec({
-													duration_in_milliseconds,
-													progress: bar.progressStamps[0],
-												})
-											)
-											let variable_time_marker_end = responseFromMilliSeconds(
-												convertProgressToMilliSec({
-													duration_in_milliseconds,
-													progress: bar.progressStamps[1],
-												})
-											)
-											console.log(
-												"Start",
-												variable_time_marker_start,
-												"\nEND",
-												variable_time_marker_end
-											)
-											const postSeg = {
-												audio_variable_name: bar.name,
-												audio_variable_column_id: column_id,
-												video_instance_id: Client.store.activeFile.file_id,
-												variable_time_marker_start: variable_time_marker_start,
-												variable_time_marker_end: variable_time_marker_end,
-												prefix_time_marker_start: "00:00:00:00",
-												prefix_time_marker_end: "00:00:00:10",
-												suffix_time_marker_start: "00:00:00:20",
-												suffix_time_marker_end: "00:00:00:30",
-											}
-											// console.log(postSeg)
-											console.log("uploading the Segments")
-											const postRes = await postSegment(postSeg)
-											console.log("uploaded the Segments, res ", postRes.data)
+										const segments = await fetchSegments({
+											file_id: Client.store.activeFile.file_id,
 										})
-										console.log("Triggering the pipeline ")
+										if (!!!segments.data[0]) {
+											barDetails.forEach(async (bar, column_id) => {
+												let variable_time_marker_start =
+													responseFromMilliSeconds(
+														convertProgressToMilliSec({
+															duration_in_milliseconds,
+															progress: bar.progressStamps[0],
+														})
+													)
+												let variable_time_marker_end = responseFromMilliSeconds(
+													convertProgressToMilliSec({
+														duration_in_milliseconds,
+														progress: bar.progressStamps[1],
+													})
+												)
+												console.log(
+													"Start",
+													variable_time_marker_start,
+													"\nEND",
+													variable_time_marker_end
+												)
+												const postSeg = {
+													audio_variable_name: bar.name,
+													audio_variable_column_id: column_id,
+													video_instance_id: Client.store.activeFile.file_id,
+													variable_time_marker_start:
+														variable_time_marker_start,
+													variable_time_marker_end: variable_time_marker_end,
+													prefix_time_marker_start: "00:00:00:00",
+													prefix_time_marker_end: "00:00:00:10",
+													suffix_time_marker_start: "00:00:00:20",
+													suffix_time_marker_end: "00:00:00:30",
+												}
+												// console.log(postSeg)
+												console.log("uploading the Segments")
+												const postRes = await postSegment(postSeg)
+												console.log("uploaded the Segments, res ", postRes.data)
+											})
+											console.log("Uploading the segments")
+										} else {
+											console.log(
+												"Already Segments are Uploaded, Only Triggering The Pipeline Again"
+											)
+										}
 										try {
 											const pipelineRes = await postPipeline({
 												lipsync_with_image: false,

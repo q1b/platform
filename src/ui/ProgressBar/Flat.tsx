@@ -1,8 +1,10 @@
 import {
 	createEffect,
+	createMemo,
 	createSignal,
 	JSX,
 	mergeProps,
+	onMount,
 	ParentProps,
 } from "solid-js"
 
@@ -125,7 +127,9 @@ const ProgressBar = (params: ParentProps<ProgressBarProps>) => {
 		return initCompletedOnAnimationStr
 	}
 
-	const fillerWidth = getFillerWidth(maxCompleted, props.completed)
+	const fillerWidth = createMemo(() =>
+		getFillerWidth(maxCompleted, props.completed)
+	)
 
 	const [initWidth, setInitWidth] = createSignal<string>(
 		initCompletedOnAnimationStr
@@ -138,20 +142,6 @@ const ProgressBar = (params: ParentProps<ProgressBarProps>) => {
 		padding: padding,
 		width: width,
 		margin: margin,
-	}
-
-	const fillerStyles: JSX.CSSProperties = {
-		height: height,
-		width: animateOnRender ? initWidth : fillerWidth,
-		background: bgColor,
-		transition: `width ${transitionDuration || "1s"} ${
-			transitionTimingFunction || "ease-in-out"
-		}`,
-		"border-radius": "inherit",
-		display: "flex",
-		"align-items": "center",
-		"justify-content":
-			labelAlignment !== "outside" && alignment ? alignment : "inherit",
 	}
 
 	const labelStyles: JSX.CSSProperties = {
@@ -167,25 +157,32 @@ const ProgressBar = (params: ParentProps<ProgressBarProps>) => {
 		"align-items": labelAlignment === "outside" ? "center" : "initial",
 	}
 
-	const completedStr =
+	const completedStr = createMemo<string>(() =>
 		typeof props.completed === "number"
 			? `${props.completed}%`
 			: `${props.completed}`
-	const labelStr = customLabel ? customLabel : completedStr
+	)
 
-	createEffect(() => {
+	const labelStr = createMemo(() =>
+		customLabel ? customLabel : completedStr()
+	)
+
+	onMount(() => {
 		if (animateOnRender) {
-			requestAnimationFrame(() => setInitWidth(fillerWidth))
+			requestAnimationFrame(() => setInitWidth(fillerWidth()))
 		}
 	})
-
+	createEffect(() => {
+		console.log(props.completed)
+		console.log(labelStr())
+	})
 	return (
 		<div
 			style={className ? undefined : outsideStyles}
 			class={className}
 			dir={dir as "ltr"}
 			role="progressbar"
-			aria-valuenow={parseFloat(labelStr)}
+			aria-valuenow={parseFloat(labelStr())}
 			aria-valuemin={ariaValuemin}
 			aria-valuemax={ariaValuemax}
 			aria-valuetext={`${ariaValuetext === null ? labelStr : ariaValuetext}`}
@@ -195,7 +192,21 @@ const ProgressBar = (params: ParentProps<ProgressBarProps>) => {
 				class={barContainerClassName}
 			>
 				<div
-					style={completedClassName ? undefined : fillerStyles}
+					style={{
+						height: height,
+						width: animateOnRender
+							? initWidth()
+							: getFillerWidth(maxCompleted, props.completed),
+						background: bgColor,
+						transition: `width ${transitionDuration || "1s"} ${
+							transitionTimingFunction || "ease-in-out"
+						}`,
+						"border-radius": "inherit",
+						display: "flex",
+						"align-items": "center",
+						"justify-content":
+							labelAlignment !== "outside" && alignment ? alignment : "inherit",
+					}}
 					class={completedClassName}
 				>
 					{labelAlignment !== "outside" && (

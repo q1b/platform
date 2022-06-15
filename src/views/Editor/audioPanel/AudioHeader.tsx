@@ -65,6 +65,7 @@ export const AudioHeader = (props) => {
 			}
 			if (activeActor() === undefined) {
 				const actor_id = Client.store.activeFile.actor_id
+				console.log("MMMMMMMMMMMMMMMMMMM RUNING HERE,", actor_id, ACTORS())
 				if (actor_id)
 					setActiveActor(ACTORS().find((ac) => ac.value === actor_id))
 				else if (actors().data.length !== 0) setActiveActor(ACTORS()[0])
