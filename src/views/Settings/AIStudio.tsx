@@ -112,8 +112,9 @@ export const AIStudio = () => {
 		setUltimateTier(Plans.data.find((plan) => plan.name === "Ultimate"))
 		setProgress(
 			Math.floor(
-				globalStore.user?.generated_videos_used /
-					globalStore.user?.generated_videos_quota
+				(globalStore.user?.generated_videos_used /
+					globalStore.user?.generated_videos_quota) *
+					100
 			)
 		)
 		console.log("Progress", progress())

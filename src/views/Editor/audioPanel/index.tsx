@@ -8,6 +8,7 @@ import {
 	createEffect,
 	createSignal,
 	createUniqueId,
+	For,
 	Index,
 	Match,
 	on,
@@ -581,28 +582,26 @@ export const AudioPanel = () => {
 								&nbsp;
 							</CSV.ColumnHeader>
 							<CSV.CellsContainer class="flex flex-col -translate-x-1 translate-y pl-0.5 z-0">
-								<Index each={generatedVideos}>
+								<For each={generatedVideos}>
 									{(video, i) => {
-										let isFirstHeader = i === 0
+										let isFirstHeader = i() === 0
 										let isLastHeader =
-											i === csv_store.table.columns[0].cells.length - 1
-
-										console.log(video())
+											i() === csv_store.table.columns[0].cells.length - 1
 
 										const [isAvailable, setIsAvailable] = createSignal(
-											video().response_state === "Success"
+											video.response_state === "Success"
 										)
 
 										const [isLoading, setLoadingState] = createSignal(
-											video().response_state === "Processing"
+											video.response_state === "Processing"
 										)
 
 										const [isFailed, setFailedState] = createSignal(
-											video().response_state === "Failed"
+											video.response_state === "Failed"
 										)
 
 										const [isLoaded, setLoadedState] = createSignal(
-											!!video().video_url
+											!!video.video_url
 										)
 
 										return (
@@ -614,14 +613,14 @@ export const AudioPanel = () => {
 												}}
 												onClick={async () => {
 													if (isLoaded()) {
-														setGeneratedVideoModelURL(video().video_url)
+														setGeneratedVideoModelURL(video.video_url)
 														openVideoPlayerModel()
 													} else if (isLoading()) {
 													} else if (isAvailable()) {
 														setLoadingState(true)
 														console.log("FETCHING START FOR GENERATED VIDEO")
 														const gen_video = await fetchGeneratedVideo({
-															generated_video_id: video().video_id,
+															generated_video_id: video.video_id,
 														})
 														console.log("FETCHING ENDED")
 														console.log(
@@ -632,7 +631,7 @@ export const AudioPanel = () => {
 															gen_video.data
 														)
 														updateGeneratedVideoURL({
-															generated_video_id: video().video_id,
+															generated_video_id: video.video_id,
 															generated_video_url,
 														})
 														setLoadingState(false)
@@ -709,7 +708,7 @@ export const AudioPanel = () => {
 											</button>
 										)
 									}}
-								</Index>
+								</For>
 							</CSV.CellsContainer>
 						</CSV.Column>
 					</CSV.Table>
@@ -721,11 +720,12 @@ export const AudioPanel = () => {
 					stylied
 					onClick={async () => {
 						const generatedVideos = await getGeneratedVideos()
+						console.log("Ge", generatedVideos)
 						setGeneratedVideos(generatedVideos)
 					}}
 					class="bg-blue-500 px-2 py-1 text-white hover:bg-sky-400 hover:text-blue-500 transition-colors"
 				>
-					Refersh Generate Videos
+					Refersh Generated Videos
 				</Button>
 				{/* </Show> */}
 			</div>

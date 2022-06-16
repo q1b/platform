@@ -150,7 +150,7 @@ export const PreviewPanel = () => {
 														rel="external"
 														target="_blank"
 														href={
-															`https://ai-videos-j5zfsbg4x-bhuman-app.vercel.app/video/${
+															`https://ai-videos-h20oemtt3-bhuman-app.vercel.app/video/${
 																video().video_id
 															}?` +
 															(getCalendyLink() !== undefined

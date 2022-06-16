@@ -42,7 +42,7 @@ export const Header = () => {
 						let cells = ""
 						for (let i = 1; i < ld.length; i++) {
 							const video_link = (video_id) =>
-								`https://ai-videos-j5zfsbg4x-bhuman-app.vercel.app/video/${video_id}?` +
+								`https://ai-videos-h20oemtt3-bhuman-app.vercel.app/video/${video_id}?` +
 								(getCalendyLink() !== undefined
 									? `calendlyUrl=${getCalendyLink()}&`
 									: ``) +
