@@ -2,7 +2,7 @@ import { Button } from "@/ui2/Buttons"
 import { Accessor, createSignal, onMount, ParentProps } from "solid-js"
 
 type UploadButtonProps<P = {}> = P & {
-	accept: "video/*" | "audio/*" | ".csv" | ".jpg, .jpeg, .png"
+	accept: "video/*" | "audio/*" | ".csv" | ".jpg, .jpeg, .png" | "image/*"
 	stylied?: boolean
 	handleFile: (arg0: Blob) => void
 	class: string

@@ -95,7 +95,7 @@ export const setFileImageColumnId = async ({
 	file_id,
 	folder_id,
 }: {
-	image_column_id: number
+	image_column_id: number | null
 	file_id: string
 	folder_id: string
 }) => {
@@ -103,6 +103,7 @@ export const setFileImageColumnId = async ({
 		image_column_id,
 		file_id,
 	})
+	console.log("From Server Updated Image Column Id", res)
 	Client.setFileImageColumnID({
 		file_id,
 		folder_id,

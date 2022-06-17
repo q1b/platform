@@ -21,7 +21,7 @@ import { createStore } from "solid-js/store"
 import { addFile, initFoldersForWorkspace } from "./api"
 
 import { Client, addFolder, openFile, renameFile, renameFolder } from "./api"
-import { activeWorkspace } from "@/App"
+import { activeWorkspace, setActiveWorkspace } from "@/App"
 
 const [activeFolder, setActiveFolder] = createSignal("Profile")
 
@@ -135,10 +135,10 @@ export const Workspace = () => {
 						fetched_files: fetched_files.value.data,
 					})
 					setActiveFolder(fetched_folders.value.data[0]?.id)
+					setActiveWorkspace(fetched_folders.value.data[0]?.workspace_id)
 				}
 			}
 		})(() => data())
-
 	return (
 		<>
 			<main class="w-60 min-h-screen shrink-0 bg-slate-100 shadow-md  shadow-slate-300 z-0 flex flex-col">

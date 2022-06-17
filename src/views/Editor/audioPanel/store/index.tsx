@@ -62,6 +62,8 @@ type Cell = {
 	label: string
 	audioURL: string | null
 	audioId: string | null
+	imageURL: string | null
+	imageId: string | null
 }
 
 /* Getters */
@@ -135,6 +137,8 @@ const createCell = (options?: Partial<Cell>): Cell => {
 		y: -1,
 		audioId: null,
 		audioURL: null,
+		imageId: null,
+		imageURL: null,
 		...options,
 	}
 }
@@ -165,6 +169,8 @@ const addNewRow = () => {
 					y: columns[index].cells.length,
 					audioURL: null,
 					audioId: null,
+					imageId: null,
+					imageURL: null,
 					x: columns[index].x,
 					label: "new cell",
 				})
@@ -196,6 +202,19 @@ export const updateCellAudioURL = (x: number, y: number, audioURL: string) => {
 		audioURL
 	)
 }
+
+export const updateCellImageURL = (x: number, y: number, imageURL: string) => {
+	setCSVStore(
+		"table",
+		"columns",
+		(column) => column.x === x,
+		"cells",
+		(cell) => cell.y === y,
+		"imageURL",
+		imageURL
+	)
+}
+
 export const initStoreFromRes = (
 	res: {
 		image_id: string
@@ -223,12 +242,15 @@ export const initStoreFromRes = (
 			columns.forEach((col, colIndex) => {
 				const uniqueLabels: string[] = []
 				res.forEach((row, rowIndex) => {
+					console.log("URGENT ROW", row)
 					columns[colIndex].cells.push({
 						label: row[colIndex].name,
 						x: colIndex + 1,
 						y: rowIndex + 1,
-						audioId: row[colIndex].audio_id,
-						audioURL: row[colIndex].audio_url,
+						audioId: row[colIndex]?.audio_id,
+						audioURL: row[colIndex]?.audio_url,
+						imageId: row[colIndex]?.image_id,
+						imageURL: row[colIndex]?.image_url,
 					})
 					if (!(row[colIndex].name in uniqueLabels)) {
 						uniqueLabels.push(row[colIndex].name)
@@ -264,6 +286,8 @@ export const initStoreFromCSV = (csv: string[][]) => {
 						columns[colIndex].cells.push({
 							audioURL: null,
 							audioId: null,
+							imageURL: null,
+							imageId: null,
 							label: row[colIndex],
 							x: colIndex + 1,
 							y: rowIndex + 1,
@@ -294,6 +318,9 @@ export const makeStoreFromCSV = (csv: string[][]) => {
 					columns[colIndex].cells.push({
 						audioId: null,
 						audioURL: null,
+						imageId: null,
+						imageURL: null,
+
 						label: row[colIndex],
 						x: colIndex + 1,
 						y: rowIndex + 1,

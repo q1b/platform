@@ -4,12 +4,21 @@ import axiosApi, {
 	postAudio,
 	deleteAudio,
 	fetchAudioData,
+	postImage,
+	fetchImage,
 } from "@/api"
 
-import { DeleteIcon, LoadingIcon, UploadIcon } from "@/assets/icons"
+import {
+	CheckIcon,
+	DeleteIcon,
+	ImageIcon,
+	LoadingIcon,
+	UploadIcon,
+} from "@/assets/icons"
 import { ReactMediaRecorderRenderProps } from "@/helpers/audioMediaRecorder"
 import { FileUpload } from "@/ui2/FileUpload"
 import { AudioMicrophoneButton, PlayIconButton } from "@/ui2/IconButtons"
+import { Client } from "@/views/Workspace/api"
 
 import {
 	Accessor,
@@ -29,7 +38,7 @@ import { getFormatedTime } from "../time"
 
 import { activeActor } from "./AudioHeader"
 
-import { updateCellAudioURL } from "./store"
+import { updateCellAudioURL, updateCellImageURL } from "./store"
 
 export const Table = (props: ComponentProps<"section">) => {
 	const [, others] = splitProps(props, ["children", "ref"])
@@ -69,6 +78,8 @@ type CellProps<P = {}> = P & {
 		readonly x: number
 		readonly y: number
 		readonly label: string
+		readonly imageURL: string
+		readonly imageId: string
 		readonly audioURL: string
 		readonly audioId: string
 	}
@@ -91,7 +102,7 @@ const uploadAudio = async ({
 		// console.log("AUDIOBATCHID", audio_batch_id)
 		const formData = new FormData()
 		formData.append("file", buffer)
-		console.log("POSTING AUDIO ", name)
+		console.log("POSTING AUDIO", name)
 		const AudioResponse = await postAudio({
 			name,
 			length,
@@ -374,19 +385,184 @@ export const Cell = (props: CellProps<ComponentProps<"div">>) => {
 	)
 }
 
-// type ImageCellProps<P = {}> = P & {
-// 	currentRecordingCell: Accessor<string>
-// 	setCurrentRecordingCell: Setter<string>
-// 	Recorder: ReactMediaRecorderRenderProps
-// 	cell: {
-// 		readonly x: number
-// 		readonly y: number
-// 		readonly label: string
-// 		readonly audioURL: string
-// 		readonly audioId: string
-// 	}
-// }
+const uploadImage = async ({ ev }: { ev: BlobPart[] }) => {
+	try {
+		const buffer = new Blob(ev, { type: "image/*" })
+		// console.log("AUDIOBATCHID", audio_batch_id)
+		const formData = new FormData()
+		formData.append("file", buffer)
+		console.log("Sending Image for POST")
+		const ImageResponse = await postImage({
+			file_id: Client.store.activeFile.file_id,
+			formData,
+		})
+		console.log("FETCHING IMAGE ", ImageResponse)
+		let fetchResponse = await fetchImage({
+			image_id: ImageResponse.data?.id,
+		})
+		console.log("IMAGE AVAILABLE NAME:-", fetchResponse)
+		return fetchResponse
+	} catch (error) {
+		console.log("👇 from uploadImage Func")
+		console.error(error)
+	}
+}
 
-export const ImageCell = () => {
-	return <div></div>
+type ImageCellProps<P = {}> = P & {
+	// imgRef: Accessor<HTMLImageElement | undefined>
+	// currentPosingCell: Accessor<string>
+	// setCurrentPosingCell: Setter<string>
+	// Camera: ReactMediaRecorderRenderProps
+	cell: {
+		readonly x: number
+		readonly y: number
+		readonly label: string
+		readonly imageURL: string
+		readonly imageId: string
+		readonly audioURL: string
+		readonly audioId: string
+	}
+}
+
+export const CellForImage = (props: ImageCellProps<ComponentProps<"div">>) => {
+	const [apiState, setAPIState] = createSignal<CellAudioAPIState>("unchecked")
+
+	const [local, others] = splitProps(props, [
+		"children",
+		"ref",
+		"cell",
+		// "Camera",
+		// "setCurrentPosingCell",
+		// "currentPosingCell",
+		// "imgRef",
+	])
+
+	const [posingState, setPosingState] = createSignal<boolean>(false)
+	const [isSeeing, setSeeingState] = createSignal<boolean>(false)
+
+	onMount(async () => {
+		setAPIState("checking")
+		if (local.cell.imageId) {
+			setAPIState("fetching")
+			const imageRes = await fetchImage({
+				image_id: local.cell.imageId,
+			})
+			updateCellImageURL(
+				local.cell.x,
+				local.cell.y,
+				URL.createObjectURL(imageRes.data)
+			)
+			console.log("Image AVAILABLE")
+			setAPIState("available")
+		} else {
+			setAPIState("notUploadedYet")
+		}
+	})
+
+	const handleFile = async (image_file: Blob) => {
+		setAPIState("uploading")
+		console.log("Image Uploading")
+		const imageRes = await uploadImage({
+			ev: [image_file],
+		})
+		console.log("Image UPLOAD RES ", imageRes)
+		setAPIState("available")
+	}
+
+	// const track = createReaction(async () => {
+	// 	console.log("HANDLING FILE STARTED")
+
+	// 	await handleFile(local.Camera.mediaChunks()[0])
+
+	// 	console.log("HANDLING FILE STOPED")
+
+	// 	updateCellAudioURL(
+	// 		local.cell.x,
+	// 		local.cell.y,
+	// 		local.Camera.mediaBlobUrl()
+	// 	)
+	// 	local.Camera?.resetMediaChunks ? local.Recorder.resetMediaChunks() : null
+	// 	local.Camera?.resetBlobUrl ? local.Recorder.resetBlobUrl() : null
+	// })
+
+	// const handleRecording = () => {
+	// 	if (local.Recorder.status() === "idle") {
+	// 		setSecond(Date.now())
+	// 		local.Recorder.startRecording()
+	// 	} else {
+	// 		local.Recorder.stopRecording()
+	// 		track(() => {
+	// 			local.Recorder.mediaBlobUrl()
+	// 		})
+	// 	}
+	// }
+
+	// const handlePlayingPause = () => {
+	// 	console.log("AUDIOURL", local.cell.imageURL)
+	// 	const imageURL = local.cell.imageURL
+	// 	const imageElement = local.imgRef()
+	// 	if (imageURL !== local.currentPosingCell()) {
+	// 		if (imageURL) local.setCurrentPosingCell(imageURL)
+	// 		if (imageElement && imageURL !== undefined) {
+	// 			imageElement.src = imageURL
+	// 			// audioElement.play()
+	// 		}
+	// 	} else {
+	// 		if (isSeeing()) {
+	// 			// audioElement?.pause()
+	// 		} else {
+	// 			// audioElement?.play()
+	// 		}
+	// 	}
+	// }
+
+	return (
+		<div {...others}>
+			{children(() => props.children)()}
+			<div class="flex items-center gap-x-1">
+				<Show
+					when={local.cell?.imageURL}
+					fallback={
+						<>
+							<Show
+								when={
+									apiState() === "uploading" ||
+									apiState() === "checking" ||
+									apiState() === "fetching"
+								}
+								fallback={
+									<>
+										<FileUpload.Btn
+											accept="image/*"
+											handleFile={(image_file) => {
+												console.log("IMAGE FILE Uploaded", image_file)
+												handleFile(image_file)
+												const blob = new Blob([image_file], {
+													type: image_file.type,
+												})
+												const url = URL.createObjectURL(blob)
+												updateCellImageURL(local.cell.x, local.cell.y, url)
+											}}
+											disabled={false}
+											class="group rounded-full p-1 hover:bg-white flex items-center"
+										>
+											<UploadIcon class="w-4 h-4" />
+										</FileUpload.Btn>
+									</>
+								}
+							>
+								<div class="bg-indigo-600 p-1 rounded-full flex items-center">
+									<LoadingIcon class="text-white w-[17px] h-[17px]" />
+								</div>
+							</Show>
+						</>
+					}
+				>
+					<button class="group rounded-full p-1 hover:bg-white flex items-center">
+						<ImageIcon class="w-4 h-4" />
+					</button>
+				</Show>
+			</div>
+		</div>
+	)
 }

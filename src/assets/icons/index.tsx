@@ -1307,6 +1307,66 @@ export const ExclamationCircleFillIcon = (props: IconProps<ComponentProps<"svg">
         />
     )
 }
+import FluentImageCopy24Regular from "~icons/fluent/image-copy-24-regular";
+export const ImageIcon = (props: IconProps<ComponentProps<"svg">>) => {
+    const [local, others] = splitProps(props, [
+        "size",
+        "class",
+        "shape-rendering",
+        "basic",
+    ])
+    if (typeof local.basic === "undefined") {
+        local.basic = true
+    }
+    return (
+        <FluentImageCopy24Regular
+            shape-rendering="geometricPrecision"
+            class={
+                local?.class
+                    ? local?.basic
+                        ? local.class +
+                          " group-active:scale-100 group-hover:scale-105 transition-transform"
+                        : local.class
+                    : local.basic
+                    ? "w-6 h-6 group-active:scale-100 group-hover:scale-105 transition-transform"
+                    : "w-6 h-6"
+            }
+            width={`${local.size || 24}px`}
+            height={`${local.size || 24}px`}
+            {...others}
+        />
+    )
+}
+import IcBaselineAudiotrack from "~icons/ic/baseline-audiotrack";
+export const AudioIcon = (props: IconProps<ComponentProps<"svg">>) => {
+    const [local, others] = splitProps(props, [
+        "size",
+        "class",
+        "shape-rendering",
+        "basic",
+    ])
+    if (typeof local.basic === "undefined") {
+        local.basic = true
+    }
+    return (
+        <IcBaselineAudiotrack
+            shape-rendering="geometricPrecision"
+            class={
+                local?.class
+                    ? local?.basic
+                        ? local.class +
+                          " group-active:scale-100 group-hover:scale-105 transition-transform"
+                        : local.class
+                    : local.basic
+                    ? "w-6 h-6 group-active:scale-100 group-hover:scale-105 transition-transform"
+                    : "w-6 h-6"
+            }
+            width={`${local.size || 24}px`}
+            height={`${local.size || 24}px`}
+            {...others}
+        />
+    )
+}
 import IcOutlineVisibility from "~icons/ic/outline-visibility";
 export const VisibilityIcon = (props: IconProps<ComponentProps<"svg">>) => {
     const [local, others] = splitProps(props, [

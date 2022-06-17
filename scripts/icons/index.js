@@ -225,6 +225,14 @@ const RequiredIcons = [
 		name: "ExclamationCircleFill",
 	},
 	{
+		path: "fluent:image-copy-24-regular",
+		name: "Image",
+	},
+	{
+		path: "ic:baseline-audiotrack",
+		name: "Audio",
+	},
+	{
 		path: "ic:outline-visibility",
 		name: "Visibility",
 	},

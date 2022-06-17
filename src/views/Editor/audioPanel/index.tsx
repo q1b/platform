@@ -78,56 +78,64 @@ import {
 	setGeneratedVideos,
 	updateGeneratedVideoURL,
 } from "./store/generated_videos"
+import { CSVEditTable } from "@/ui/CSVEditTable"
 
 const uploadCsv = async ({
 	ev,
 	actor_id,
+	image_column_id,
 	audio_batch_id,
 	file_id,
 	folder_id,
 }: {
 	ev: BlobPart[]
 	actor_id: string
+	image_column_id: number | null
 	audio_batch_id?: string
 	file_id: string
 	folder_id: string
 }) => {
 	try {
-		let image_column_id = null
-
 		if (!audio_batch_id) {
 			const batchData = await axiosApi.post("audio_batch", {
 				name: "audio batch " + new Date().getTime(),
 			})
 			audio_batch_id = batchData.data.id
+
 			setAudioData({
 				file_id,
 				audio_batch_id,
 				actor_id,
 				folder_id,
 			})
+
+			console.log("New Batch Created", audio_batch_id)
 		}
 
-		const buffer = new Blob(ev, { type: "audio/webm" })
-		// console.log("AUDIOBATCHID", audio_batch_id)
+		const buffer = new Blob(ev, { type: "text/plain" })
+
 		const formData = new FormData()
 		formData.append("file", buffer)
+
 		const resBatchData = await postAudioBatchData({
 			audio_batch_id,
 			formData,
 		})
 
+		console.log("IMAGE COLUMN ID", image_column_id)
 		setFileImageColumnId({
 			file_id: Client.store.activeFile.file_id,
 			folder_id: Client.store.activeFile.folder_id,
 			image_column_id,
 		})
+		console.log("IMAGE COL ID UPDATED")
 
 		let csvResponse = await fetchCSVFromAudioBatchData({
 			video_instance_id: Client.store.activeFile.file_id,
 			audio_batch_id: resBatchData.data.audio_batch_id,
 			actor_id,
 		})
+
 		console.log("CSV RESPONSE can be here!", csvResponse)
 
 		return csvResponse
@@ -214,6 +222,22 @@ type CSVFileState =
 const [CSVFileState, setCSVFileState] = createSignal<CSVFileState>("unchecked")
 
 export const AudioPanel = () => {
+	const [imageColumnId, setImageColumnId] = createSignal(
+		Client.store.activeFile.image_column_id
+	)
+
+	const [CSVInitialData, setCSVInitialData] = createSignal<string>("")
+	const [CSVEditedData, setCSVEditedData] = createSignal("")
+
+	const [CSVSelectableTableModal, setCSVSelectableTableModal] =
+		createSignal(false)
+
+	const openCSVSelectableTableModal = () => setCSVSelectableTableModal(true)
+	const closeCSVSelectableTableModal = async () => {
+		setCSVSelectableTableModal(false)
+		await uploadFile(CSVEditedData())
+	}
+
 	const [videoPlayerModel, setVideoPlayerModelState] = createSignal(false)
 	const [generatedVideoModelURL, setGeneratedVideoModelURL] =
 		createSignal<string>()
@@ -343,13 +367,15 @@ export const AudioPanel = () => {
 							csv_store.table.columns.forEach((column, i) => {
 								const element = document.createElement("div")
 								let id = createUniqueId()
-								new_barDetails.push({
-									element,
-									id,
-									name: column.label,
-									progressStamps: [(i + 1) / 10, (i + 2) / 10],
-									color: colorsIter(),
-								})
+								if (Client.store.activeFile.image_column_id !== i) {
+									new_barDetails.push({
+										element,
+										id,
+										name: column.label,
+										progressStamps: [(i + 1) / 10, (i + 2) / 10],
+										color: colorsIter(),
+									})
+								}
 							})
 							setBarDetails(new_barDetails)
 						}
@@ -371,38 +397,43 @@ export const AudioPanel = () => {
 	// 		}
 	// 	)
 	// )
-
-	const handleFile = async (csv_file: Blob) => {
+	const uploadFile = async (csv_file: string) => {
 		setCSVFileState("uploading")
 		const csvRes = await uploadCsv({
 			ev: [csv_file],
 			actor_id: activeActor().value,
 			file_id: Client.store.activeFile.file_id,
 			folder_id: Client.store.activeFile.folder_id,
+			image_column_id: imageColumnId() || imageColumnId() === 0 ? 0 : null,
 			audio_batch_id:
 				Client.store.activeFile?.audio_batch_id !== undefined
 					? Client.store.activeFile.audio_batch_id
 					: undefined,
 		})
-
 		initStoreFromRes(csvRes.data)
-
 		const new_barDetails: BarDetailsOptions[] = []
 		csv_store.table.columns.forEach((column, i) => {
 			const element = document.createElement("div")
 			let id = createUniqueId()
-			new_barDetails.push({
-				element,
-				id,
-				name: column.label,
-				progressStamps: [(i + 1) / 10, (i + 2) / 10],
-				color: colorsIter(),
-			})
+			if (Client.store.activeFile.image_column_id !== i) {
+				new_barDetails.push({
+					element,
+					id,
+					name: column.label,
+					progressStamps: [(i + 1) / 10, (i + 2) / 10],
+					color: colorsIter(),
+				})
+			}
 		})
 		setBarDetails(new_barDetails)
 		triggerBarDetailsUpdate(() => CSVFileState())
 		console.log("BAR ITEMS ARE ADDED", barDetails)
 		setCSVFileState("available")
+	}
+	const handleFile = async (csv_file: Blob) => {
+		const csv_txt = await csv_file.text()
+		setCSVInitialData(csv_txt)
+		openCSVSelectableTableModal()
 	}
 
 	const [currentRecordingCell, setCurrentRecordingCellURL] =
@@ -550,6 +581,26 @@ export const AudioPanel = () => {
 														y === column().cells.length - 1 && isLastHeader
 													let isFirstColLastElement =
 														y === column().cells.length - 1 && isFirstColumn
+													console.log(
+														"CLIENT STORE ACTIVEFILE IMAGECOLUMNID ",
+														Client.store.activeFile.image_column_id
+													)
+													if (Client.store.activeFile.image_column_id === x) {
+														console.log("YUP IMAGE COLUMN", cell()?.imageId)
+														return (
+															<CSV.CellForImage
+																class="flex border-t border-slate-400 text-sm gap-x-5 place-content-between hover:bg-blue-100 text-blue-900 hover:text-blue-900 items-center px-3 py-[5px] bg-blue-50"
+																classList={{
+																	// "border-t": isFirst,
+																	"rounded-bl-md": isFirstColLastElement,
+																	"rounded-br-md ": isLastColLastElement,
+																}}
+																cell={cell()}
+															>
+																{cell()?.label}
+															</CSV.CellForImage>
+														)
+													}
 													return (
 														<CSV.Cell
 															class="flex border-t border-slate-400 text-sm gap-x-5 place-content-between hover:bg-blue-100 text-blue-900 hover:text-blue-900 items-center px-3 py-1 bg-blue-50"
@@ -720,7 +771,6 @@ export const AudioPanel = () => {
 					stylied
 					onClick={async () => {
 						const generatedVideos = await getGeneratedVideos()
-						console.log("Ge", generatedVideos)
 						setGeneratedVideos(generatedVideos)
 					}}
 					class="bg-blue-500 px-2 py-1 text-white hover:bg-sky-400 hover:text-blue-500 transition-colors"
@@ -734,6 +784,16 @@ export const AudioPanel = () => {
 					<VideoPlayerDialog
 						closeEvent={closeVideoPlayerModel}
 						videoURL={generatedVideoModelURL}
+					/>
+				</Portal>
+			</Show>
+			<Show when={CSVSelectableTableModal()}>
+				<Portal>
+					<CSVEditTable
+						initialCSVData={CSVInitialData()}
+						setImageColumnId={setImageColumnId}
+						setCSVEditedData={setCSVEditedData}
+						closeEvent={closeCSVSelectableTableModal}
 					/>
 				</Portal>
 			</Show>

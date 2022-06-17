@@ -382,8 +382,8 @@ export const fetchAudio = async ({ audio_id }: { audio_id: string }) =>
 		responseType: "blob",
 	})
 
-export const fetchImageData = async ({ image_id }: { image_id: string }) =>
-	await axiosApi.get(`image?image_id=${image_id}`)
+// export const fetchImageData = async ({ file_id,image_id }: { file_id:string;image_id: string }) =>
+// 	await axiosApi.get(`image?image_id=${image_id}`)
 
 export const fetchAudioData = async ({
 	name,
@@ -394,12 +394,12 @@ export const fetchAudioData = async ({
 }) => await axiosApi.get(`audio?actor_id=${actor_id}&&name=${name}`)
 
 export const postImage = async ({
-	image_id,
+	file_id,
 	formData,
 }: {
-	image_id: string
+	file_id: string
 	formData: FormData
-}) => await axiosApi.post(`upload_image?image_id=${image_id}`, formData)
+}) => await axiosApi.post(`upload_image?video_instance_id=${file_id}`, formData)
 
 // audio
 export const postAudio = async ({

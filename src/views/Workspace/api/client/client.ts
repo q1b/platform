@@ -102,6 +102,7 @@ export const initFoldersForWorkspace = ({
 				name: file.name,
 				actor_id: file?.actor_id,
 				audio_batch_id: file?.audio_batch_id,
+				image_column_id: file?.image_column_id,
 				video_id: file?.video_id,
 			})
 		}
