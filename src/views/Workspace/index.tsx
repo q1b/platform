@@ -141,14 +141,14 @@ export const Workspace = () => {
 		})(() => data())
 	return (
 		<>
-			<main class="w-60 min-h-screen shrink-0 bg-slate-100 shadow-md  shadow-slate-300 z-0 flex flex-col">
+			<main class="w-60 min-h-screen max-h-screen shrink-0 bg-slate-100 shadow-md  shadow-slate-300 z-0 flex flex-col">
 				<div class="w-full px-3 py-2.5 border-b-2 font-semibold text-slate-600">
 					<h1>Settings</h1>
 				</div>
 				<div class="flex w-full items-center justify-center p-4">
 					<FreeVideoBtnWithDialog />
 				</div>
-				<div class="w-full px-3 flex flex-col gap-y-1">
+				<div class="w-full px-3 flex flex-col gap-y-1 pb-1">
 					<h1 class="px-2 flex items-center place-content-between">
 						<span class="text-sm"> Folders </span>
 						<button
@@ -169,7 +169,9 @@ export const Workspace = () => {
 							<PlusIcon class="w-4 h-4" />
 						</button>
 					</h1>
-					<div class="flex flex-col gap-y-0.5 overflow-auto">
+				</div>
+				<div class="mx-2 sc overflow-y-auto">
+					<div class="flex pr-0.5 flex-col gap-y-0.5">
 						<Show
 							when={!data?.loading}
 							fallback={<LoadingIcon />}
