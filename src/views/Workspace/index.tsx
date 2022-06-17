@@ -169,7 +169,7 @@ export const Workspace = () => {
 							<PlusIcon class="w-4 h-4" />
 						</button>
 					</h1>
-					<div class="flex flex-col gap-y-0.5">
+					<div class="flex flex-col gap-y-0.5 overflow-auto">
 						<Show
 							when={!data?.loading}
 							fallback={<LoadingIcon />}
