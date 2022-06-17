@@ -751,6 +751,12 @@ export const VideoPanel = () => {
 											)
 										}
 										try {
+											function delay(milliseconds: number) {
+												return new Promise((resolve) =>
+													setTimeout(resolve, milliseconds)
+												)
+											}
+											await delay(1000)
 											const pipelineRes = await postPipeline({
 												lipsync_with_image: false,
 												file_id: Client.store.activeFile.file_id,
