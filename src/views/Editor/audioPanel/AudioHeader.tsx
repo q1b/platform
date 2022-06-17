@@ -49,13 +49,13 @@ export const AudioHeader = (props) => {
 	const trigger = createReaction(async () => {
 		console.log("Running I am running")
 		if (actors()) {
-			const actorsArr: {
-				id: string
-				name: string
-			}[] = actors()?.data
+			// const actorsArr: {
+			// 	id: string
+			// 	name: string
+			// }[] = actors()?.data
 			if (actors().data.length !== 0) {
 				setACTORS(
-					actorsArr.map((actorDetail) => ({
+					actors().data.map((actorDetail) => ({
 						value: actorDetail.id,
 						label: actorDetail.name,
 					}))
@@ -65,10 +65,23 @@ export const AudioHeader = (props) => {
 			}
 			if (activeActor() === undefined) {
 				const actor_id = Client.store.activeFile.actor_id
-				console.log("MMMMMMMMMMMMMMMMMMM RUNING HERE,", actor_id, ACTORS())
+				console.log(
+					"MMMMMMMMMMMMMMMMMMM RUNING HERE,",
+					actor_id,
+					ACTORS(),
+					actors().data
+				)
 				if (actor_id)
-					setActiveActor(ACTORS().find((ac) => ac.value === actor_id))
-				else if (actors().data.length !== 0) setActiveActor(ACTORS()[0])
+					setActiveActor({
+						value: actors().data.find((ac) => ac.id === actor_id).id,
+						label: actors().data.find((ac) => ac.id === actor_id).name,
+					})
+				else if (actors().data.length !== 0) {
+					setActiveActor({
+						value: actors().data[0].id,
+						label: actors().data[0].name,
+					})
+				}
 			}
 		}
 	})

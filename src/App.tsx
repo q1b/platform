@@ -125,7 +125,6 @@ const App: Component = () => {
 								},
 							})
 						)
-						console.log("NAVI", workspaces)
 						setActiveWorkspace(workspaces.value.data[0]?.id)
 					}
 				}
