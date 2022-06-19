@@ -58,15 +58,15 @@ import {
 import { useReactMediaRecorder } from "@/helpers/audioMediaRecorder"
 import { Button } from "@/ui2/Buttons"
 
-import {
-	decodeTime,
-	milliSecToProg,
-	progToSec,
-	secToProg,
-	Time,
-	timeToMilliSec,
-	timeToSec,
-} from "../time"
+// import {
+// 	decodeTime,
+// 	milliSecToProg,
+// 	progToSec,
+// 	secToProg,
+// 	Time,
+// 	timeToMilliSec,
+// 	timeToSec,
+// } from "../time"
 
 import { range } from "@/helpers/range"
 
@@ -79,18 +79,20 @@ import {
 	updateGeneratedVideoURL,
 } from "./store/generated_videos"
 import { CSVEditTable } from "@/ui/CSVEditTable"
+import { convertMilliSecToProgress, millisecondsFromResponse } from "../timeV2"
+import { Segment } from "@/api.type"
 
 const uploadCsv = async ({
 	ev,
 	actor_id,
-	image_column_id,
+	// image_column_id,
 	audio_batch_id,
 	file_id,
 	folder_id,
 }: {
 	ev: BlobPart[]
 	actor_id: string
-	image_column_id: number | null
+	// image_column_id: number | null
 	audio_batch_id?: string
 	file_id: string
 	folder_id: string
@@ -122,12 +124,13 @@ const uploadCsv = async ({
 			formData,
 		})
 
-		console.log("IMAGE COLUMN ID", image_column_id)
-		setFileImageColumnId({
-			file_id: Client.store.activeFile.file_id,
-			folder_id: Client.store.activeFile.folder_id,
-			image_column_id,
-		})
+		// console.log("IMAGE COLUMN ID", image_column_id)
+		// setFileImageColumnId({
+		// 	file_id: Client.store.activeFile.file_id,
+		// 	folder_id: Client.store.activeFile.folder_id,
+		// 	image_column_id,
+		// })
+
 		console.log("IMAGE COL ID UPDATED")
 
 		let csvResponse = await fetchCSVFromAudioBatchData({
@@ -222,9 +225,9 @@ type CSVFileState =
 const [CSVFileState, setCSVFileState] = createSignal<CSVFileState>("unchecked")
 
 export const AudioPanel = () => {
-	const [imageColumnId, setImageColumnId] = createSignal(
-		Client.store.activeFile.image_column_id
-	)
+	// const [imageColumnId, setImageColumnId] = createSignal(
+	// 	Client.store.activeFile.image_column_id
+	// )
 
 	const [CSVInitialData, setCSVInitialData] = createSignal<string>("")
 	const [CSVEditedData, setCSVEditedData] = createSignal("")
@@ -261,40 +264,42 @@ export const AudioPanel = () => {
 		}
 	}
 
-	const bakeBarDetails = ({ segments, duration_time }) => {
+	const bakeBarDetails = ({
+		segments,
+		duration_time,
+	}: {
+		segments: Segment[]
+		duration_time: number
+	}) => {
 		console.log("###SEGMENTS", segments, "DURATIONTIME", duration_time)
 		setBarDetails([])
 		segments.forEach((seg) => {
 			let name = seg["audio_variable_name"]
-			const startDecodedTime = decodeTime.fromMilliSecondsFormat(
+			let start_time_marker_value: number = millisecondsFromResponse(
 				seg.variable_time_marker_start
 			)
-			startDecodedTime.milliSeconds = startDecodedTime.milliSeconds * 10
-			let start_time_marker_value: number = timeToMilliSec(startDecodedTime)
-			const endDecodedTime = decodeTime.fromMilliSecondsFormat(
+			let end_time_marker_value: number = millisecondsFromResponse(
 				seg.variable_time_marker_end
 			)
-			endDecodedTime.milliSeconds = endDecodedTime.milliSeconds * 10
-			let end_time_marker_value: number = timeToMilliSec(endDecodedTime)
 			console.log(
 				"Start",
 				start_time_marker_value,
 				"End",
 				end_time_marker_value
 			)
-			const StartPointProg = milliSecToProg({
-				milliSeconds: start_time_marker_value,
-				duration: duration_time,
+			const StartPointProg = convertMilliSecToProgress({
+				milliseconds: start_time_marker_value,
+				duration_in_milliseconds: duration_time,
 			})
 			console.log("Progrss 1 ", StartPointProg)
-			const EndPointProg = milliSecToProg({
-				milliSeconds: end_time_marker_value,
-				duration: duration_time,
+			const EndPointProg = convertMilliSecToProgress({
+				milliseconds: end_time_marker_value,
+				duration_in_milliseconds: duration_time,
 			})
 			console.log("Progrss 2 ", EndPointProg)
 			addBarItem({
 				name,
-				progressStamps: [StartPointProg / 100, EndPointProg / 100],
+				progressStamps: [StartPointProg / 1000, EndPointProg / 1000],
 			})
 		})
 	}
@@ -344,11 +349,9 @@ export const AudioPanel = () => {
 						])
 					let duration_time: number
 					if (videoResponse.status === "fulfilled") {
-						duration_time = timeToSec(
-							decodeTime.fromMilliSecondsFormat(
-								videoResponse.value.data[0].length
-							)
-						)
+						duration_time =
+							millisecondsFromResponse(videoResponse.value.data[0].length) /
+							1000
 					}
 					if (csvResponse.status === "fulfilled") {
 						initStoreFromRes(csvResponse.value.data)
@@ -404,7 +407,7 @@ export const AudioPanel = () => {
 			actor_id: activeActor().value,
 			file_id: Client.store.activeFile.file_id,
 			folder_id: Client.store.activeFile.folder_id,
-			image_column_id: imageColumnId() || imageColumnId() === 0 ? 0 : null,
+			// image_column_id: imageColumnId() || imageColumnId() === 0 ? 0 : null,
 			audio_batch_id:
 				Client.store.activeFile?.audio_batch_id !== undefined
 					? Client.store.activeFile.audio_batch_id
@@ -585,22 +588,22 @@ export const AudioPanel = () => {
 														"CLIENT STORE ACTIVEFILE IMAGECOLUMNID ",
 														Client.store.activeFile.image_column_id
 													)
-													if (Client.store.activeFile.image_column_id === x) {
-														console.log("YUP IMAGE COLUMN", cell()?.imageId)
-														return (
-															<CSV.CellForImage
-																class="flex border-t border-slate-400 text-sm gap-x-5 place-content-between hover:bg-blue-100 text-blue-900 hover:text-blue-900 items-center px-3 py-[5px] bg-blue-50"
-																classList={{
-																	// "border-t": isFirst,
-																	"rounded-bl-md": isFirstColLastElement,
-																	"rounded-br-md ": isLastColLastElement,
-																}}
-																cell={cell()}
-															>
-																{cell()?.label}
-															</CSV.CellForImage>
-														)
-													}
+													// if (Client.store.activeFile.image_column_id === x) {
+													// 	console.log("YUP IMAGE COLUMN", cell()?.imageId)
+													// 	return (
+													// 		<CSV.CellForImage
+													// 			class="flex border-t border-slate-400 text-sm gap-x-5 place-content-between hover:bg-blue-100 text-blue-900 hover:text-blue-900 items-center px-3 py-[5px] bg-blue-50"
+													// 			classList={{
+													// 				// "border-t": isFirst,
+													// 				"rounded-bl-md": isFirstColLastElement,
+													// 				"rounded-br-md ": isLastColLastElement,
+													// 			}}
+													// 			cell={cell()}
+													// 		>
+													// 			{cell()?.label}
+													// 		</CSV.CellForImage>
+													// 	)
+													// }
 													return (
 														<CSV.Cell
 															class="flex border-t border-slate-400 text-sm gap-x-5 place-content-between hover:bg-blue-100 text-blue-900 hover:text-blue-900 items-center px-3 py-1 bg-blue-50"
@@ -791,7 +794,7 @@ export const AudioPanel = () => {
 				<Portal>
 					<CSVEditTable
 						initialCSVData={CSVInitialData()}
-						setImageColumnId={setImageColumnId}
+						// setImageColumnId={setImageColumnId}
 						setCSVEditedData={setCSVEditedData}
 						closeEvent={closeCSVSelectableTableModal}
 					/>

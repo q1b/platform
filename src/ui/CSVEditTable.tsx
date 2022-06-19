@@ -19,7 +19,7 @@ export const CSVEditTable = (props: {
 	closeEvent: any
 	initialCSVData: string
 	setCSVEditedData: Setter<string>
-	setImageColumnId: Setter<number>
+	// setImageColumnId: Setter<number>
 }) => {
 	/* Table will contain Columns and some metadata about all Cells */
 	/* Each Column will contain Header & Cells */
@@ -292,8 +292,8 @@ export const CSVEditTable = (props: {
 		containerAnimation.onfinish = () => containerAnimation.cancel()
 	}
 
-	const [imageColumn, setImageColumn] = createSignal(-1)
-	const isActiveImageColumn = createSelector(imageColumn)
+	// const [imageColumn, setImageColumn] = createSignal(-1)
+	// const isActiveImageColumn = createSelector(imageColumn)
 
 	const [audioColumns, setAudioColumns] = createStore([])
 
@@ -340,7 +340,7 @@ export const CSVEditTable = (props: {
 				>
 					<div class="mb-4 flex flex-col items-start gap-y-2">
 						<h1 class="text-xl leading-3">Select Column Types:</h1>
-						<h2 class="mt-2">
+						{/* <h2 class="mt-2">
 							Column for Image :-{" "}
 							<span
 								classList={{
@@ -352,7 +352,7 @@ export const CSVEditTable = (props: {
 									? "none"
 									: csv_store.table.columns[imageColumn()]?.label}
 							</span>
-						</h2>
+						</h2> */}
 						<h2>
 							Column for Audio :-{" "}
 							<For
@@ -409,7 +409,7 @@ export const CSVEditTable = (props: {
 												)
 												return (
 													<>
-														<button
+														{/* <button
 															class="p-px rounded-md mx-0.5 hover:bg-white/10"
 															onClick={() => {
 																isActiveImageColumn(x)
@@ -429,15 +429,15 @@ export const CSVEditTable = (props: {
 															}}
 														>
 															<ImageIcon class="w-5 h-5" />
-														</button>
+														</button> */}
 														<button
 															onClick={() => {
 																isAudioColumn()
 																	? setAudioColumn(false)
 																	: setAudioColumn(true)
-																if (isAudioColumn() && isActiveImageColumn(x)) {
-																	setImageColumn(-1)
-																}
+																// if (isAudioColumn() && isActiveImageColumn(x)) {
+																// 	setImageColumn(-1)
+																// }
 															}}
 															classList={{
 																"bg-black/10 text-white": isAudioColumn(),
@@ -487,86 +487,86 @@ export const CSVEditTable = (props: {
 					</div>
 					<div class="flex items-center gap-x-2">
 						{(() => {
-							const [input, setInput] = createSignal([])
-							const [output, setOutput] = createSignal()
-							const [isProcessing, setIsProcessing] = createSignal(false)
-							createSignaledWorker({
-								input,
-								output: setOutput,
-								func: function cvt([csv_store, imageColumn, audioColumns]: [
-									any,
-									number,
-									any[]
-								]) {
-									if (csv_store) {
-										const range = (start, stop, step) =>
-											Array.from(
-												{ length: (stop - start) / step + 1 },
-												(_, i) => start + i * step
-											)
-										const a = range(0, 100000000, 1)
-										for (let index = 0; index < a.length; index++) {
-											const element = a[index]
-										}
-										const result_arr: string[][] = [[]]
-										if (!(imageColumn === -1)) {
-											const col = csv_store.table.columns[imageColumn]
-											const imgHeader = col.label
-											result_arr[0].push(imgHeader)
-											for (let index = 0; index < col.cells.length; index++) {
-												const cell_label = col.cells[index].label
-												if (result_arr[index + 1]) {
-													result_arr[index + 1].push(cell_label)
-												} else {
-													result_arr[index + 1] = [cell_label]
-												}
-											}
-										}
-										for (let index = 0; index < audioColumns.length; index++) {
-											const col_index = audioColumns[index]
-											const audio_col = csv_store.table.columns[col_index]
-											const audioHeader = audio_col.label
-											result_arr[0].push(audioHeader)
-											for (
-												let index = 0;
-												index < audio_col.cells.length;
-												index++
-											) {
-												const cell_label = audio_col.cells[index].label
-												if (result_arr[index + 1]) {
-													result_arr[index + 1].push(cell_label)
-												} else {
-													result_arr[index + 1] = [cell_label]
-												}
-											}
-										}
-										const header = result_arr[0].join(",")
-										let cells = ""
-										for (let i = 1; i < result_arr.length; i++) {
-											const row = result_arr[i]
-											let row_cells = row.join(",")
-											if (i !== 1) row_cells = "\n" + row_cells
-											cells += row_cells
-										}
-										return header + "\n" + cells
-									}
-								},
-							})
+							// const [input, setInput] = createSignal([])
+							// const [output, setOutput] = createSignal()
+							// const [isProcessing, setIsProcessing] = createSignal(false)
+							// createSignaledWorker({
+							// input,
+							// output: setOutput,
+							// func: function cvt([csv_store, imageColumn, audioColumns]: [
+							// any,
+							// number,
+							// any[]
+							// ]) {
+							// if (csv_store) {
+							// const range = (start, stop, step) =>
+							// Array.from(
+							// { length: (stop - start) / step + 1 },
+							// (_, i) => start + i * step
+							// )
+							// const a = range(0, 100000000, 1)
+							// for (let index = 0; index < a.length; index++) {
+							// const element = a[index]
+							// }
+							// const result_arr: string[][] = [[]]
+							// if (!(imageColumn === -1)) {
+							// const col = csv_store.table.columns[imageColumn]
+							// const imgHeader = col.label
+							// result_arr[0].push(imgHeader)
+							// for (let index = 0; index < col.cells.length; index++) {
+							// const cell_label = col.cells[index].label
+							// if (result_arr[index + 1]) {
+							// result_arr[index + 1].push(cell_label)
+							// } else {
+							// result_arr[index + 1] = [cell_label]
+							// }
+							// }
+							// }
+							// for (let index = 0; index < audioColumns.length; index++) {
+							// const col_index = audioColumns[index]
+							// const audio_col = csv_store.table.columns[col_index]
+							// const audioHeader = audio_col.label
+							// result_arr[0].push(audioHeader)
+							// for (
+							// let index = 0;
+							// index < audio_col.cells.length;
+							// index++
+							// ) {
+							// const cell_label = audio_col.cells[index].label
+							// if (result_arr[index + 1]) {
+							// result_arr[index + 1].push(cell_label)
+							// } else {
+							// result_arr[index + 1] = [cell_label]
+							// }
+							// }
+							// }
+							// const header = result_arr[0].join(",")
+							// let cells = ""
+							// for (let i = 1; i < result_arr.length; i++) {
+							// const row = result_arr[i]
+							// let row_cells = row.join(",")
+							// if (i !== 1) row_cells = "\n" + row_cells
+							// cells += row_cells
+							// }
+							// return header + "\n" + cells
+							// }
+							// },
+							// })
 							const convertStoreIntoCSV_Text = () => {
 								const result_arr: string[][] = [[]]
-								if (!isActiveImageColumn(-1)) {
-									const col = csv_store.table.columns[imageColumn()]
-									const imgHeader = col.label
-									result_arr[0].push(imgHeader)
-									for (let index = 0; index < col.cells.length; index++) {
-										const cell_label = col.cells[index].label
-										if (result_arr[index + 1]) {
-											result_arr[index + 1].push(cell_label)
-										} else {
-											result_arr[index + 1] = [cell_label]
-										}
-									}
-								}
+								// if (!isActiveImageColumn(-1)) {
+								// 	const col = csv_store.table.columns[imageColumn()]
+								// 	const imgHeader = col.label
+								// 	result_arr[0].push(imgHeader)
+								// 	for (let index = 0; index < col.cells.length; index++) {
+								// 		const cell_label = col.cells[index].label
+								// 		if (result_arr[index + 1]) {
+								// 			result_arr[index + 1].push(cell_label)
+								// 		} else {
+								// 			result_arr[index + 1] = [cell_label]
+								// 		}
+								// 	}
+								// }
 								setAudioColumns(
 									produce((cols: any[]) => cols.sort((a, b) => a - b))
 								)
@@ -594,23 +594,23 @@ export const CSVEditTable = (props: {
 								}
 								return header + "\n" + cells
 							}
-							createEffect(() => {
-								console.log("OUTPUT", output())
-								setIsProcessing(false)
-							})
+							// createEffect(() => {
+							// 	console.log("OUTPUT", output())
+							// 	setIsProcessing(false)
+							// })
 							return (
 								<button
 									onClick={() => {
-										setInput([
-											unwrap(csv_store),
-											imageColumn(),
-											unwrap(audioColumns),
-										])
-										setIsProcessing(true)
+										// setInput([
+										// unwrap(csv_store),
+										// imageColumn(),
+										// unwrap(audioColumns),
+										// ])
+										// setIsProcessing(true)
 										props.setCSVEditedData(convertStoreIntoCSV_Text())
-										props.setImageColumnId(
-											isActiveImageColumn(-1) ? null : imageColumn()
-										)
+										// props.setImageColumnId(
+										// 	isActiveImageColumn(-1) ? null : imageColumn()
+										// )
 										onExit()
 										setTimeout(() => {
 											props.closeEvent()
@@ -618,18 +618,13 @@ export const CSVEditTable = (props: {
 									}}
 									class="inline-flex items-center gap-x-1 px-2 py-1 bg-green-400 text-slate-900 font-semibold rounded-lg mt-6"
 								>
-									<LoadingIcon
+									{/* <LoadingIcon
 										class="w-6 h-6"
 										classList={{
 											hidden: !isProcessing(),
 										}}
-									/>
-									<CheckIcon
-										classList={{
-											hidden: isProcessing(),
-										}}
-										class="w-5 h-5"
-									/>{" "}
+									/> */}
+									<CheckIcon class="w-5 h-5" />
 									Done
 								</button>
 							)

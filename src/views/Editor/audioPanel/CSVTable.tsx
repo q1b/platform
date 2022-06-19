@@ -33,8 +33,7 @@ import {
 	Show,
 	splitProps,
 } from "solid-js"
-
-import { getFormatedTime } from "../time"
+import { responseFromMilliSeconds } from "../timeV2"
 
 import { activeActor } from "./AudioHeader"
 
@@ -181,9 +180,9 @@ export const Cell = (props: CellProps<ComponentProps<"div">>) => {
 		setAPIState("uploading")
 		let length: string
 		if (type === "Blob") {
-			length = getFormatedTime.fromMilliSeconds(Date.now() - second())
+			length = responseFromMilliSeconds(Date.now() - second())
 		} else if (type === "File") {
-			length = getFormatedTime.fromMilliSeconds(
+			length = responseFromMilliSeconds(
 				(await getAudioDurationFromFile(audio_file)) * 1000
 			)
 		}
@@ -424,7 +423,7 @@ type ImageCellProps<P = {}> = P & {
 	}
 }
 
-export const CellForImage = (props: ImageCellProps<ComponentProps<"div">>) => {
+const CellForImage = (props: ImageCellProps<ComponentProps<"div">>) => {
 	const [apiState, setAPIState] = createSignal<CellAudioAPIState>("unchecked")
 
 	const [local, others] = splitProps(props, [

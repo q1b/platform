@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js"
-import { secToTime, Time, timeToSec } from "../time"
+// import { secToTime, Time, timeToSec } from "../time"
 
 export const [videoEl, setVideoEl] = createSignal<HTMLVideoElement | undefined>(
 	undefined
@@ -14,15 +14,15 @@ export const extractControls = () => {
 		setIsPlaying(true)
 	}
 
-	const getTime = () =>
-		secToTime({
-			seconds: videoEl()?.currentTime,
-		})
+	// const getTime = () =>
+	// 	secToTime({
+	// 		seconds: videoEl()?.currentTime,
+	// 	})
 
-	const setTime = (time: Time) => {
-		const seconds = timeToSec(time)
-		videoEl().currentTime = seconds
-	}
+	// const setTime = (time: Time) => {
+	// 	const seconds = timeToSec(time)
+	// 	videoEl().currentTime = seconds
+	// }
 	const pause = (): void => {
 		videoEl()?.pause()
 		setIsPlaying(false)
@@ -33,8 +33,8 @@ export const extractControls = () => {
 	return {
 		load: (): void => videoEl()?.load(),
 		play,
-		getTime,
-		setTime,
+		// getTime,
+		// setTime,
 		pause,
 		togglePlay,
 		mute: (): void => {

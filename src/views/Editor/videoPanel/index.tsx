@@ -43,13 +43,21 @@ import { extractControls, setVideoEl, videoEl } from "./controls"
 import { PopUp, SplitButton } from "@/ui2/Buttons/SplitButton"
 import { FileUpload } from "@/ui2/FileUpload"
 
+// import {
+// 	decodeTime,
+// 	getFormatedTime,
+// 	progToSec,
+// 	Time,
+// 	timeToSec,
+// } from "../time"
+
 import {
-	decodeTime,
-	getFormatedTime,
-	progToSec,
-	Time,
-	timeToSec,
-} from "../time"
+	millisecondsFromResponse,
+	responseFromMilliSeconds,
+	convertMilliSecToProgress,
+	convertProgressToMilliSec,
+	formatDuration,
+} from "../timeV2"
 
 import { setFileTemplateVideoId } from "@/views/Workspace/api"
 import {
@@ -58,11 +66,7 @@ import {
 	store,
 } from "@/views/Workspace/api/client/client"
 import { ProgressBar } from "@/ui/ProgressBar"
-import {
-	convertMilliSecToProgress,
-	convertProgressToMilliSec,
-	responseFromMilliSeconds,
-} from "../timeV2"
+
 import { AxiosError } from "axios"
 
 // got help from here,
@@ -216,7 +220,7 @@ export const VideoPanel = () => {
 			ev: [video_file],
 			file_id: Client.store.activeFile.file_id,
 			setUploadProgress: setUploadProgress,
-			duration: getFormatedTime.fromMilliSeconds(seconds * 1000),
+			duration: responseFromMilliSeconds(seconds * 1000),
 			folder_id: Client.store.activeFile.folder_id,
 		})
 
@@ -261,8 +265,7 @@ export const VideoPanel = () => {
 
 	const [mediaURL, setMediaURL] = createSignal<string>("")
 
-	const { play, pause, togglePlay, isPlaying, getTime, setTime } =
-		extractControls()
+	const { play, pause, togglePlay, isPlaying } = extractControls()
 
 	createEffect(
 		on(
@@ -319,14 +322,14 @@ export const VideoPanel = () => {
 						videoResponse.status === "fulfilled" &&
 						video.status === "fulfilled"
 					) {
-						const decordedTime: Time = decodeTime.fromMilliSecondsFormat(
+						const decordedTime = millisecondsFromResponse(
 							videoResponse.value.data[0].length
 						)
-						setDuration(timeToSec(decordedTime))
+						setDuration(decordedTime / 1000)
 						setFileVideoDuration({
 							folder_id: folder_id,
 							file_id: file_id,
-							video_duration: timeToSec(decordedTime),
+							video_duration: decordedTime / 1000,
 						})
 						const videoURL: string = URL.createObjectURL(video.value.data)
 						setFileVideoURL({
@@ -654,7 +657,7 @@ export const VideoPanel = () => {
 							/>
 							<span id="timer">
 								{(() => {
-									return getFormatedTime.fromSeconds(currentTime())
+									return formatDuration(currentTime())
 								})()}
 							</span>
 						</div>
@@ -727,6 +730,9 @@ export const VideoPanel = () => {
 													"\nEND",
 													variable_time_marker_end
 												)
+												let formatedDur = responseFromMilliSeconds(
+													duration() * 1000
+												)
 												const postSeg = {
 													audio_variable_name: bar.name,
 													audio_variable_column_id: column_id,
@@ -735,9 +741,9 @@ export const VideoPanel = () => {
 														variable_time_marker_start,
 													variable_time_marker_end: variable_time_marker_end,
 													prefix_time_marker_start: "00:00:00:00",
-													prefix_time_marker_end: "00:00:00:10",
-													suffix_time_marker_start: "00:00:00:20",
-													suffix_time_marker_end: "00:00:00:30",
+													prefix_time_marker_end: variable_time_marker_start,
+													suffix_time_marker_start: variable_time_marker_end,
+													suffix_time_marker_end: formatedDur,
 												}
 												// console.log(postSeg)
 												console.log("uploading the Segments")

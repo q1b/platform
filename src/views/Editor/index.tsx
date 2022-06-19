@@ -1,6 +1,7 @@
 import { Client, closeFile } from "@/views/Workspace/api"
-import { ChevronLeftIcon, LoadingIcon } from "@/assets/icons"
+import { ChevronLeftIcon } from "@/assets/icons"
 import { Panels } from "./Panel"
+import { onCleanup, onMount } from "solid-js"
 
 const Editor = () => {
 	return (
