@@ -88,6 +88,8 @@ export const RenamingHandler = (
 }
 
 export const Workspace = () => {
+	const params = useParams()
+	const folder_id = params?.folder_id
 	const isActiveFolder = createSelector(activeFolder)
 	const navigate = useNavigate()
 	const activefiles = createMemo(() => {
@@ -121,6 +123,7 @@ export const Workspace = () => {
 			PromiseSettledResult<AxiosResponse<File[]>>
 		]
 	> = useRouteData()
+	console.log(Client.store.folders.length, data.loading)
 	if (data.loading)
 		createReaction(async () => {
 			if (data()) {
@@ -129,13 +132,20 @@ export const Workspace = () => {
 					fetched_folders.status === "fulfilled" &&
 					fetched_files.status === "fulfilled"
 				) {
-					Client.setStore({ folders: [] })
-					initFoldersForWorkspace({
-						fetched_folders: fetched_folders.value.data,
-						fetched_files: fetched_files.value.data,
-					})
-					setActiveFolder(fetched_folders.value.data[0]?.id)
-					setActiveWorkspace(fetched_folders.value.data[0]?.workspace_id)
+					if (Client.store.folders.length === 0) {
+						Client.setStore({ folders: [] })
+						initFoldersForWorkspace({
+							fetched_folders: fetched_folders.value.data,
+							fetched_files: fetched_files.value.data,
+						})
+					}
+					if (folder_id === "000") {
+						setActiveFolder(fetched_folders.value.data[0]?.id)
+						setActiveWorkspace(fetched_folders.value.data[0]?.workspace_id)
+					} else {
+						setActiveFolder(folder_id)
+						setActiveWorkspace(fetched_folders.value.data[0]?.workspace_id)
+					}
 				}
 			}
 		})(() => data())
@@ -173,7 +183,7 @@ export const Workspace = () => {
 				<div class="mx-2 sc overflow-y-auto">
 					<div class="flex pr-0.5 flex-col gap-y-0.5">
 						<Show
-							when={!data?.loading}
+							when={!data?.loading || Client.store.folders.length !== 0}
 							fallback={<LoadingIcon />}
 						>
 							{renamingState().folder_id ? (

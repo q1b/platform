@@ -2,14 +2,16 @@ import { Client, closeFile } from "@/views/Workspace/api"
 import { ChevronLeftIcon } from "@/assets/icons"
 import { Panels } from "./Panel"
 import { createReaction, createSignal, Resource } from "solid-js"
-import { useRouteData } from "solid-app-router"
+import { useNavigate, useRouteData } from "solid-app-router"
 import { AxiosResponse } from "axios"
+import { createPath, ROUTE } from "@/routing"
+import { activeWorkspace } from "@/App"
 
 export const [fetchedFile, setFetchedFile] = createSignal()
 
 const Editor = () => {
 	const data: Resource<AxiosResponse<[File]>> = useRouteData()
-	console.log("Data", data())
+	const navigate = useNavigate()
 	if (data.loading)
 		createReaction(async () => {
 			if (data()) {
@@ -30,7 +32,19 @@ const Editor = () => {
 				<button
 					class=""
 					onClick={() => {
-						history.back()
+						if (Client.store.activeFile.folder_id) {
+							navigate(
+								createPath({
+									path: ROUTE.WORKSPACE,
+									params: {
+										workspace_id: activeWorkspace(),
+										folder_id: Client.store.activeFile.folder_id,
+									},
+								})
+							)
+						} else {
+							history.back()
+						}
 						closeFile({
 							folder_id: Client.store.activeFile.folder_id,
 							file_id: Client.store.activeFile.file_id,

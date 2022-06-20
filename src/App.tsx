@@ -131,6 +131,7 @@ const App: Component = () => {
 								path: ROUTE.WORKSPACE,
 								params: {
 									workspace_id: workspaces.value.data[0]?.id,
+									folder_id: "000",
 								},
 							})
 						)
@@ -175,6 +176,7 @@ const App: Component = () => {
 													path: ROUTE.WORKSPACE,
 													params: {
 														workspace_id: workspace.id,
+														folder_id: "000",
 													},
 												})
 											)

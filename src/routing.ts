@@ -15,7 +15,7 @@ export enum ROUTE {
 	HOME = `/`,
 
 	/* WORKSPACE */
-	WORKSPACE = `/workspace/:workspace_id`,
+	WORKSPACE = `/workspace/:workspace_id/:folder_id`,
 
 	/* Editor */
 	EDITOR = `/editor/:file_id`,
