@@ -46,6 +46,7 @@ export const [ACTORS, setACTORS] = createSignal<
 export const AudioHeader = (props) => {
 	const [actorModel, setActorModel] = createSignal(false)
 	const [actors] = createResource(fetchActors)
+	const [isChangingActor, setChangingActor] = createSignal(false)
 	const trigger = createReaction(async () => {
 		console.log("Running I am running")
 		if (actors()) {
@@ -163,7 +164,7 @@ export const AudioHeader = (props) => {
 				</div>
 				<div class="relative w-full max-w-md text-gray-900">
 					<Show
-						when={!actors.loading}
+						when={!actors.loading && !isChangingActor()}
 						fallback={<LoadingIcon class="text-blue-500 w-7 h-7" />}
 					>
 						<Listbox<{
@@ -172,7 +173,11 @@ export const AudioHeader = (props) => {
 						}>
 							onChange={async (el) => {
 								setActiveActor(el)
-								if (props?.onActorChange) await props.onActorChange(el)
+								if (props?.onActorChange) {
+									setChangingActor(true)
+									await props.onActorChange(el)
+									setChangingActor(false)
+								}
 							}}
 							value={activeActor()}
 						>

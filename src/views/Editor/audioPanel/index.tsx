@@ -469,27 +469,18 @@ export const AudioPanel = () => {
 					const audio_batch_id = Client.store.activeFile.audio_batch_id
 					if (audio_batch_id) {
 						setCSVFileState("fetching")
-						const [uploadResponse, csvResponse] = await Promise.allSettled([
-							updateFileAudioData({
-								file_id: Client.store.activeFile.file_id,
-								audio_batch_id,
-								actor_id,
-							}),
-							fetchCSVFromAudioBatchData({
-								video_instance_id: Client.store.activeFile.file_id,
-								audio_batch_id,
-								actor_id,
-							}),
-						])
-						if (
-							uploadResponse.status === "fulfilled" &&
-							csvResponse.status === "fulfilled"
-						) {
-							initStoreFromRes(csvResponse.value.data)
-							setCSVFileState("available")
-						} else {
-							setCSVFileState("notUploadedYet")
-						}
+						const uploadResponse = await updateFileAudioData({
+							file_id: Client.store.activeFile.file_id,
+							audio_batch_id,
+							actor_id,
+						})
+						const csvResponse = await fetchCSVFromAudioBatchData({
+							video_instance_id: Client.store.activeFile.file_id,
+							audio_batch_id,
+							actor_id,
+						})
+						initStoreFromRes(csvResponse.data)
+						setCSVFileState("available")
 					} else {
 						setCSVFileState("notUploadedYet")
 					}
