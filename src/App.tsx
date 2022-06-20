@@ -61,6 +61,15 @@ const WorkspaceData = ({ params, navigate, location, data }) => {
 	return details
 }
 
+const EditorData = ({ params, navigate, location, data }) => {
+	/** Data function https://github.com/solidjs/solid-app-router#data-functions */
+	const [details] = createResource(
+		() => params.file_id,
+		async (file_id) => await Server.fetchFile({ file_id })
+	)
+	return details
+}
+
 const EditorPage = lazy(() => import("@/views/Editor"))
 
 export const [globalStore, setGlobalStore] = createStore<{
@@ -293,6 +302,7 @@ const App: Component = () => {
 				<Route
 					path={ROUTE.EDITOR}
 					component={EditorPage}
+					data={EditorData}
 				/>
 
 				<Route

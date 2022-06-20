@@ -17,9 +17,9 @@ import {
 
 export const Header = () => {
 	// used for inputing values
-	const [value, setValue] = createSignal(
-		getCalendyLink() ? getCalendyLink() : ""
-	)
+	// const [value, setValue] = createSignal(
+	// 	getCalendyLink() ? getCalendyLink() : ""
+	// )
 
 	return (
 		<div class="flex place-content-between">
@@ -71,7 +71,7 @@ export const Header = () => {
 					/>
 					<span class="text-sm"> Download CSV </span>
 				</Button>
-				<CheckBox
+				{/* <CheckBox
 					value={isSelectedCalendyLink}
 					toggle={() => {
 						if (isSelectedCalendyLink()) {
@@ -80,8 +80,8 @@ export const Header = () => {
 							selectCalendy()
 						}
 					}}
-				/>
-				<Show when={isSelectedCalendyLink()}>
+				/> */}
+				{/* <Show when={isSelectedCalendyLink()}>
 					<input
 						type="text"
 						class="w-32 rounded-md px-1 border focus:outline-none focus:ring-2 ring-slate-500"
@@ -124,7 +124,7 @@ export const Header = () => {
 						</span>
 						{getCalendyLink() ? "Update" : "Save"}
 					</button>
-				</Show>
+				</Show> */}
 			</div>
 		</div>
 	)

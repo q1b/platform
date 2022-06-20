@@ -1,9 +1,22 @@
 import { Client, closeFile } from "@/views/Workspace/api"
 import { ChevronLeftIcon } from "@/assets/icons"
 import { Panels } from "./Panel"
-import { onCleanup, onMount } from "solid-js"
+import { createReaction, createSignal, Resource } from "solid-js"
+import { useRouteData } from "solid-app-router"
+import { AxiosResponse } from "axios"
+
+export const [fetchedFile, setFetchedFile] = createSignal()
 
 const Editor = () => {
+	const data: Resource<AxiosResponse<[File]>> = useRouteData()
+	console.log("Data", data())
+	if (data.loading)
+		createReaction(async () => {
+			if (data()) {
+				const fetch_file = data()
+				console.log("From URL", fetch_file.data[0])
+			}
+		})(() => data())
 	return (
 		// <main
 		// 	id="body"
