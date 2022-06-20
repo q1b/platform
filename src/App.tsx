@@ -171,6 +171,7 @@ const App: Component = () => {
 											"bg-[#27257b]": isActive(workspace.id),
 										}}
 										onClick={() => {
+											setActiveWorkspace(workspace.id)
 											navigate(
 												createPath({
 													path: ROUTE.WORKSPACE,
@@ -180,7 +181,6 @@ const App: Component = () => {
 													},
 												})
 											)
-											setActiveWorkspace(workspace.id)
 										}}
 									>
 										<svg

@@ -102,9 +102,10 @@ const uploadCsv = async ({
 			const batchData = await axiosApi.post("audio_batch", {
 				name: "audio batch " + new Date().getTime(),
 			})
+
 			audio_batch_id = batchData.data.id
 
-			setAudioData({
+			await setAudioData({
 				file_id,
 				audio_batch_id,
 				actor_id,

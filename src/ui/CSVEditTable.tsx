@@ -589,8 +589,8 @@ export const CSVEditTable = (props: {
 								for (let i = 1; i < result_arr.length; i++) {
 									const row = result_arr[i]
 									let row_cells = row.join(",")
-									if (i !== 1) row_cells = "\n" + row_cells
-									cells += row_cells
+									if (i !== 1 && row_cells !== ",") row_cells = "\n" + row_cells
+									if (row_cells !== ",") cells += row_cells
 								}
 								return header + "\n" + cells
 							}
@@ -607,9 +607,10 @@ export const CSVEditTable = (props: {
 										// unwrap(audioColumns),
 										// ])
 										// setIsProcessing(true)
+										// console.log(convertStoreIntoCSV_Text())
 										props.setCSVEditedData(convertStoreIntoCSV_Text())
 										// props.setImageColumnId(
-										// 	isActiveImageColumn(-1) ? null : imageColumn()
+										// isActiveImageColumn(-1) ? null : imageColumn()
 										// )
 										onExit()
 										setTimeout(() => {
