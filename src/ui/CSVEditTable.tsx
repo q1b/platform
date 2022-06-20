@@ -578,9 +578,11 @@ export const CSVEditTable = (props: {
 									for (let index = 0; index < audio_col.cells.length; index++) {
 										const cell_label = audio_col.cells[index].label
 										if (result_arr[index + 1]) {
-											result_arr[index + 1].push(cell_label)
+											if (cell_label !== "" && cell_label !== undefined)
+												result_arr[index + 1].push(cell_label)
 										} else {
-											result_arr[index + 1] = [cell_label]
+											if (cell_label !== "" && cell_label !== undefined)
+												result_arr[index + 1] = [cell_label]
 										}
 									}
 								}
@@ -589,8 +591,8 @@ export const CSVEditTable = (props: {
 								for (let i = 1; i < result_arr.length; i++) {
 									const row = result_arr[i]
 									let row_cells = row.join(",")
-									if (i !== 1 && row_cells !== ",") row_cells = "\n" + row_cells
-									if (row_cells !== ",") cells += row_cells
+									if (i !== 1 && row_cells !== "") row_cells = "\n" + row_cells
+									if (row_cells !== "") cells += row_cells
 								}
 								return header + "\n" + cells
 							}
