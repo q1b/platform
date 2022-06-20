@@ -1,7 +1,7 @@
 import MichaelImg from "@/assets/Michael_lulo_image_40X40.png"
 import { ProgressBar } from "@/ui/ProgressBar"
 import { Plan } from "@/api.type"
-import { onMount, createSignal, Show } from "solid-js"
+import { onMount, createSignal, Show, createEffect } from "solid-js"
 import { fetchCheckoutLink, fetchPlans } from "@/api"
 import { globalStore } from "@/App"
 import { Link } from "solid-app-router"
@@ -64,8 +64,9 @@ const PriceButton = (props: {
 						plan_id: props.plan_id,
 					})
 				)
-				setHref(res.data.url)
-				location.href = href()
+				console.log(res.data)
+				// setHref(res.data.url)
+				// location.href = href()
 				setLoadingState(false)
 			}}
 			class="py-5 px-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 rounded-full w-full"
@@ -110,6 +111,13 @@ export const AIStudio = () => {
 		setGrowthTier(Plans.data.find((plan) => plan.name === "Growth"))
 		setScaleTier(Plans.data.find((plan) => plan.name === "Scale"))
 		setUltimateTier(Plans.data.find((plan) => plan.name === "Ultimate"))
+		console.log("Progress", progress())
+		console.log("FREE TIER", freeTier())
+		console.log("Growth TIER", growthTier())
+		console.log("Ultimate TIER", ultimateTier())
+	})
+
+	createEffect(() => {
 		setProgress(
 			Math.floor(
 				(globalStore.user?.generated_videos_used /
@@ -117,11 +125,8 @@ export const AIStudio = () => {
 					100
 			)
 		)
-		console.log("Progress", progress())
-		// console.log("FREE TIER", freeTier())
-		// console.log("Growth TIER", growthTier())
-		// console.log("Ultimate TIER", ultimateTier())
 	})
+
 	return (
 		<section class="p-8 grow flex flex-col">
 			<div class="flex flex-col gap-y-8 mb-4">
