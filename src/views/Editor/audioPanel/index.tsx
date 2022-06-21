@@ -809,7 +809,7 @@ export const AudioPanel = () => {
 					<Match when={isRecursiveRunning.value}>
 						<>generating your video</>
 					</Match>
-					<Match when={generatedVideos[0].response_state === "Success"}>
+					<Match when={generatedVideos[0]?.response_state === "Success"}>
 						<></>
 					</Match>
 				</Switch>
