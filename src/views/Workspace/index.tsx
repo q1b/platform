@@ -385,7 +385,7 @@ export const Workspace = () => {
 			</div>
 			<div class="min-h-screen max-h-screen overflow-y-scroll w-full flex flex-col bg-white">
 				<div class="px-3 py-2.5 border-b-2 font-semibold text-slate-900">
-					<h1>Video Instance</h1>
+					<h1>Video Template</h1>
 				</div>
 				<Outlet />
 			</div>
