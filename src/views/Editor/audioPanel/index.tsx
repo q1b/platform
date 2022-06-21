@@ -29,6 +29,7 @@ import axiosApi, {
 	fetchGeneratedVideo,
 	fetchSegments,
 	fetchVideo,
+	getGeneratedVideo,
 	postAudioBatchData,
 	postCSV,
 	updateFileAudioData,
@@ -148,35 +149,35 @@ const uploadCsv = async ({
 	}
 }
 
-const getGeneratedVideos = async (): Promise<
+const getPreproccesedGeneratedVideos = async (): Promise<
 	{
 		video_url: string | undefined
 		video_id: string
+		vimeo_url: string | undefined
 		response_state: "Failed" | "Processing" | "Success"
 	}[]
 > => {
-	const res = await exportGeneratedVideoAsCSV({
+	const res = await getGeneratedVideo({
 		file_id: Client.store.activeFile.file_id,
 	})
 	console.log("Response", res)
 	console.log("EXPORTED CSV", res.data)
-	const csv_str = res.data
-	if (csv_str === "") return []
-	const csv_lines = csv_str.split("\n")
-	console.log("CSV _ LINES", csv_lines)
+	const generated_column = res.data
 	const generated_videos: {
 		video_url: string | undefined
+		vimeo_url: string
 		video_id: string
 		response_state: "Failed" | "Processing" | "Success"
 	}[] = []
-	for (let index = 0; index < csv_lines.length; index++) {
-		const line = csv_lines[index].split(",")
+	for (let index = 0; index < generated_column.length; index++) {
+		const row = generated_column[index]
 		const last:
 			| "Failed"
 			| "Processing"
-			| Omit<string, "Failed" | "Processing"> = line.at(-1)
+			| Omit<string, "Failed" | "Processing"> = row.status
 		let response_type: "Failed" | "Processing" | "Success"
 		let video_id: string
+		let vimeo_url: string
 		if (last !== "") {
 			if (last === "Failed") {
 				response_type = "Failed"
@@ -184,12 +185,14 @@ const getGeneratedVideos = async (): Promise<
 				response_type = "Processing"
 			} else {
 				response_type = "Success"
-				video_id = line.at(0)
+				video_id = row.id
+				vimeo_url = row.vimeo_url
 			}
 		}
 		const obj = {
 			video_url: undefined,
 			video_id,
+			vimeo_url,
 			response_state: response_type,
 		}
 		if (response_type !== undefined) generated_videos.push(obj)
@@ -325,7 +328,7 @@ export const AudioPanel = () => {
 					Client.store.activeFile.video_duration,
 					"\n"
 				)
-				setGeneratedVideos(await getGeneratedVideos())
+				setGeneratedVideos(await getPreproccesedGeneratedVideos())
 				setGeneratedVideoModelURL("")
 				setCSVFileState("checking")
 				initActor()
@@ -765,12 +768,12 @@ export const AudioPanel = () => {
 				<Button
 					stylied
 					onClick={async () => {
-						const generatedVideos = await getGeneratedVideos()
+						const generatedVideos = await getPreproccesedGeneratedVideos()
 						setGeneratedVideos(generatedVideos)
 					}}
 					class="bg-blue-500 px-2 py-1 text-white hover:bg-sky-400 hover:text-blue-500 transition-colors"
 				>
-					Refersh Generated Videos
+					Refresh Generated Videos
 				</Button>
 				{/* </Show> */}
 			</div>

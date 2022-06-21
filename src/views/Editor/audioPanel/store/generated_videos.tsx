@@ -5,6 +5,7 @@ type LooseAutoComplete<T extends string> = T | Omit<string, T>
 export const [generatedVideos, setGeneratedVideos] = createStore<
 	{
 		video_url: string | undefined
+		vimeo_url: string | undefined
 		video_id: string | undefined
 		response_state: "Failed" | "Processing" | "Success"
 	}[]

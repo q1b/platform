@@ -149,15 +149,7 @@ export const PreviewPanel = () => {
 													<Link
 														rel="external"
 														target="_blank"
-														href={
-															`https://ai-videos-h20oemtt3-bhuman-app.vercel.app/video/${
-																video().video_id
-															}?` +
-															(getCalendyLink() !== undefined
-																? `calendlyUrl=${getCalendyLink()}&`
-																: ``) +
-															`instanceId=${Client.store.activeFile.file_id}`
-														}
+														href={video().vimeo_url}
 														class="text-xs group-hover:bg-blue-400 text-white ml-1 my-0.5 whitespace-nowrap px-1 rounded-md max-w-xs overflow-x-auto overflow-y-hidden inline-flex items-center h-[25px]"
 													>
 														share

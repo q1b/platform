@@ -16,7 +16,7 @@ const Editor = () => {
 		createReaction(async () => {
 			if (data()) {
 				const fetch_file = data()
-				console.log("From URL", fetch_file.data[0])
+				console.log("File Data", fetch_file.data[0])
 			}
 		})(() => data())
 	return (
