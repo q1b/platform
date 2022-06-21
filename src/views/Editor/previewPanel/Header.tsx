@@ -41,16 +41,7 @@ export const Header = () => {
 						const header = [...ld[0], "video link"].join(",")
 						let cells = ""
 						for (let i = 1; i < ld.length; i++) {
-							const video_link = (video_id) =>
-								`https://ai-videos-h20oemtt3-bhuman-app.vercel.app/video/${video_id}?` +
-								(getCalendyLink() !== undefined
-									? `calendlyUrl=${getCalendyLink()}&`
-									: ``) +
-								`instanceId=${Client.store.activeFile.file_id}`
-							const row = [
-								...ld[i],
-								video_link(generatedVideos[i - 1].video_id),
-							]
+							const row = [...ld[i], generatedVideos[i - 1].vimeo_url]
 							let row_cells = row.join(",")
 							if (i !== 1) row_cells = "\n" + row_cells
 							cells += row_cells
