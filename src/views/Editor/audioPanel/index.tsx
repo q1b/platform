@@ -149,7 +149,7 @@ const uploadCsv = async ({
 	}
 }
 
-const getPreproccesedGeneratedVideos = async (): Promise<
+export const getPreproccesedGeneratedVideos = async (): Promise<
 	{
 		video_url: string | undefined
 		video_id: string
@@ -449,7 +449,32 @@ export const AudioPanel = () => {
 	const [audioElement, setAudioElement] = createSignal<
 		HTMLAudioElement | undefined
 	>()
-
+	// createEffect(
+	// 	on(
+	// 		() => generatedVideos,
+	// 		(GeneratedVideos) => {
+	// 			const checkRecursive = (v) => {
+	// 				if (v?.response_state === "Processing") {
+	// 					setTimeout(() => {
+	// 						getPreproccesedGeneratedVideos()
+	// 							.then((value) => {
+	// 								setGeneratedVideos(value)
+	// 								checkRecursive(value)
+	// 							})
+	// 							.catch((err) =>
+	// 								console.log(
+	// 									"Recusive CALL FOR CHECKING THE response of generating video erro",
+	// 									err
+	// 								)
+	// 							)
+	// 					}, 1000)
+	// 				}
+	// 			}
+	// 			checkRecursive(GeneratedVideos[0])
+	// 			console.log("Sendeas;jdfajsfd;jasfd;ljasf")
+	// 		}
+	// 	)
+	// )
 	return (
 		<div class="w-full h-full flex flex-col p-4">
 			<audio
@@ -771,7 +796,7 @@ export const AudioPanel = () => {
 						const generatedVideos = await getPreproccesedGeneratedVideos()
 						setGeneratedVideos(generatedVideos)
 					}}
-					class="bg-blue-500 px-2 py-1 text-white hover:bg-sky-400 hover:text-blue-500 transition-colors"
+					class="bg-blue-500 px-2 py-1 text-white hover:bg-sky-400 hover:text-slate-900 transition-colors"
 				>
 					Refresh Generated Videos
 				</Button>

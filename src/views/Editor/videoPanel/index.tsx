@@ -68,6 +68,8 @@ import {
 import { ProgressBar } from "@/ui/ProgressBar"
 
 import { AxiosError } from "axios"
+import { setGeneratedVideos } from "../audioPanel/store/generated_videos"
+import { getPreproccesedGeneratedVideos } from "../audioPanel"
 
 // got help from here,
 // https://stackoverflow.com/questions/29285056/get-video-duration-when-input-a-video-file
@@ -769,6 +771,10 @@ export const VideoPanel = () => {
 											})
 											console.log("Triggering complete, res", pipelineRes.data)
 											setState(states["loaded"])
+											await delay(100)
+											const generatedVideos =
+												await getPreproccesedGeneratedVideos()
+											setGeneratedVideos(generatedVideos)
 										} catch (error) {
 											const err = error as AxiosError
 											if (err.response) {
