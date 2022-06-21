@@ -19,7 +19,7 @@ import {
 
 type FolderProps<P = {}> = P & {
 	label: string
-	onAdd?: any
+	onRemove?: any
 	active: boolean
 	options?: boolean
 }
@@ -27,7 +27,7 @@ type FolderProps<P = {}> = P & {
 export const Folder = (props: FolderProps<ComponentProps<"button">>) => {
 	const [local, others] = splitProps(props, [
 		"children",
-		"onAdd",
+		"onRemove",
 		"id",
 		"ref",
 		"active",
@@ -67,23 +67,24 @@ export const Folder = (props: FolderProps<ComponentProps<"button">>) => {
 				</span>
 			</button>
 			<Show when={props?.options && isHover()}>
-				<button
+				{/* <button
 					classList={{
 						"bg-slate-300": props.active,
 					}}
 					class={`py-1.5 px-1 text-slate-900 group flex items-center justify-center`}
+
 				>
 					<SettingsIcon class="w-3.5 h-3.5" />
-				</button>
+				</button> */}
 				<button
 					id="add-action-button-for-folder"
 					classList={{
 						"bg-slate-300": props.active,
 					}}
-					onClick={props.onAdd}
-					class={`py-1.5 pl-0.5 pr-2 text-slate-900 group flex items-center justify-center`}
+					onClick={props.onRemove}
+					class={`py-1.5 pl-0.5 pr-3 text-slate-900 group flex items-center justify-center`}
 				>
-					<PlusIcon class="w-4 h-4" />
+					<XIcon class="w-4 h-4" />
 				</button>
 			</Show>
 		</div>

@@ -269,7 +269,12 @@ export const AudioPanel = () => {
 		createSignal(false)
 
 	const openCSVSelectableTableModal = () => setCSVSelectableTableModal(true)
+
 	const closeCSVSelectableTableModal = async () => {
+		setCSVSelectableTableModal(false)
+		await uploadFile(CSVEditedData())
+	}
+	const successCloseCSVSelectableTableModal = async () => {
 		setCSVSelectableTableModal(false)
 		await uploadFile(CSVEditedData())
 	}
@@ -829,6 +834,7 @@ export const AudioPanel = () => {
 						// setImageColumnId={setImageColumnId}
 						setCSVEditedData={setCSVEditedData}
 						closeEvent={closeCSVSelectableTableModal}
+						successCloseEvent={successCloseCSVSelectableTableModal}
 					/>
 				</Portal>
 			</Show>

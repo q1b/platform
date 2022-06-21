@@ -17,6 +17,7 @@ import { createSignaledWorker, createWorker } from "@solid-primitives/workers"
 
 export const CSVEditTable = (props: {
 	closeEvent: any
+	successCloseEvent: any
 	initialCSVData: string
 	setCSVEditedData: Setter<string>
 	// setImageColumnId: Setter<number>
@@ -616,7 +617,7 @@ export const CSVEditTable = (props: {
 										// )
 										onExit()
 										setTimeout(() => {
-											props.closeEvent()
+											props.successCloseEvent()
 										}, leaveDur - 65)
 									}}
 									class="inline-flex items-center gap-x-1 px-2 py-1 bg-green-400 text-slate-900 font-semibold rounded-lg mt-6"

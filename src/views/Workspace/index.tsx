@@ -153,10 +153,10 @@ export const Workspace = () => {
 		<>
 			<main class="w-60 min-h-screen max-h-screen shrink-0 bg-slate-100 shadow-md  shadow-slate-300 z-0 flex flex-col">
 				<div class="w-full px-3 py-2.5 border-b-2 font-semibold text-slate-600">
-					<h1>Settings</h1>
+					<h1>Workspace</h1>
 				</div>
 				<div class="flex w-full items-center justify-center p-4">
-					<FreeVideoBtnWithDialog />
+					{/* <FreeVideoBtnWithDialog /> */}
 				</div>
 				<div class="w-full px-3 flex flex-col gap-y-1 pb-1">
 					<h1 class="px-2 flex items-center place-content-between">
@@ -234,8 +234,8 @@ export const Workspace = () => {
 								{(folder) => (
 									<FolderBtn
 										id={folder?.id}
-										onAdd={() => {}}
-										options={false}
+										onRemove={() => {}}
+										options
 										active={isActiveFolder(folder?.id)}
 										label={folder?.name}
 										onClick={() => {
