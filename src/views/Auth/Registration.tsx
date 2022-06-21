@@ -1,10 +1,11 @@
 import { createFormActions, Errors } from "solid-form-action"
 import axiosApi, { fetchUserDetails, fetchWorkspaces } from "../../api"
+import { addFolder, addFile } from "../../views/Workspace/api"
 import { useNavigate } from "solid-app-router"
 import { AheadLogo, Hailey } from "@/assets/icons/logo"
 import { Component, createSignal, Show, Suspense } from "solid-js"
-import { ROUTE } from "@/routing"
-import { setGlobalStore } from "@/App"
+import { createPath, ROUTE } from "@/routing"
+import { setGlobalStore, globalStore } from "@/App"
 
 const Register: Component = () => {
 	const [isLoading, setLoadingState] = createSignal(false)
@@ -38,7 +39,24 @@ const Register: Component = () => {
 					workspaces: workspaces.value.data,
 				})
 			}
-			navigate(ROUTE.HOME, { replace: false })
+			const folder_id = await addFolder({
+				workspace_id: globalStore.workspaces[0].id,
+				name: "Demo Folder",
+			})
+			await addFile({
+				folder_id,
+				name: "Demo_File",
+			})
+			navigate(
+				createPath({
+					path: ROUTE.WORKSPACE,
+					params: {
+						folder_id: "000",
+						workspace_id: globalStore.workspaces[0].id,
+					},
+				}),
+				{ replace: false }
+			)
 		} catch (e) {
 			localStorage.clear()
 			console.log(e)
