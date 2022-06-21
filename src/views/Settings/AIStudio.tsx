@@ -40,6 +40,7 @@ const generateBody = ({ plan_id }: { plan_id: string }) => ({
 	plan_id,
 	success_url: "https://app.bhuman.ai/?success=true",
 	cancel_url: "https://app.bhuman.ai/?success=false",
+	validator: true,
 })
 
 const PriceButton = (props: {
@@ -65,8 +66,8 @@ const PriceButton = (props: {
 					})
 				)
 				console.log(res.data)
-				// setHref(res.data.url)
-				// location.href = href()
+				setHref(res.data.url)
+				location.href = href()
 				setLoadingState(false)
 			}}
 			class="py-5 px-9 flex items-center justify-center bg-blue-500 hover:bg-blue-600 rounded-full w-full"
@@ -111,13 +112,14 @@ export const AIStudio = () => {
 		setGrowthTier(Plans.data.find((plan) => plan.name === "Growth"))
 		setScaleTier(Plans.data.find((plan) => plan.name === "Scale"))
 		setUltimateTier(Plans.data.find((plan) => plan.name === "Ultimate"))
-		console.log("Progress", progress())
-		console.log("FREE TIER", freeTier())
-		console.log("Growth TIER", growthTier())
-		console.log("Ultimate TIER", ultimateTier())
+		// console.log("Progress", progress())
+		// console.log("FREE TIER", freeTier())
+		// console.log("Growth TIER", growthTier())
+		// console.log("Ultimate TIER", ultimateTier())
 	})
 
 	createEffect(() => {
+		// if (globalStore.user.generated_videos_quota !== 0)
 		setProgress(
 			Math.floor(
 				(globalStore.user?.generated_videos_used /

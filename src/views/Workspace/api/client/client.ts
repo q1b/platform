@@ -521,7 +521,7 @@ export const getActiveFile = ({
 		segments,
 	} = store.folders
 		.find((folder) => folder.id === folder_id)
-		.files.find((file) => file.id === file_id)
+		?.files.find((file) => file.id === file_id)
 	return {
 		name,
 		audio_batch_id,

@@ -18,7 +18,7 @@ export const Settings = () => {
 					<h1>Settings</h1>
 				</div>
 				<div class="flex w-full items-center justify-center p-4">
-					<FreeVideoBtnWithDialog />
+					{/* <FreeVideoBtnWithDialog /> */}
 				</div>
 				<div class="w-full px-3 flex flex-col gap-y-0.5">
 					<h1 class="pl-2">General </h1>
