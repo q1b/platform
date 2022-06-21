@@ -82,6 +82,7 @@ import {
 import { CSVEditTable } from "@/ui/CSVEditTable"
 import { convertMilliSecToProgress, millisecondsFromResponse } from "../timeV2"
 import { Segment } from "@/api.type"
+import { createStore } from "solid-js/store"
 
 const uploadCsv = async ({
 	ev,
@@ -149,6 +150,31 @@ const uploadCsv = async ({
 	}
 }
 
+const [isRecursiveRunning, setRecursive] = createStore({
+	value: false,
+})
+
+const checkRecursive = (v) => {
+	if (v?.status === "Processing") {
+		setRecursive("value", true)
+		setTimeout(() => {
+			getPreproccesedGeneratedVideos()
+				.then((value) => {
+					setGeneratedVideos(value)
+					checkRecursive(value)
+				})
+				.catch((err) =>
+					console.log(
+						"Recusive CALL FOR CHECKING THE response of generating video erro",
+						err
+					)
+				)
+		}, 2000)
+	} else {
+		setRecursive("value", false)
+	}
+}
+
 export const getPreproccesedGeneratedVideos = async (): Promise<
 	{
 		video_url: string | undefined
@@ -163,6 +189,9 @@ export const getPreproccesedGeneratedVideos = async (): Promise<
 	console.log("Response", res)
 	console.log("EXPORTED CSV", res.data)
 	const generated_column = res.data
+	console.log("recursive started")
+	checkRecursive(generated_column[0])
+	console.log("recursive ended")
 	const generated_videos: {
 		video_url: string | undefined
 		vimeo_url: string
@@ -449,32 +478,6 @@ export const AudioPanel = () => {
 	const [audioElement, setAudioElement] = createSignal<
 		HTMLAudioElement | undefined
 	>()
-	// createEffect(
-	// 	on(
-	// 		() => generatedVideos,
-	// 		(GeneratedVideos) => {
-	// 			const checkRecursive = (v) => {
-	// 				if (v?.response_state === "Processing") {
-	// 					setTimeout(() => {
-	// 						getPreproccesedGeneratedVideos()
-	// 							.then((value) => {
-	// 								setGeneratedVideos(value)
-	// 								checkRecursive(value)
-	// 							})
-	// 							.catch((err) =>
-	// 								console.log(
-	// 									"Recusive CALL FOR CHECKING THE response of generating video erro",
-	// 									err
-	// 								)
-	// 							)
-	// 					}, 1000)
-	// 				}
-	// 			}
-	// 			checkRecursive(GeneratedVideos[0])
-	// 			console.log("Sendeas;jdfajsfd;jasfd;ljasf")
-	// 		}
-	// 	)
-	// )
 	return (
 		<div class="w-full h-full flex flex-col p-4">
 			<audio
@@ -789,18 +792,27 @@ export const AudioPanel = () => {
 				</Show>
 			</div>
 			<div class="">
-				{/* <Show when={generatedVideos[0]?.response_state === "Processing"}> */}
-				<Button
-					stylied
-					onClick={async () => {
-						const generatedVideos = await getPreproccesedGeneratedVideos()
-						setGeneratedVideos(generatedVideos)
-					}}
-					class="bg-blue-500 px-2 py-1 text-white hover:bg-sky-400 hover:text-slate-900 transition-colors"
+				<Switch
+					fallback={
+						<Button
+							stylied
+							onClick={async () => {
+								const generatedVideos = await getPreproccesedGeneratedVideos()
+								setGeneratedVideos(generatedVideos)
+							}}
+							class="bg-blue-500 px-2 py-1 text-white hover:bg-sky-400 hover:text-slate-900 transition-colors"
+						>
+							Refresh Generated Videos
+						</Button>
+					}
 				>
-					Refresh Generated Videos
-				</Button>
-				{/* </Show> */}
+					<Match when={isRecursiveRunning.value}>
+						<>generating your video</>
+					</Match>
+					<Match when={generatedVideos[0].response_state === "Success"}>
+						<></>
+					</Match>
+				</Switch>
 			</div>
 			<Show when={videoPlayerModel()}>
 				<Portal>
