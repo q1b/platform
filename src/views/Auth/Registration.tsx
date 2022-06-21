@@ -1,9 +1,10 @@
 import { createFormActions, Errors } from "solid-form-action"
-import axiosApi from "../../api"
+import axiosApi, { fetchUserDetails, fetchWorkspaces } from "../../api"
 import { useNavigate } from "solid-app-router"
 import { AheadLogo, Hailey } from "@/assets/icons/logo"
 import { Component, createSignal, Show, Suspense } from "solid-js"
 import { ROUTE } from "@/routing"
+import { setGlobalStore } from "@/App"
 
 const Register: Component = () => {
 	const [isLoading, setLoadingState] = createSignal(false)
@@ -24,7 +25,19 @@ const Register: Component = () => {
 			localStorage.setItem("access_token", data.access_token)
 			localStorage.setItem("refresh_token", data.refresh_token)
 			localStorage.setItem("user_id", data.user_id)
-			await createWorkspace(values.workspace)
+
+			const workspace_res = await createWorkspace(values.workspace)
+			console.log("First Workspace Created For User", workspace_res)
+			const [user, workspaces] = await Promise.allSettled([
+				fetchUserDetails(),
+				fetchWorkspaces(),
+			])
+			if (user.status === "fulfilled" && workspaces.status === "fulfilled") {
+				setGlobalStore({
+					user: user.value.data,
+					workspaces: workspaces.value.data,
+				})
+			}
 			navigate(ROUTE.HOME, { replace: false })
 		} catch (e) {
 			localStorage.clear()
@@ -62,10 +75,8 @@ const Register: Component = () => {
 		},
 	})
 
-	const createWorkspace = async (name: string) => {
-		// TODO: need to add video quota fields for handle dynamic video quota for specific workspace.
+	const createWorkspace = async (name: string) =>
 		await axiosApi.post(`workspace`, { name, generated_videos_quota: 15 })
-	}
 
 	// const planCheckout = async () => {
 	// 	// TODO: need to redirect to plan selection here
