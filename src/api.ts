@@ -3,6 +3,7 @@ import {
 	Actor,
 	File,
 	Folder,
+	GeneratedVideo,
 	Plan,
 	Segment,
 	TemplateVideo,
@@ -440,6 +441,13 @@ export const postCSV = async ({ formData }: { formData: FormData }) =>
 
 export const fetchJsonFromCSV = async ({ csv_id }: { csv_id: string }) =>
 	await axiosApi.get(`convert_csv?id=${csv_id}`)
+
+export const getGeneratedVideo = async ({
+	file_id,
+}: {
+	file_id: string
+}): Promise<AxiosResponse<GeneratedVideo[]>> =>
+	await axiosApi.get(`generated_video?video_instance_id=${file_id}`)
 
 export const exportGeneratedVideoAsCSV = async ({
 	file_id,

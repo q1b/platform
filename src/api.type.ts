@@ -83,6 +83,20 @@ export interface TemplateVideo {
 	updated_at: string
 }
 
+export interface GeneratedVideo {
+	id: string
+	batch_id: string
+	audio_lables: string[]
+	name: string
+	user_id: string
+	video_instance_id: string
+	video_url: string
+	vimeo_url: string
+	status: "Succeeded" | "Processing" | "Failed"
+	created_at: string
+	updated_at: string
+}
+
 export interface Segment {
 	audio_variable_column_id: number
 	audio_variable_name: string
