@@ -3,7 +3,6 @@ import { createEffect, createSignal, Show, Suspense } from "solid-js"
 
 import axiosApi from "@/api"
 import { createFormActions, Errors } from "solid-form-action"
-import { AheadLogo, Hailey } from "@/assets/icons/logo"
 import { LoadingIcon } from "@/assets/icons"
 import { createPath, ROUTE } from "@/routing"
 
@@ -81,7 +80,6 @@ const Access = () => {
 							<span class="text-xl font-semibold text-slate-700">
 								to access BHuman
 							</span>
-							<Hailey />
 						</h2>
 					</div>
 					<form
