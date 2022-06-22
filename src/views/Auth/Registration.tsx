@@ -1,8 +1,9 @@
+import PixelGrid from "@/assets/pixel-grid.svg"
 import { createFormActions, Errors } from "solid-form-action"
 import axiosApi, { fetchUserDetails, fetchWorkspaces } from "../../api"
 import { addFolder, addFile } from "../../views/Workspace/api"
 import { useNavigate } from "solid-app-router"
-import { AheadLogo, Hailey } from "@/assets/icons/logo"
+import { BHuman, BhumanAIFullLogo } from "@/assets/icons/logo"
 import { Component, createSignal, Show, Suspense } from "solid-js"
 import { createPath, ROUTE } from "@/routing"
 import { setGlobalStore, globalStore } from "@/App"
@@ -130,121 +131,134 @@ const Register: Component = () => {
 
 	return (
 		<section class="min-h-screen flex w-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-			<main class="max-w-md w-full flex flex-col pb-12">
-				<div class="flex flex-col items-start gap-y-1 mb-6">
-					<div class="flex items-center pl-1">
-						<AheadLogo />
-					</div>
-					<div class="mt-2">
-						<h1 class="text-slate-400 text-3xl">Welcome ahead</h1>
-					</div>
-					<div class="flex gap-x-2 items-center">
-						<h4 class="text-xl text-slate-600 whitespace-normal font-normal">
-							to access hailey
-						</h4>
-						<Hailey />
-					</div>
-				</div>
-				<form use:form>
-					<div class="mb-3">
-						<div class="rounded-md shadow-sm -space-y-px">
-							<label
-								for="username"
-								class="sr-only"
-							>
-								Username
-							</label>
-							<input
-								id="username"
-								name="username"
-								type="text"
-								// autocomplete="email"
-								autocomplete="off"
-								required
-								class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-								ref={username}
-								value={formState.username}
-								placeholder="Username"
-							/>
-							{errors.username && (
-								<span class="ml-2 text-red-700">{errors.username}</span>
-							)}
+			<div class="z-10 absolute inset-0 w-full flex items-center justify-center">
+				<main class="max-w-md w-full flex flex-col pb-12">
+					<div class="flex flex-col items-start gap-y-1 mb-6">
+						<div class="flex items-center pl-1"></div>
+						<div class="mt-2">
+							<h1 class="text-slate-400 text-3xl">Welcome </h1>
+						</div>
+						<div class="flex gap-x-2 items-center">
+							<h4 class="flex items-center text-xl text-slate-600 whitespace-normal font-normal">
+								to access
+								<span class="pl-1 inline-block">
+									<BhumanAIFullLogo
+										width="85.9375"
+										height="15.914351851851855"
+									/>
+								</span>
+							</h4>
 						</div>
 					</div>
-					<div class="mb-3">
-						<div class="rounded-md shadow-sm -space-y-px">
-							<label
-								for="fullname"
-								class="sr-only"
-							>
-								Full Name
-							</label>
-							<input
-								id="fullname"
-								name="fullname"
-								type="text"
-								// autocomplete="email"
-								autocomplete="off"
-								required
-								class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-								ref={fullname}
-								value={formState.fullname}
-								placeholder="fullname"
-							/>
-							{errors.fullname && (
-								<span class="ml-2 text-red-700">{errors.fullname}</span>
-							)}
+					<form use:form>
+						<div class="mb-3">
+							<div class="rounded-md shadow-sm -space-y-px">
+								<label
+									for="username"
+									class="sr-only"
+								>
+									Username
+								</label>
+								<input
+									id="username"
+									name="username"
+									type="text"
+									// autocomplete="email"
+									autocomplete="off"
+									required
+									class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+									ref={username}
+									value={formState.username}
+									placeholder="Username"
+								/>
+								{errors.username && (
+									<span class="ml-2 text-red-700">{errors.username}</span>
+								)}
+							</div>
 						</div>
-					</div>
-					<div class="mb-7">
-						<div class="rounded-md shadow-sm -space-y-px">
-							<label
-								for="initial-workspace-name"
-								class="sr-only"
-							>
-								Initial Workspace Name
-							</label>
-							<input
-								id="workspace"
-								name="workspace"
-								type="text"
-								// autocomplete="email"
-								autocomplete="off"
-								required
-								class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-								ref={workspace}
-								value={formState.workspace}
-								placeholder="Workspace"
-							/>
-							{errors.workspace && (
-								<span class="ml-2 text-red-700">{errors.workspace}</span>
-							)}
+						<div class="mb-3">
+							<div class="rounded-md shadow-sm -space-y-px">
+								<label
+									for="fullname"
+									class="sr-only"
+								>
+									Full Name
+								</label>
+								<input
+									id="fullname"
+									name="fullname"
+									type="text"
+									// autocomplete="email"
+									autocomplete="off"
+									required
+									class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+									ref={fullname}
+									value={formState.fullname}
+									placeholder="fullname"
+								/>
+								{errors.fullname && (
+									<span class="ml-2 text-red-700">{errors.fullname}</span>
+								)}
+							</div>
 						</div>
-					</div>
-					<div class="mb-3">
-						<Suspense>
-							<Show
-								when={!isLoading()}
-								fallback={
+						<div class="mb-7">
+							<div class="rounded-md shadow-sm -space-y-px">
+								<label
+									for="initial-workspace-name"
+									class="sr-only"
+								>
+									Initial Workspace Name
+								</label>
+								<input
+									id="workspace"
+									name="workspace"
+									type="text"
+									// autocomplete="email"
+									autocomplete="off"
+									required
+									class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+									ref={workspace}
+									value={formState.workspace}
+									placeholder="Workspace Name"
+								/>
+								{errors.workspace && (
+									<span class="ml-2 text-red-700">{errors.workspace}</span>
+								)}
+							</div>
+						</div>
+						<div class="mb-3">
+							<Suspense>
+								<Show
+									when={!isLoading()}
+									fallback={
+										<button
+											class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+											disabled
+										>
+											Loading...
+										</button>
+									}
+								>
 									<button
 										class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-										disabled
+										type="submit"
 									>
-										Loading...
+										Log In
 									</button>
-								}
-							>
-								<button
-									class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-									type="submit"
-								>
-									Log In
-								</button>
-							</Show>
-						</Suspense>
-					</div>
-				</form>
-			</main>
+								</Show>
+							</Suspense>
+						</div>
+					</form>
+				</main>
+			</div>
+			<div class="bg-white absolute inset-0 w-full h-full transition-colors">
+				<div
+					style={{
+						"background-image": `url(${PixelGrid})`,
+					}}
+					class={`absolute [mask-image:linear-gradient(rgba(0,0,0,0.06),rgba(73,39,244,1),rgba(0,0,0,0.07))] inset-0 bg-center`}
+				></div>
+			</div>
 		</section>
 	)
 }
