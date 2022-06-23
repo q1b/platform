@@ -11,15 +11,8 @@ export const PreviewPanel = () => {
 	return (
 		<div class="w-full h-full flex flex-col p-4">
 			<Header />
-			<div>
-				<CSV.Table
-					style={
-						{
-							// width: `${document.body.getBoundingClientRect().width - 600}px`,
-						}
-					}
-					class="mt-4 flex rounded-lg overflow-auto w-max"
-				>
+			<div class=" max-h-96 mt-4 overflow-y-auto sc ">
+				<CSV.Table class="flex rounded-lg overflow-auto w-max">
 					<Index each={csv_store.table.columns}>
 						{(column, x) => {
 							let isFirstColumn = x === 0

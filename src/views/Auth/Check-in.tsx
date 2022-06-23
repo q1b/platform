@@ -5,6 +5,7 @@ import axiosApi from "@/api"
 import { createFormActions, Errors } from "solid-form-action"
 import { LoadingIcon } from "@/assets/icons"
 import { createPath, ROUTE } from "@/routing"
+import { BhumanAIFullLogo } from "@/assets/icons/logo"
 
 const EMAIL_REGEX =
 	/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -77,9 +78,15 @@ const Access = () => {
 							Continue ahead
 						</h2>
 						<h2 class="flex gap-x-2">
-							<span class="text-xl font-semibold text-slate-700">
-								to access BHuman
-							</span>
+							<div class="flex items-center text-xl text-slate-600 whitespace-normal font-semibold">
+								to access{" "}
+								<span class="pl-1 inline-block">
+									<BhumanAIFullLogo
+										width="85.9375"
+										height="15.914351851851855"
+									/>
+								</span>
+							</div>
 						</h2>
 					</div>
 					<form

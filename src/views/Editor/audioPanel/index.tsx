@@ -270,9 +270,8 @@ export const AudioPanel = () => {
 
 	const openCSVSelectableTableModal = () => setCSVSelectableTableModal(true)
 
-	const closeCSVSelectableTableModal = async () => {
+	const closeCSVSelectableTableModal = () => {
 		setCSVSelectableTableModal(false)
-		await uploadFile(CSVEditedData())
 	}
 	const successCloseCSVSelectableTableModal = async () => {
 		setCSVSelectableTableModal(false)
@@ -583,220 +582,222 @@ export const AudioPanel = () => {
 						</FileUpload.Region>
 					}
 				>
-					<CSV.Table class="mt-4 flex rounded-lg overflow-auto w-max">
-						<Index each={csv_store.table.columns}>
-							{(column, x) => {
-								let isFirstColumn = x === 0
-								let isLastHeader = x === csv_store.table.columns.length - 1
-								return (
-									<CSV.Column class="flex flex-col w-max border-blue-700 z-10">
-										<CSV.ColumnHeader
-											class="bg-blue-500 border-r text-white hover:bg-blue-600 border-blue-600 text-left px-3 py-1"
-											classList={{
-												"rounded-tl-md": isFirstColumn,
-												"rounded-tr-md border-none": isLastHeader,
-											}}
-										>
-											{column().label}
-										</CSV.ColumnHeader>
-										<CSV.CellsContainer
-											class="border-blue-200 flex flex-col border-r"
-											classList={{
-												"border-none": isLastHeader,
-											}}
-										>
-											<Index each={column().cells}>
-												{(cell, y) => {
-													let isFirst = y === 0
-													let isLastColLastElement =
-														y === column().cells.length - 1 && isLastHeader
-													let isFirstColLastElement =
-														y === column().cells.length - 1 && isFirstColumn
-													console.log(
-														"CLIENT STORE ACTIVEFILE IMAGECOLUMNID ",
-														Client.store.activeFile.image_column_id
-													)
-													// if (Client.store.activeFile.image_column_id === x) {
-													// 	console.log("YUP IMAGE COLUMN", cell()?.imageId)
-													// 	return (
-													// 		<CSV.CellForImage
-													// 			class="flex border-t border-slate-400 text-sm gap-x-5 place-content-between hover:bg-blue-100 text-blue-900 hover:text-blue-900 items-center px-3 py-[5px] bg-blue-50"
-													// 			classList={{
-													// 				// "border-t": isFirst,
-													// 				"rounded-bl-md": isFirstColLastElement,
-													// 				"rounded-br-md ": isLastColLastElement,
-													// 			}}
-													// 			cell={cell()}
-													// 		>
-													// 			{cell()?.label}
-													// 		</CSV.CellForImage>
-													// 	)
-													// }
-													return (
-														<CSV.Cell
-															class="flex border-t border-slate-400 text-sm gap-x-5 place-content-between hover:bg-blue-100 text-blue-900 hover:text-blue-900 items-center px-3 py-1 bg-blue-50"
-															classList={{
-																// "border-t": isFirst,
-																"rounded-bl-md": isFirstColLastElement,
-																"rounded-br-md ": isLastColLastElement,
-															}}
-															audioRef={audioElement}
-															currentRecordingCell={currentRecordingCell}
-															setCurrentRecordingCell={
-																setCurrentRecordingCellURL
-															}
-															Recorder={AudioMediaRecorder}
-															cell={cell()}
-														>
-															{cell().label}
-														</CSV.Cell>
-													)
-												}}
-											</Index>
-										</CSV.CellsContainer>
-									</CSV.Column>
-								)
-							}}
-						</Index>
-						{/* <CSV.Column></CSV.Column> */}
-						<CSV.Column class="flex flex-col w-max">
-							<CSV.ColumnHeader class="bg-transparent invisible px-3 py-1">
-								&nbsp;
-							</CSV.ColumnHeader>
-							<CSV.CellsContainer class="flex flex-col -translate-x-1 translate-y pl-0.5 z-0">
-								<For each={generatedVideos}>
-									{(video, i) => {
-										let isFirstHeader = i() === 0
-										let isLastHeader =
-											i() === csv_store.table.columns[0].cells.length - 1
-
-										const [isAvailable, setIsAvailable] = createSignal(
-											video.response_state === "Success"
-										)
-
-										const [isLoading, setLoadingState] = createSignal(
-											video.response_state === "Processing"
-										)
-
-										const [isFailed, setFailedState] = createSignal(
-											video.response_state === "Failed"
-										)
-
-										const [isLoaded, setLoadedState] = createSignal(
-											!!video.video_url
-										)
-
-										return (
-											<button
-												class="bg-blue-400 hover:bg-sky-300 flex items-center justify-center group transition-colors duration-100"
+					<div class=" max-h-96 mt-4 overflow-y-auto sc ">
+						<CSV.Table class="flex rounded-lg w-max">
+							<Index each={csv_store.table.columns}>
+								{(column, x) => {
+									let isFirstColumn = x === 0
+									let isLastHeader = x === csv_store.table.columns.length - 1
+									return (
+										<CSV.Column class="flex flex-col w-max border-blue-700 z-10">
+											<CSV.ColumnHeader
+												class="bg-blue-500 border-r text-white hover:bg-blue-600 border-blue-600 text-left px-3 py-1"
 												classList={{
-													"rounded-tr-lg": isFirstHeader,
-													"rounded-br-lg": isLastHeader,
-												}}
-												onClick={async () => {
-													if (isLoaded()) {
-														setGeneratedVideoModelURL(video.video_url)
-														openVideoPlayerModel()
-													} else if (isLoading()) {
-													} else if (isAvailable()) {
-														setLoadingState(true)
-														console.log("FETCHING START FOR GENERATED VIDEO")
-														const gen_video = await fetchGeneratedVideo({
-															generated_video_id: video.video_id,
-														})
-														console.log("FETCHING ENDED")
-														console.log(
-															"RESPOSNE OF GENERATED VIDEO",
-															gen_video
-														)
-														const generated_video_url = URL.createObjectURL(
-															gen_video.data
-														)
-														updateGeneratedVideoURL({
-															generated_video_id: video.video_id,
-															generated_video_url,
-														})
-														setLoadingState(false)
-														if (generated_video_url !== "") {
-															setLoadedState(true)
-														}
-													} else {
-													}
+													"rounded-tl-md": isFirstColumn,
+													"rounded-tr-md border-none": isLastHeader,
 												}}
 											>
-												<Switch
-													fallback={<span class="w-[31px] h-[31px]"></span>}
+												{column().label}
+											</CSV.ColumnHeader>
+											<CSV.CellsContainer
+												class="border-blue-200 flex flex-col border-r"
+												classList={{
+													"border-none": isLastHeader,
+												}}
+											>
+												<Index each={column().cells}>
+													{(cell, y) => {
+														let isFirst = y === 0
+														let isLastColLastElement =
+															y === column().cells.length - 1 && isLastHeader
+														let isFirstColLastElement =
+															y === column().cells.length - 1 && isFirstColumn
+														console.log(
+															"CLIENT STORE ACTIVEFILE IMAGECOLUMNID ",
+															Client.store.activeFile.image_column_id
+														)
+														// if (Client.store.activeFile.image_column_id === x) {
+														// 	console.log("YUP IMAGE COLUMN", cell()?.imageId)
+														// 	return (
+														// 		<CSV.CellForImage
+														// 			class="flex border-t border-slate-400 text-sm gap-x-5 place-content-between hover:bg-blue-100 text-blue-900 hover:text-blue-900 items-center px-3 py-[5px] bg-blue-50"
+														// 			classList={{
+														// 				// "border-t": isFirst,
+														// 				"rounded-bl-md": isFirstColLastElement,
+														// 				"rounded-br-md ": isLastColLastElement,
+														// 			}}
+														// 			cell={cell()}
+														// 		>
+														// 			{cell()?.label}
+														// 		</CSV.CellForImage>
+														// 	)
+														// }
+														return (
+															<CSV.Cell
+																class="flex border-t border-slate-400 text-sm gap-x-5 place-content-between hover:bg-blue-100 text-blue-900 hover:text-blue-900 items-center px-3 py-1 bg-blue-50"
+																classList={{
+																	// "border-t": isFirst,
+																	"rounded-bl-md": isFirstColLastElement,
+																	"rounded-br-md ": isLastColLastElement,
+																}}
+																audioRef={audioElement}
+																currentRecordingCell={currentRecordingCell}
+																setCurrentRecordingCell={
+																	setCurrentRecordingCellURL
+																}
+																Recorder={AudioMediaRecorder}
+																cell={cell()}
+															>
+																{cell().label}
+															</CSV.Cell>
+														)
+													}}
+												</Index>
+											</CSV.CellsContainer>
+										</CSV.Column>
+									)
+								}}
+							</Index>
+							{/* <CSV.Column></CSV.Column> */}
+							<CSV.Column class="flex flex-col w-max">
+								<CSV.ColumnHeader class="bg-transparent invisible px-3 py-1">
+									&nbsp;
+								</CSV.ColumnHeader>
+								<CSV.CellsContainer class="flex flex-col -translate-x-1 translate-y pl-0.5 z-0">
+									<For each={generatedVideos}>
+										{(video, i) => {
+											let isFirstHeader = i() === 0
+											let isLastHeader =
+												i() === csv_store.table.columns[0].cells.length - 1
+
+											const [isAvailable, setIsAvailable] = createSignal(
+												video.response_state === "Success"
+											)
+
+											const [isLoading, setLoadingState] = createSignal(
+												video.response_state === "Processing"
+											)
+
+											const [isFailed, setFailedState] = createSignal(
+												video.response_state === "Failed"
+											)
+
+											const [isLoaded, setLoadedState] = createSignal(
+												!!video.video_url
+											)
+
+											return (
+												<button
+													class="bg-blue-400 hover:bg-sky-300 flex items-center justify-center group transition-colors duration-100"
+													classList={{
+														"rounded-tr-lg": isFirstHeader,
+														"rounded-br-lg": isLastHeader,
+													}}
+													onClick={async () => {
+														if (isLoaded()) {
+															setGeneratedVideoModelURL(video.video_url)
+															openVideoPlayerModel()
+														} else if (isLoading()) {
+														} else if (isAvailable()) {
+															setLoadingState(true)
+															console.log("FETCHING START FOR GENERATED VIDEO")
+															const gen_video = await fetchGeneratedVideo({
+																generated_video_id: video.video_id,
+															})
+															console.log("FETCHING ENDED")
+															console.log(
+																"RESPOSNE OF GENERATED VIDEO",
+																gen_video
+															)
+															const generated_video_url = URL.createObjectURL(
+																gen_video.data
+															)
+															updateGeneratedVideoURL({
+																generated_video_id: video.video_id,
+																generated_video_url,
+															})
+															setLoadingState(false)
+															if (generated_video_url !== "") {
+																setLoadedState(true)
+															}
+														} else {
+														}
+													}}
 												>
-													<Match when={isFailed()}>
-														<span
-															title="video can't be processed"
-															class="p-1 relative text-white group-hover:text-sky-800 transition-colors"
-														>
-															<ExclamationCircleOutlineIcon
-																size={27}
-																class="group-hover:opacity-0 group-hover:scale-75 transition-[transform,opacity] duration-500 ease-snappy"
-															/>
-															<ExclamationCircleFillIcon
-																size={27}
-																class="absolute opacity-0 scale-0 -translate-y-full group-hover:opacity-100 group-hover:scale-100 group-active:scale-90 transition-[opacity,transform] duration-500 ease-swift"
-															/>
-														</span>
-													</Match>
-													<Match when={isLoaded()}>
-														<span
-															title="play the video"
-															class="p-1 relative text-white group-hover:text-sky-800 transition-colors"
-														>
-															<VideoPlayerOutlineIcon
-																size={27}
-																class="group-hover:opacity-0 group-hover:scale-75 transition-[transform,opacity] duration-500 ease-snappy"
-															/>
-															<VideoPlayerFillIcon
-																size={27}
-																class="absolute opacity-0 scale-0 -translate-y-full group-hover:opacity-100 group-hover:scale-100 group-active:scale-90 transition-[opacity,transform] duration-500 ease-swift"
-															/>
-														</span>
-													</Match>
-													<Match when={isLoading()}>
-														<span
-															title="video is loading"
-															class="p-1 text-white group-hover:text-white"
-														>
-															<LoadingIcon
-																size={27}
-																class=""
-															/>
-														</span>
-													</Match>
-													<Match when={isAvailable()}>
-														<span
-															title="download video"
-															class="relative p-1 text-white group-hover:text-white transition-colors"
-														>
-															<DownloadOutlineIcon
-																size={27}
-																class="group-hover:opacity-0 group-hover:scale-75 transition-[transform,opacity] duration-500 ease-snappy"
-															/>
-															<DownloadFillIcon
-																size={27}
-																class="absolute opacity-0 scale-0 -translate-y-full group-hover:opacity-100 group-hover:scale-100 group-active:scale-90 transition-[opacity,transform] duration-500 ease-swift"
-															/>
-															{/* <div class="absolute w-auto p-2 m-2 min-w-max left-8 rounded-md shadow-md text-white bg-slate-800 text-xs font-bold transition-all duration-100 scale-0 group-hover:scale-100 origin-left">
+													<Switch
+														fallback={<span class="w-[31px] h-[31px]"></span>}
+													>
+														<Match when={isFailed()}>
+															<span
+																title="video can't be processed"
+																class="p-1 relative text-white group-hover:text-sky-800 transition-colors"
+															>
+																<ExclamationCircleOutlineIcon
+																	size={27}
+																	class="group-hover:opacity-0 group-hover:scale-75 transition-[transform,opacity] duration-500 ease-snappy"
+																/>
+																<ExclamationCircleFillIcon
+																	size={27}
+																	class="absolute opacity-0 scale-0 -translate-y-full group-hover:opacity-100 group-hover:scale-100 group-active:scale-90 transition-[opacity,transform] duration-500 ease-swift"
+																/>
+															</span>
+														</Match>
+														<Match when={isLoaded()}>
+															<span
+																title="play the video"
+																class="p-1 relative text-white group-hover:text-sky-800 transition-colors"
+															>
+																<VideoPlayerOutlineIcon
+																	size={27}
+																	class="group-hover:opacity-0 group-hover:scale-75 transition-[transform,opacity] duration-500 ease-snappy"
+																/>
+																<VideoPlayerFillIcon
+																	size={27}
+																	class="absolute opacity-0 scale-0 -translate-y-full group-hover:opacity-100 group-hover:scale-100 group-active:scale-90 transition-[opacity,transform] duration-500 ease-swift"
+																/>
+															</span>
+														</Match>
+														<Match when={isLoading()}>
+															<span
+																title="video is loading"
+																class="p-1 text-white group-hover:text-white"
+															>
+																<LoadingIcon
+																	size={27}
+																	class=""
+																/>
+															</span>
+														</Match>
+														<Match when={isAvailable()}>
+															<span
+																title="download video"
+																class="relative p-1 text-white group-hover:text-white transition-colors"
+															>
+																<DownloadOutlineIcon
+																	size={27}
+																	class="group-hover:opacity-0 group-hover:scale-75 transition-[transform,opacity] duration-500 ease-snappy"
+																/>
+																<DownloadFillIcon
+																	size={27}
+																	class="absolute opacity-0 scale-0 -translate-y-full group-hover:opacity-100 group-hover:scale-100 group-active:scale-90 transition-[opacity,transform] duration-500 ease-swift"
+																/>
+																{/* <div class="absolute w-auto p-2 m-2 min-w-max left-8 rounded-md shadow-md text-white bg-slate-800 text-xs font-bold transition-all duration-100 scale-0 group-hover:scale-100 origin-left">
 																hellow
 															</div> */}
-														</span>
-													</Match>
-												</Switch>
-											</button>
-										)
-									}}
-								</For>
-							</CSV.CellsContainer>
-						</CSV.Column>
-					</CSV.Table>
+															</span>
+														</Match>
+													</Switch>
+												</button>
+											)
+										}}
+									</For>
+								</CSV.CellsContainer>
+							</CSV.Column>
+						</CSV.Table>
+					</div>
 				</Show>
 			</div>
-			<div class="">
+			<div class="mt-10">
 				<Switch
 					fallback={
 						<Button

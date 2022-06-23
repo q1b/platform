@@ -297,7 +297,8 @@ export const CSVEditTable = (props: {
 	// const isActiveImageColumn = createSelector(imageColumn)
 
 	const [audioColumns, setAudioColumns] = createStore([])
-
+	const [errorForSelectingColumn, SetErrorForSelectingColumn] =
+		createSignal(false)
 	// const [workder, start, stop] = createWorker(function cvtToCSVStringWorkder() {
 
 	// });
@@ -364,7 +365,7 @@ export const CSVEditTable = (props: {
 									</span>
 								}
 							>
-								{(index) => (
+								{(index, i) => (
 									<span class="bg-blue-500 rounded-md inline-block first-letter:uppercase leading-6 text-white px-0.5 mx-0.5">
 										{csv_store.table.columns[index]?.label}
 									</span>
@@ -444,7 +445,8 @@ export const CSVEditTable = (props: {
 																"bg-black/10 text-white": isAudioColumn(),
 																"text-blue-300": !isAudioColumn(),
 															}}
-															class="p-px rounded-md mx-0.5 hover:bg-white/10"
+															class="p-px rounded-md mx-0.5 hover:bg-white/10 group"
+															title="click to select, column for audio use"
 														>
 															<AudioIcon class="w-5 h-5" />
 														</button>
@@ -459,7 +461,18 @@ export const CSVEditTable = (props: {
 												"border-none": isLastHeader,
 											}}
 										>
-											<Index each={column().cells}>
+											<Index
+												each={
+													column().cells.length > 4
+														? [
+																...column().cells.slice(0, 4),
+																{
+																	label: "...",
+																},
+														  ]
+														: column().cells
+												}
+											>
 												{(cell, y) => {
 													let isFirst = y === 0
 													let isLastColLastElement =
@@ -470,6 +483,8 @@ export const CSVEditTable = (props: {
 														<div
 															class="flex border-t border-slate-400 text-sm gap-x-5 place-content-between hover:bg-blue-100 text-blue-900 hover:text-blue-900 items-center px-3 py-1 bg-blue-50"
 															classList={{
+																"font-bold text-2xl pt-0 leading-none text-black":
+																	cell().label === "...",
 																// "border-t": isFirst,
 																"rounded-bl-md": isFirstColLastElement,
 																"rounded-br-md ": isLastColLastElement,
@@ -579,10 +594,18 @@ export const CSVEditTable = (props: {
 									for (let index = 0; index < audio_col.cells.length; index++) {
 										const cell_label = audio_col.cells[index].label
 										if (result_arr[index + 1]) {
-											if (cell_label !== "" && cell_label !== undefined)
+											if (
+												cell_label !== "" &&
+												cell_label !== undefined &&
+												cell_label !== "..."
+											)
 												result_arr[index + 1].push(cell_label)
 										} else {
-											if (cell_label !== "" && cell_label !== undefined)
+											if (
+												cell_label !== "" &&
+												cell_label !== undefined &&
+												cell_label !== "..."
+											)
 												result_arr[index + 1] = [cell_label]
 										}
 									}
@@ -611,14 +634,18 @@ export const CSVEditTable = (props: {
 										// ])
 										// setIsProcessing(true)
 										// console.log(convertStoreIntoCSV_Text())
-										props.setCSVEditedData(convertStoreIntoCSV_Text())
-										// props.setImageColumnId(
-										// isActiveImageColumn(-1) ? null : imageColumn()
-										// )
-										onExit()
-										setTimeout(() => {
-											props.successCloseEvent()
-										}, leaveDur - 65)
+										if (audioColumns[0] !== undefined) {
+											props.setCSVEditedData(convertStoreIntoCSV_Text())
+											// props.setImageColumnId(
+											// isActiveImageColumn(-1) ? null : imageColumn()
+											// )
+											onExit()
+											setTimeout(() => {
+												props.successCloseEvent()
+											}, leaveDur - 65)
+										} else {
+											SetErrorForSelectingColumn(true)
+										}
 									}}
 									class="inline-flex items-center gap-x-1 px-2 py-1 bg-green-400 text-slate-900 font-semibold rounded-lg mt-6"
 								>
@@ -637,6 +664,19 @@ export const CSVEditTable = (props: {
 							Cancel
 						</button> */}
 					</div>
+					<span
+						id="info-audio-tooltip"
+						class="absolute flex items-center gap-x-1 -left-4 -bottom-12 w-auto p-2 m-2 min-w-max rounded-md shadow-md text-white bg-rose-600 transition-transform duration-300 origin-top"
+						classList={{
+							"scale-100": errorForSelectingColumn(),
+							"scale-0": !errorForSelectingColumn(),
+						}}
+					>
+						select atleast one column, click{" "}
+						<span class="bg-white rounded-md inline-block">
+							<AudioIcon class="text-blue-400 w-5 h-5" />
+						</span>
+					</span>
 				</main>
 			</div>
 		</section>
