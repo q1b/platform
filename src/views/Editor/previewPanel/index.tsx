@@ -58,6 +58,7 @@ export const PreviewPanel = () => {
 										classList={{
 											"rounded-tl-md": isFirstColumn,
 											"rounded-tr-md border-none": isLastHeader,
+											"h-[25px]": !!!column().label,
 										}}
 									>
 										{column().label}
@@ -82,6 +83,7 @@ export const PreviewPanel = () => {
 															// "border-t": isFirst,
 															"rounded-bl-md": isFirstColLastElement,
 															"rounded-br-md ": isLastColLastElement,
+															"h-[25px]": !!!cell().label,
 														}}
 													>
 														{cell().label}

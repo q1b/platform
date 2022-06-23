@@ -338,7 +338,7 @@ export const CSVEditTable = (props: {
 					// x-trap.noscroll.inert="isOpen"
 					ref={(el: HTMLElement) => (containerRef = el)}
 					id="dialog-container"
-					class="mx-10 relative max-w-4xl p-8 rounded-2xl bg-white shadow-lg border-t"
+					class="mx-10 relative max-w-6xl w-full p-8 rounded-2xl bg-white shadow-lg border-t"
 				>
 					<div class="mb-4 flex flex-col items-start gap-y-2">
 						<h1 class="text-xl leading-3">Select Column Types:</h1>
@@ -373,133 +373,137 @@ export const CSVEditTable = (props: {
 							</For>
 						</h2>
 					</div>
-					<div
-						id="table"
-						class="flex rounded-lg overflow-auto w-max"
-					>
-						<Index each={csv_store.table.columns}>
-							{(column, x) => {
-								let isFirstColumn = x === 0
-								let isLastHeader = x === csv_store.table.columns.length - 1
-								return (
-									<div class="flex flex-col w-max border-blue-700 z-10">
-										<div
-											id="header"
-											class="inline-flex items-center bg-blue-500 border-r text-white hover:bg-blue-600 border-blue-600 text-left pl-2 pr-1 py-1"
-											classList={{
-												"rounded-tl-md": isFirstColumn,
-												"rounded-tr-md border-none": isLastHeader,
-											}}
-										>
-											<span class="select-none pr-1">{column().label}</span>
-											{(() => {
-												const [isAudioColumn, setAudioColumn] =
-													createSignal(false)
-												createEffect(
-													on(isAudioColumn, () => {
-														if (isAudioColumn()) {
-															if (!audioColumns.includes(x))
-																setAudioColumns((col) => [...col, x])
-														} else {
-															if (audioColumns.includes(x))
-																setAudioColumns(
-																	audioColumns.filter((ele) => ele != x)
-																)
-														}
-														console.log("RUNNING", audioColumns)
-													})
-												)
-												return (
-													<>
-														{/* <button
-															class="p-px rounded-md mx-0.5 hover:bg-white/10"
-															onClick={() => {
-																isActiveImageColumn(x)
-																	? setImageColumn(-1)
-																	: setImageColumn(x)
-																if (
-																	isActiveImageColumn(x) &&
-																	audioColumns.includes(x)
-																) {
-																	setAudioColumn(false)
-																}
-															}}
-															classList={{
-																"text-blue-300": !isActiveImageColumn(x),
-																"bg-black/10 text-white":
-																	isActiveImageColumn(x),
-															}}
-														>
-															<ImageIcon class="w-5 h-5" />
-														</button> */}
-														<button
-															onClick={() => {
-																isAudioColumn()
-																	? setAudioColumn(false)
-																	: setAudioColumn(true)
-																// if (isAudioColumn() && isActiveImageColumn(x)) {
-																// 	setImageColumn(-1)
-																// }
-															}}
-															classList={{
-																"bg-black/10 text-white": isAudioColumn(),
-																"text-blue-300": !isAudioColumn(),
-															}}
-															class="p-px rounded-md mx-0.5 hover:bg-white/10 group"
-															title="click to select, column for audio use"
-														>
-															<AudioIcon class="w-5 h-5" />
-														</button>
-													</>
-												)
-											})()}
-										</div>
-										<div
-											id="CellsContainer"
-											class="border-blue-200 flex flex-col border-r"
-											classList={{
-												"border-none": isLastHeader,
-											}}
-										>
-											<Index
-												each={
-													column().cells.length > 4
-														? [
-																...column().cells.slice(0, 4),
-																{
-																	label: "...",
-																},
-														  ]
-														: column().cells
-												}
-											>
-												{(cell, y) => {
-													let isFirst = y === 0
-													let isLastColLastElement =
-														y === column().cells.length - 1 && isLastHeader
-													let isFirstColLastElement =
-														y === column().cells.length - 1 && isFirstColumn
-													return (
-														<div
-															class="flex border-t border-slate-400 text-sm gap-x-5 place-content-between hover:bg-blue-100 text-blue-900 hover:text-blue-900 items-center px-3 py-1 bg-blue-50"
-															classList={{
-																"font-bold text-2xl pt-0 leading-none text-black":
-																	cell().label === "...",
-																// "border-t": isFirst,
-																"rounded-bl-md": isFirstColLastElement,
-																"rounded-br-md ": isLastColLastElement,
-															}}
-														>
-															{cell().label}
-														</div>
-													)
+					<div class="overflow-x-auto overflow-y-hidden w-full h-full">
+						<div
+							id="table"
+							class="flex rounded-lg w-max"
+						>
+							<Index each={csv_store.table.columns}>
+								{(column, x) => {
+									let isFirstColumn = x === 0
+									let isLastHeader = x === csv_store.table.columns.length - 1
+									return (
+										<div class="flex flex-col w-max border-blue-700 z-10">
+											<div
+												id="header"
+												class="inline-flex items-center bg-blue-500 border-r text-white hover:bg-blue-600 border-blue-600 text-left pl-2 pr-1 py-1"
+												classList={{
+													"rounded-tl-md": isFirstColumn,
+													"rounded-tr-md border-none": isLastHeader,
+													"h-[25px]": column().label !== undefined,
 												}}
-											</Index>
+											>
+												<span class="select-none pr-1">{column().label}</span>
+												{(() => {
+													const [isAudioColumn, setAudioColumn] =
+														createSignal(false)
+													createEffect(
+														on(isAudioColumn, () => {
+															if (isAudioColumn()) {
+																if (!audioColumns.includes(x))
+																	setAudioColumns((col) => [...col, x])
+															} else {
+																if (audioColumns.includes(x))
+																	setAudioColumns(
+																		audioColumns.filter((ele) => ele != x)
+																	)
+															}
+															console.log("RUNNING", audioColumns)
+														})
+													)
+													return (
+														<>
+															{/* <button
+																class="p-px rounded-md mx-0.5 hover:bg-white/10"
+																onClick={() => {
+																	isActiveImageColumn(x)
+																		? setImageColumn(-1)
+																		: setImageColumn(x)
+																	if (
+																		isActiveImageColumn(x) &&
+																		audioColumns.includes(x)
+																	) {
+																		setAudioColumn(false)
+																	}
+																}}
+																classList={{
+																	"text-blue-300": !isActiveImageColumn(x),
+																	"bg-black/10 text-white":
+																		isActiveImageColumn(x),
+																}}
+															>
+																<ImageIcon class="w-5 h-5" />
+															</button> */}
+															<button
+																onClick={() => {
+																	isAudioColumn()
+																		? setAudioColumn(false)
+																		: setAudioColumn(true)
+																	// if (isAudioColumn() && isActiveImageColumn(x)) {
+																	// 	setImageColumn(-1)
+																	// }
+																}}
+																classList={{
+																	"bg-black/10 text-white": isAudioColumn(),
+																	"text-blue-300": !isAudioColumn(),
+																}}
+																class="p-px rounded-md mx-0.5 hover:bg-white/10 group"
+																title="click to select, column for audio use"
+															>
+																<AudioIcon class="w-5 h-5" />
+															</button>
+														</>
+													)
+												})()}
+											</div>
+											<div
+												id="CellsContainer"
+												class="border-blue-200 flex flex-col border-r"
+												classList={{
+													"border-none": isLastHeader,
+												}}
+											>
+												<Index
+													each={
+														column().cells.length > 4
+															? [
+																	...column().cells.slice(0, 4),
+																	{
+																		label: "...",
+																	},
+															  ]
+															: column().cells
+													}
+												>
+													{(cell, y) => {
+														let isFirst = y === 0
+														let isLastColLastElement =
+															y === column().cells.length - 1 && isLastHeader
+														let isFirstColLastElement =
+															y === column().cells.length - 1 && isFirstColumn
+														return (
+															<div
+																class="flex border-t border-slate-400 text-sm gap-x-5 place-content-between hover:bg-blue-100 text-blue-900 hover:text-blue-900 items-center px-3 py-1 bg-blue-50"
+																classList={{
+																	"h-[25px]": cell().label !== undefined,
+																	"font-bold text-2xl pt-0 leading-none text-black":
+																		cell().label === "...",
+																	// "border-t": isFirst,
+																	"rounded-bl-md": isFirstColLastElement,
+																	"rounded-br-md ": isLastColLastElement,
+																}}
+															>
+																{cell().label}
+															</div>
+														)
+													}}
+												</Index>
+											</div>
 										</div>
-									</div>
-								)
-							}}
-						</Index>
+									)
+								}}
+							</Index>
+						</div>
 					</div>
 					<div class="flex items-center gap-x-2">
 						{(() => {

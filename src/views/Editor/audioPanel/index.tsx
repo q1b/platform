@@ -83,6 +83,7 @@ import { CSVEditTable } from "@/ui/CSVEditTable"
 import { convertMilliSecToProgress, millisecondsFromResponse } from "../timeV2"
 import { Segment } from "@/api.type"
 import { createStore } from "solid-js/store"
+import { AxiosError } from "axios"
 
 const uploadCsv = async ({
 	ev,
@@ -439,18 +440,27 @@ export const AudioPanel = () => {
 	// )
 	const uploadFile = async (csv_file: string) => {
 		setCSVFileState("uploading")
-		const csvRes = await uploadCsv({
-			ev: [csv_file],
-			actor_id: activeActor().value,
-			file_id: Client.store.activeFile.file_id,
-			folder_id: Client.store.activeFile.folder_id,
-			// image_column_id: imageColumnId() || imageColumnId() === 0 ? 0 : null,
-			audio_batch_id:
-				Client.store.activeFile?.audio_batch_id !== undefined
-					? Client.store.activeFile.audio_batch_id
-					: undefined,
-		})
-		initStoreFromRes(csvRes.data)
+		try {
+			const csvRes = await uploadCsv({
+				ev: [csv_file],
+				actor_id: activeActor().value,
+				file_id: Client.store.activeFile.file_id,
+				folder_id: Client.store.activeFile.folder_id,
+				// image_column_id: imageColumnId() || imageColumnId() === 0 ? 0 : null,
+				audio_batch_id:
+					Client.store.activeFile?.audio_batch_id !== undefined
+						? Client.store.activeFile.audio_batch_id
+						: undefined,
+			})
+			initStoreFromRes(csvRes.data)
+		} catch (error) {
+			console.error("From The Uploading CSV Section Response failed", error)
+			const err = error as AxiosError
+			if (err.response) {
+				console.log(err.response.status)
+				console.log(err.response.data)
+			}
+		}
 		const new_barDetails: BarDetailsOptions[] = []
 		csv_store.table.columns.forEach((column, i) => {
 			const element = document.createElement("div")
@@ -595,6 +605,7 @@ export const AudioPanel = () => {
 												classList={{
 													"rounded-tl-md": isFirstColumn,
 													"rounded-tr-md border-none": isLastHeader,
+													"h-[25px]": !!!column().label,
 												}}
 											>
 												{column().label}
