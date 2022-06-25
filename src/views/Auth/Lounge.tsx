@@ -1,3 +1,4 @@
+import PixelGrid from "@/assets/pixel-grid.svg"
 import { Component } from "solid-js"
 import { NavLink, useLocation, useParams } from "solid-app-router"
 import { BhumanAIFullLogo } from "@/assets/icons/logo"
@@ -8,7 +9,7 @@ const Lounge: Component = () => {
 
 	return (
 		<section class="min-h-screen flex w-full items-center justify-center">
-			<div class="flex flex-col gap-y-1 pb-12">
+			<div class="flex z-10 flex-col gap-y-1 pb-12">
 				<div class="p-8 bg-white rounded-xl shadow-lg shadow-blue-100">
 					<div class="flex p-1 pb-2 items-center gap-x-2">
 						<BhumanAIFullLogo
@@ -42,12 +43,19 @@ const Lounge: Component = () => {
 						<NavLink
 							class="text-cyan-500 font-medium underline text-xl"
 							href="/check-in"
-							end
 						>
 							Back to login
 						</NavLink>
 					</div>
 				</div>
+			</div>
+			<div class="bg-white absolute inset-0 w-full h-full transition-colors">
+				<div
+					style={{
+						"background-image": `url(${PixelGrid})`,
+					}}
+					class={`absolute [mask-image:linear-gradient(315deg,rgba(0,0,0,0.06),rgba(73,39,244,0.76),rgba(73,39,244,0.25),rgba(73,39,244,0.6),rgba(0,0,0,0.07))] inset-0 bg-center`}
+				></div>
 			</div>
 		</section>
 	)

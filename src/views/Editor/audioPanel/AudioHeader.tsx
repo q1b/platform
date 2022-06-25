@@ -137,6 +137,10 @@ export const AudioHeader = (props) => {
 															...actors,
 														]
 													)
+													setActiveActor({
+														label: res.data.name,
+														value: res.data.id,
+													})
 													setIsProcessing(false)
 												}}
 												class="group flex justify-center rounded-lg bg-green-400 text-white w-full"

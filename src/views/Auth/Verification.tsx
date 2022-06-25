@@ -1,12 +1,16 @@
-import { Component, createEffect, createSignal, Show } from "solid-js"
+import { Component, createEffect, createSignal, onMount, Show } from "solid-js"
 import { useLocation, useNavigate } from "solid-app-router"
 import axiosApi, { fetchUserDetails, fetchWorkspaces } from "@/api"
 import { LoadingIcon } from "@/assets/icons"
-import { ROUTE } from "@/routing"
-import { setGlobalStore } from "@/App"
+import { createPath, ROUTE } from "@/routing"
+import { globalStore, setGlobalStore } from "@/App"
+
+export const [isValidating, setIsValidating] = createSignal(false)
 
 const Verify: Component = () => {
-	const [isValidating, setIsValidating] = createSignal(false)
+	const [validatingText, setValidatingText] = createSignal(
+		"Validating Triggering"
+	)
 	const navigate = useNavigate()
 	const searchParams = useLocation()
 	const params = new URLSearchParams(searchParams.search)
@@ -15,16 +19,22 @@ const Verify: Component = () => {
 	const validateUser = async (token: null | string) => {
 		if (token) {
 			setIsValidating(true)
+			setValidatingText("Validating, Started")
 			console.log("Validating")
 			try {
 				const res = await axiosApi.post("tokenauth", { token })
+				setValidatingText("Validating, Ended")
 				console.log("VALIDATE RESPONSE", res)
 				const data = res.data
 				if (data.found) {
+					setValidatingText("You are already Registered! 🥳")
 					console.log("You are already Registered! 🥳")
 					localStorage.setItem("access_token", data.access_token)
 					localStorage.setItem("refresh_token", data.refresh_token)
 					localStorage.setItem("user_id", data.user_id)
+
+					setValidatingText("🥳")
+					setValidatingText("Fetching you details from server")
 					const [user, workspaces] = await Promise.allSettled([
 						fetchUserDetails(),
 						fetchWorkspaces(),
@@ -33,14 +43,29 @@ const Verify: Component = () => {
 						user.status === "fulfilled" &&
 						workspaces.status === "fulfilled"
 					) {
+						setValidatingText("Your Request is completed.")
 						setGlobalStore({
 							user: user.value.data,
 							workspaces: workspaces.value.data,
 						})
+						setIsValidating(false)
+						console.log("Going to Home Route")
+						navigate(
+							createPath({
+								path: ROUTE.WORKSPACE,
+								params: {
+									folder_id: "000",
+									workspace_id: globalStore.workspaces[0].id,
+								},
+							}),
+							{ replace: false }
+						)
+					} else {
+						setValidatingText("Failed, in fetching user details ???")
+						setTimeout(() => {
+							setIsValidating(false)
+						}, 3000)
 					}
-					setIsValidating(false)
-					console.log("Going to Home Route")
-					navigate(ROUTE.HOME, { replace: false })
 				} else {
 					localStorage.setItem("stytch_user_id", data.stytch_user_id)
 					navigate(ROUTE.REGISTRATION, { replace: false })
@@ -51,17 +76,20 @@ const Verify: Component = () => {
 			}
 		}
 	}
-	createEffect(async () => await validateUser(token))
+	onMount(() => {
+		{
+			;(async () => {
+				await validateUser(token)
+			})()
+		}
+	})
 	return (
 		<section class="min-h-screen flex w-full items-center bg-slate-900 justify-center relative">
 			<Show
 				when={isValidating()}
 				fallback={
 					<>
-						<span class="text-white">
-							Not Validating, anything because nothing is available, get back
-							home bye bye
-						</span>
+						<span class="text-white">Not Validating,</span>
 					</>
 				}
 			>
@@ -74,7 +102,7 @@ const Verify: Component = () => {
 							"text-shadow": "0.2px 1px 2px #0002",
 						}}
 					>
-						Validating
+						{validatingText()}
 					</span>
 				</div>
 			</Show>

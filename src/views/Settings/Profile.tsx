@@ -2,6 +2,9 @@ import { createFormActions, Errors } from "solid-form-action"
 import { globalStore, updateFullname, updateUsername } from "@/App"
 import { InputButton } from "@/ui/Button/InputButton"
 import { createSignal } from "solid-js"
+import { ExclamationCircleFillIcon, LogOutIcon } from "@/assets/icons"
+import { createPath, ROUTE } from "@/routing"
+import { useNavigate } from "solid-app-router"
 
 export const Profile = () => {
 	const [is_username_loading, setUsernameIsLoading] = createSignal(false)
@@ -56,6 +59,7 @@ export const Profile = () => {
 			}
 		},
 	})
+	const navigate = useNavigate()
 	return (
 		<section class="p-8 grow flex flex-col place-content-between">
 			<div class="flex flex-col gap-y-8">
@@ -111,10 +115,29 @@ export const Profile = () => {
 						</h2>
 					</div>
 				</div>
-				<p class="text-slate-400">
-					BHuman uses passwordless login secured by your email.BHuman uses
-					passwordless login secured by your email.
-				</p>
+				<div class="bg-slate-200 cursor-default inline-flex hover:bg-slate-300 group rounded-xl px-4 py-2">
+					<p class="inline font-semibold text-slate-600">
+						BHuman uses passwordless login secured by your email. BHuman uses
+						passwordless login secured by your email.
+					</p>
+				</div>
+				<div class="">
+					<button
+						onClick={() => {
+							localStorage.removeItem("access_token")
+							localStorage.removeItem("refresh_token")
+							localStorage.removeItem("user_id")
+							navigate(
+								createPath({
+									path: ROUTE.CHECKIN,
+								})
+							)
+						}}
+						class="group relative w-32 flex items-center gap-x-2 justify-center py-1 px-4 border border-transparent font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 active:bg-rose-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+					>
+						Logout <LogOutIcon class="w-5 h-5" />
+					</button>
+				</div>
 			</div>
 			<h2 class="text-2xl font-semibold">
 				Need help? Please email Help@BHuman.ai

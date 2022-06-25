@@ -32,6 +32,7 @@ import { SidenavBtn } from "./ui/Sidenav/ActionBtn"
 import { Portal } from "solid-js/web"
 import { PaymentSuccessModal } from "./views/Redirects/PaymentSuccess"
 import { PaymentFailModal } from "./views/Redirects/PaymentFail"
+import { isValidating } from "@/views/Auth/Verification"
 
 const CheckInPage = lazy(() => import("@/views/Auth/Check-in"))
 const LoungePage = lazy(() => import("@/views/Auth/Lounge"))
@@ -112,7 +113,7 @@ const App: Component = () => {
 	createReaction(async () => {
 		if (data()) {
 			const [user, workspaces] = data()
-			if (user.status === "rejected") {
+			if (!isValidating() && user.status === "rejected") {
 				navigate(
 					createPath({
 						path: ROUTE.CHECKIN,

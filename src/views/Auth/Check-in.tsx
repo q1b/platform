@@ -1,3 +1,4 @@
+import PixelGrid from "@/assets/pixel-grid.svg"
 import { useNavigate } from "solid-app-router"
 import { createEffect, createSignal, Show, Suspense } from "solid-js"
 
@@ -27,8 +28,8 @@ const Access = () => {
 						params: {
 							email_id: email,
 						},
-					}),
-					{ replace: false }
+					})
+					// { replace: false }
 				)
 			}
 		} catch (e) {
@@ -65,7 +66,7 @@ const Access = () => {
 	return (
 		<>
 			<div class="min-h-screen w-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-				<div class="max-w-sm w-full flex flex-col gap-y-5 pb-12">
+				<div class="max-w-sm z-10 w-full flex flex-col gap-y-5 pb-12">
 					<div
 						id="user-email-Showoff"
 						class="flex flex-col gap-y-2"
@@ -142,6 +143,14 @@ const Access = () => {
 								</span> */}
 						</div>
 					</form>
+				</div>
+				<div class="bg-white absolute inset-0 w-full h-full transition-colors">
+					<div
+						style={{
+							"background-image": `url(${PixelGrid})`,
+						}}
+						class={`absolute [mask-image:linear-gradient(rgba(0,0,0,0.06),rgba(73,39,244,1),rgba(0,0,0,0.07))] inset-0 bg-center`}
+					></div>
 				</div>
 			</div>
 		</>
