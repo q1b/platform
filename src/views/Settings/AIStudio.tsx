@@ -205,7 +205,7 @@ export const AIStudio = () => {
 								<PriceButton
 									plan_id={growthTier().id}
 									variant={
-										globalStore?.activePlan.name === growthTier().name
+										globalStore?.activePlan?.name === growthTier().name
 											? "current"
 											: "upgrade"
 									}
@@ -237,7 +237,7 @@ export const AIStudio = () => {
 								<PriceButton
 									plan_id={scaleTier().id}
 									variant={
-										globalStore?.activePlan.name === scaleTier().name
+										globalStore?.activePlan?.name === scaleTier().name
 											? "current"
 											: "upgrade"
 									}
@@ -270,7 +270,7 @@ export const AIStudio = () => {
 								<PriceButton
 									plan_id={ultimateTier().id}
 									variant={
-										globalStore?.activePlan.name === ultimateTier().name
+										globalStore?.activePlan?.name === ultimateTier().name
 											? "current"
 											: "upgrade"
 									}

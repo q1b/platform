@@ -17,22 +17,6 @@ export const Settings = () => {
 
 	const isActive = createSelector(active)
 	const navigate = useNavigate()
-	const [plan, { refetch }] = createResource(async () => {
-		let plan
-		if (globalStore.user)
-			plan = await fetchPlan({
-				plan_id: globalStore.user?.plan_id,
-			})
-		return plan
-	})
-
-	createEffect(() => {
-		if (!plan.loading) setGlobalStore("activePlan", plan())
-	})
-
-	createReaction(() => {
-		refetch()
-	})(() => globalStore.user?.plan_id)
 
 	return (
 		<>
