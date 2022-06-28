@@ -128,8 +128,7 @@ export const AIStudio = () => {
 		// if (globalStore.user.generated_videos_quota !== 0)
 		setProgress(
 			Math.floor(
-				(globalStore.user?.generated_videos_used /
-					globalStore.user?.generated_videos_quota) *
+				(globalStore.user?.generated_videos_used / activePlan()?.soft_limit) *
 					100
 			)
 		)
@@ -165,7 +164,7 @@ export const AIStudio = () => {
 							<h2 class="font-semibold leading-4 mb-1.5"> Free Tier </h2>
 							<p class="text-[13px] font-medium mb-2">
 								{globalStore.user?.generated_videos_used} of{" "}
-								{globalStore.user?.generated_videos_quota} used
+								{activePlan()?.soft_limit} used
 							</p>
 							<ProgressBar.FlatProgressBar
 								completed={progress()}
