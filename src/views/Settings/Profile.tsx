@@ -117,8 +117,7 @@ export const Profile = () => {
 				</div>
 				<div class="bg-slate-200 cursor-default inline-flex hover:bg-slate-300 group rounded-xl px-4 py-2">
 					<p class="inline font-semibold text-slate-600">
-						BHuman uses passwordless login secured by your email. BHuman uses
-						passwordless login secured by your email.
+						BHuman uses passwordless login secured by your email.
 					</p>
 				</div>
 				<div class="">

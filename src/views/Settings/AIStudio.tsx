@@ -128,8 +128,7 @@ export const AIStudio = () => {
 		// if (globalStore.user.generated_videos_quota !== 0)
 		setProgress(
 			Math.floor(
-				(globalStore.user?.generated_videos_used / activePlan()?.soft_limit) *
-					100
+				(globalStore.user?.generated_videos_used / activePlan?.soft_limit) * 100
 			)
 		)
 	})
@@ -164,7 +163,7 @@ export const AIStudio = () => {
 							<h2 class="font-semibold leading-4 mb-1.5"> Free Tier </h2>
 							<p class="text-[13px] font-medium mb-2">
 								{globalStore.user?.generated_videos_used} of{" "}
-								{activePlan()?.soft_limit} used
+								{activePlan?.soft_limit} used
 							</p>
 							<ProgressBar.FlatProgressBar
 								completed={progress()}
@@ -206,7 +205,7 @@ export const AIStudio = () => {
 								<PriceButton
 									plan_id={growthTier().id}
 									variant={
-										activePlan().name === growthTier().name
+										activePlan.name === growthTier().name
 											? "current"
 											: "upgrade"
 									}
@@ -238,9 +237,7 @@ export const AIStudio = () => {
 								<PriceButton
 									plan_id={scaleTier().id}
 									variant={
-										activePlan().name === scaleTier().name
-											? "current"
-											: "upgrade"
+										activePlan.name === scaleTier().name ? "current" : "upgrade"
 									}
 								/>
 							</div>
@@ -271,7 +268,7 @@ export const AIStudio = () => {
 								<PriceButton
 									plan_id={ultimateTier().id}
 									variant={
-										activePlan().name === ultimateTier().name
+										activePlan.name === ultimateTier().name
 											? "current"
 											: "upgrade"
 									}

@@ -3,6 +3,7 @@ import { Plan } from "@/api.type"
 import { globalStore } from "@/App"
 import { Folder } from "@/ui/Button/Folder"
 import { Outlet, useNavigate } from "solid-app-router"
+
 import {
 	createEffect,
 	createReaction,
@@ -10,8 +11,9 @@ import {
 	createSelector,
 	createSignal,
 } from "solid-js"
+import { createStore } from "solid-js/store"
 
-export const [activePlan, setActivePlan] = createSignal<Plan>()
+export const [activePlan, setActivePlan] = createStore<Partial<Plan>>({})
 
 export const Settings = () => {
 	const [active, setActive] = createSignal("Profile")

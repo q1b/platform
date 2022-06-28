@@ -5,16 +5,13 @@ import { activePlan } from "."
 
 export const Billings = () => {
 	const [customer_portal] = createResource(fetchCustomerPortalLink)
-	createEffect(() => {
-		console.log(activePlan())
-	})
 	return (
 		<section class="p-8 grow flex flex-col gap-y-8">
 			<div class="flex flex-col gap-y-2">
 				<h1 class="text-2xl font-semibold pl-1">Your Plan</h1>
 				<Show
-					when={activePlan() === undefined}
-					fallback={<p class="pl-2">{activePlan()?.name}</p>}
+					when={activePlan === undefined}
+					fallback={<p class="pl-2">{activePlan?.name}</p>}
 				>
 					<LoadingIcon class="w-4 h-4 text-slate-600" />
 				</Show>
