@@ -36,7 +36,7 @@
 		"solid-a11y": "^0.2.0",
 		"solid-app-router": "^0.3.2",
 		"solid-form-action": "^0.3.0",
-		"solid-js": "^1.4.4",
+		"solid-js": "^1.4.5",
 		"solid-split-component": "^0.1.6",
 		"split.js": "^1.6.5",
 		"yaml": "^1.10.2"

@@ -26,7 +26,7 @@ import {
 import { createStore } from "solid-js/store"
 import { fetchFiles, fetchFolders } from "./api"
 
-import { User, Workspace } from "./api.type"
+import { Plan, User, Workspace } from "./api.type"
 import { createPath, ROUTE } from "./routing"
 import { SidenavBtn } from "./ui/Sidenav/ActionBtn"
 import { Portal } from "solid-js/web"
@@ -76,6 +76,7 @@ const EditorPage = lazy(() => import("@/views/Editor"))
 export const [globalStore, setGlobalStore] = createStore<{
 	user?: User
 	workspaces: Workspace[]
+	activePlan?: Plan
 }>({
 	workspaces: [],
 })

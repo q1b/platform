@@ -1,7 +1,7 @@
 import { fetchCustomerPortalLink } from "@/api"
+import { globalStore } from "@/App"
 import { LoadingIcon } from "@/assets/icons"
 import { createEffect, createResource, onMount, Show } from "solid-js"
-import { activePlan } from "."
 
 export const Billings = () => {
 	const [customer_portal] = createResource(fetchCustomerPortalLink)
@@ -10,8 +10,8 @@ export const Billings = () => {
 			<div class="flex flex-col gap-y-2">
 				<h1 class="text-2xl font-semibold pl-1">Your Plan</h1>
 				<Show
-					when={activePlan === undefined}
-					fallback={<p class="pl-2">{activePlan?.name}</p>}
+					when={globalStore?.activePlan === undefined}
+					fallback={<p class="pl-2">{globalStore?.activePlan?.name}</p>}
 				>
 					<LoadingIcon class="w-4 h-4 text-slate-600" />
 				</Show>
