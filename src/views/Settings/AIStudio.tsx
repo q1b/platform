@@ -6,6 +6,7 @@ import { fetchCheckoutLink, fetchPlans } from "@/api"
 import { globalStore } from "@/App"
 import { Link } from "solid-app-router"
 import { LoadingIcon } from "@/assets/icons"
+import { activePlan } from "."
 
 const plans: {
 	plan: Plan["name"]
@@ -84,23 +85,27 @@ const PriceButton = (props: {
 
 export const AIStudio = () => {
 	let [freeTier, setFreeTier] = createSignal<Partial<Plan>>({
-		quota: 0,
-		price: "0",
+		price: "...",
+		soft_limit: 0,
+		extra_videos_cost: "...",
 		name: "Free plan",
 	})
 	let [scaleTier, setScaleTier] = createSignal<Partial<Plan>>({
-		quota: 0,
-		price: "0",
+		price: "...",
+		soft_limit: 0,
+		extra_videos_cost: "...",
 		name: "Scale",
 	})
 	let [growthTier, setGrowthTier] = createSignal<Partial<Plan>>({
-		quota: 0,
-		price: "0",
+		price: "...",
+		soft_limit: 0,
+		extra_videos_cost: "...",
 		name: "Growth",
 	})
 	let [ultimateTier, setUltimateTier] = createSignal<Partial<Plan>>({
-		quota: 0,
-		price: "0",
+		price: "...",
+		soft_limit: 0,
+		extra_videos_cost: "...",
 		name: "Ultimate",
 	})
 
@@ -108,6 +113,7 @@ export const AIStudio = () => {
 
 	onMount(async () => {
 		const Plans = await fetchPlans()
+		console.log("Plans Data", Plans.data)
 		setFreeTier(Plans.data.find((plan) => plan.name === "Free plan"))
 		setGrowthTier(Plans.data.find((plan) => plan.name === "Growth"))
 		setScaleTier(Plans.data.find((plan) => plan.name === "Scale"))
@@ -146,8 +152,8 @@ export const AIStudio = () => {
 						>
 							<div
 								class="flex items-center justify-center text-center absolute
-                top-0
-                w-full h-full
+                                top-0
+                                w-full h-full
 								mx-auto
 								my-0
 								text-slate-800 select-none font-semibold"
@@ -187,9 +193,11 @@ export const AIStudio = () => {
 							</div>
 							<ul class="list-disc list-inside mb-6">
 								<li class="font-semibold uppercase">
-									{growthTier().quota} videos a month
+									{growthTier().soft_limit} videos a month
 								</li>
-								<li class="font-semibold uppercase">Limited Analytics</li>
+								<li class="font-semibold uppercase">
+									{growthTier().extra_videos_cost.slice(0, -2)}$ per extra video
+								</li>
 							</ul>
 							<div class="inline-flex items-end border-t-2 border-slate-200 gap-x-1 mb-7 pt-0.5">
 								<p class="text-3xl font-bold">{growthTier().price}$</p>{" "}
@@ -198,7 +206,11 @@ export const AIStudio = () => {
 							<div>
 								<PriceButton
 									plan_id={growthTier().id}
-									variant="upgrade"
+									variant={
+										activePlan().name === growthTier().name
+											? "current"
+											: "upgrade"
+									}
 								/>
 							</div>
 						</div>
@@ -213,9 +225,11 @@ export const AIStudio = () => {
 							</div>
 							<ul class="list-disc list-inside mb-6">
 								<li class="font-semibold uppercase">
-									{scaleTier().quota} videos a month
+									{scaleTier().soft_limit} videos a month
 								</li>
-								<li class="font-semibold uppercase">Full Analytics</li>
+								<li class="font-semibold uppercase">
+									{scaleTier().extra_videos_cost.slice(0, -2)}$ per extra video
+								</li>
 							</ul>
 							<div class="inline-flex items-end border-t-2 border-slate-200 gap-x-1 mb-7 pt-0.5">
 								<p class="text-3xl font-bold">{scaleTier().price}$</p>{" "}
@@ -224,7 +238,11 @@ export const AIStudio = () => {
 							<div>
 								<PriceButton
 									plan_id={scaleTier().id}
-									variant="upgrade"
+									variant={
+										activePlan().name === scaleTier().name
+											? "current"
+											: "upgrade"
+									}
 								/>
 							</div>
 						</div>
@@ -238,17 +256,26 @@ export const AIStudio = () => {
 								</p>
 							</div>
 							<ul class="list-disc list-inside mb-6">
-								<li class="font-semibold uppercase">UNLIMTED videos</li>
-								<li class="font-semibold uppercase">Limited Analytics</li>
+								<li class="font-semibold uppercase">
+									{ultimateTier().soft_limit} videos
+								</li>
+								<li class="font-semibold uppercase">
+									{ultimateTier().extra_videos_cost.slice(0, -2)}$ per extra
+									video
+								</li>
 							</ul>
 							<div class="inline-flex items-end border-t-2 border-slate-200 gap-x-1 mb-7 pt-0.5">
-								<p class="text-3xl font-bold">39 cents</p>{" "}
-								<span class="inline pb-1">/render</span>
+								<p class="text-3xl font-bold">{ultimateTier().price}$</p>{" "}
+								<span class="inline pb-1">/month</span>
 							</div>
 							<div>
 								<PriceButton
 									plan_id={ultimateTier().id}
-									variant="upgrade"
+									variant={
+										activePlan().name === ultimateTier().name
+											? "current"
+											: "upgrade"
+									}
 								/>
 							</div>
 						</div>

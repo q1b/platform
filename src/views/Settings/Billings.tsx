@@ -1,34 +1,22 @@
-import { fetchCustomerPortalLink, fetchPlan } from "@/api"
-import { globalStore } from "@/App"
+import { fetchCustomerPortalLink } from "@/api"
 import { LoadingIcon } from "@/assets/icons"
-import { InputButton } from "@/ui/Button/InputButton"
-import { createEffect, createReaction, createResource, Show } from "solid-js"
+import { createEffect, createResource, onMount, Show } from "solid-js"
+import { activePlan } from "."
 
 export const Billings = () => {
 	const [customer_portal] = createResource(fetchCustomerPortalLink)
-
-	const [plan, { refetch }] = createResource(async () => {
-		let plan
-		if (globalStore.user)
-			plan = await fetchPlan({
-				plan_id: globalStore.user?.plan_id,
-			})
-		return plan
+	createEffect(() => {
+		console.log(activePlan())
 	})
-
-	createReaction(() => {
-		refetch()
-	})(() => globalStore.user?.plan_id)
-
 	return (
 		<section class="p-8 grow flex flex-col gap-y-8">
 			<div class="flex flex-col gap-y-2">
 				<h1 class="text-2xl font-semibold pl-1">Your Plan</h1>
 				<Show
-					when={!plan.loading}
-					fallback={<LoadingIcon class="w-4 h-4 text-slate-600" />}
+					when={activePlan() === undefined}
+					fallback={<p class="pl-2">{activePlan()?.name}</p>}
 				>
-					<p class="pl-2">{plan()?.name}</p>
+					<LoadingIcon class="w-4 h-4 text-slate-600" />
 				</Show>
 				<p class="text-slate-400 pl-2">
 					Visit the AI Studio page to change your plan

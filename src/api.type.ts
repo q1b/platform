@@ -18,14 +18,17 @@ export interface User {
 }
 
 export interface Plan {
-	id: string
-	name: "Free plan" | "Growth" | "Scale" | "Ultimate"
-	stripe_plan_id: null | string
-	metred_stripe_plan_id: null | string
-	quota: number
-	price: string
-	is_metred_plan: boolean
 	created_at: string
+	extra_videos_cost: string
+	id: string
+	is_free: boolean
+	is_metred_plan: boolean
+	metred_stripe_plan_id: string
+	name: "Free plan" | "Growth" | "Scale" | "Ultimate"
+	price: string
+	quota: number
+	soft_limit: number
+	stripe_plan_id: string
 	updated_at: string
 }
 
