@@ -22,6 +22,7 @@ import {
 
 import {
 	children,
+	createEffect,
 	createReaction,
 	createResource,
 	createSignal,
@@ -141,6 +142,7 @@ export const AudioHeader = (props) => {
 														value: res.data.id,
 													})
 													setIsProcessing(false)
+													setActorModel(false)
 												}}
 												class="group flex justify-center rounded-lg bg-green-400 text-white w-full"
 											>
