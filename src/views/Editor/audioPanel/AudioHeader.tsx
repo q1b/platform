@@ -48,7 +48,6 @@ export const AudioHeader = (props) => {
 	const [actors] = createResource(fetchActors)
 	const [isChangingActor, setChangingActor] = createSignal(false)
 	const trigger = createReaction(async () => {
-		console.log("Running I am running")
 		if (actors()) {
 			// const actorsArr: {
 			// 	id: string

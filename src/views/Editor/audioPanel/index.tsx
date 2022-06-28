@@ -579,8 +579,17 @@ export const AudioPanel = () => {
 									CSVFileState() === "fetching"
 								}
 								fallback={
-									<p class="text-5xl flex pb-5">
-										Drop your <b> .csv </b>&nbsp;file here!
+									<p class="text-5xl flex pb-5 select-none">
+										<Show
+											when={activeActor() === undefined}
+											fallback={
+												<>
+													Drop your <b> .csv </b>&nbsp;file here!
+												</>
+											}
+										>
+											<>Select Actor, before importing data ☝️</>
+										</Show>
 									</p>
 								}
 							>
