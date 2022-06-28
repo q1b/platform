@@ -160,7 +160,13 @@ export const AIStudio = () => {
 							</div>
 						</ProgressBar.CircularProgressbar>
 						<div class="flex flex-col items-start pb-2">
-							<h2 class="font-semibold leading-4 mb-1.5"> Free Tier </h2>
+							<h2 class="font-semibold leading-4 mb-1.5">
+								{" "}
+								{globalStore?.activePlan?.name !== undefined
+									? globalStore?.activePlan?.name
+									: "Free"}{" "}
+								Tier{" "}
+							</h2>
 							<p class="text-[13px] font-medium mb-2">
 								{globalStore.user?.generated_videos_used} of{" "}
 								{globalStore?.activePlan?.soft_limit} used
