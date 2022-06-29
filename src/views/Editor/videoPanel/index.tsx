@@ -683,6 +683,7 @@ export const VideoPanel = () => {
 							error: "error",
 						}
 						const [state, setState] = createSignal(states["idle"])
+						const [errorMessage, setErrorMessage] = createSignal("Error!")
 						createEffect(
 							on(state, (v, p) => {
 								console.log("st", v)
@@ -781,6 +782,12 @@ export const VideoPanel = () => {
 												console.log(err.response.status)
 												console.log(err.response.data)
 											}
+											if (
+												err.response.data?.error ==
+												"You don't have enough quota."
+											) {
+												setErrorMessage("Out of Credits!")
+											}
 											setState(states["error"])
 										}
 									}
@@ -810,7 +817,7 @@ export const VideoPanel = () => {
 										invisible: state() !== states["error"],
 									}}
 								>
-									error!
+									{errorMessage ? errorMessage : "error!"}
 								</span>
 								<span
 									class="absolute inset-0 flex items-center justify-center gap-x-1"
