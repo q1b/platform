@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios"
+import axios, { Axios, AxiosResponse } from "axios"
 import {
 	Actor,
 	File,
@@ -62,7 +62,7 @@ export const fetchPlan = async ({
 	plan_id,
 }: {
 	plan_id: string
-}): Promise<Plan> => (await axiosApi.get(`plans?id=${plan_id}`)).data[0]
+}): Promise<Plan> => (await axiosApi.get(`plans?id=${plan_id}`)).data
 
 export const fetchCheckoutLink = async (body: {
 	plan_id: string

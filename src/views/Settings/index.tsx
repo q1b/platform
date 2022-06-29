@@ -1,8 +1,9 @@
 import { fetchPlan } from "@/api"
 import { Plan } from "@/api.type"
-import { globalStore } from "@/App"
+import { globalStore, setGlobalStore } from "@/App"
 import { Folder } from "@/ui/Button/Folder"
 import { Outlet, useNavigate } from "solid-app-router"
+
 import {
 	createEffect,
 	createReaction,
@@ -11,29 +12,11 @@ import {
 	createSignal,
 } from "solid-js"
 
-export const [activePlan, setActivePlan] = createSignal<Plan>()
-
 export const Settings = () => {
 	const [active, setActive] = createSignal("Profile")
 
 	const isActive = createSelector(active)
 	const navigate = useNavigate()
-	const [plan, { refetch }] = createResource(async () => {
-		let plan
-		if (globalStore.user)
-			plan = await fetchPlan({
-				plan_id: globalStore.user?.plan_id,
-			})
-		return plan
-	})
-
-	createEffect(() => {
-		if (!plan.loading) setActivePlan(plan())
-	})
-
-	createReaction(() => {
-		refetch()
-	})(() => globalStore.user?.plan_id)
 
 	return (
 		<>

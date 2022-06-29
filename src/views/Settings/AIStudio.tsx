@@ -4,9 +4,7 @@ import { Plan } from "@/api.type"
 import { onMount, createSignal, Show, createEffect } from "solid-js"
 import { fetchCheckoutLink, fetchPlans } from "@/api"
 import { globalStore } from "@/App"
-import { Link } from "solid-app-router"
 import { LoadingIcon } from "@/assets/icons"
-import { activePlan } from "."
 
 const plans: {
 	plan: Plan["name"]
@@ -129,7 +127,7 @@ export const AIStudio = () => {
 		setProgress(
 			Math.floor(
 				(globalStore.user?.generated_videos_used /
-					globalStore.user?.generated_videos_quota) *
+					globalStore?.activePlan?.soft_limit) *
 					100
 			)
 		)
@@ -162,10 +160,16 @@ export const AIStudio = () => {
 							</div>
 						</ProgressBar.CircularProgressbar>
 						<div class="flex flex-col items-start pb-2">
-							<h2 class="font-semibold leading-4 mb-1.5"> Free Tier </h2>
+							<h2 class="font-semibold leading-4 mb-1.5">
+								{" "}
+								{globalStore?.activePlan?.name !== undefined
+									? globalStore?.activePlan?.name
+									: "Free"}{" "}
+								Tier{" "}
+							</h2>
 							<p class="text-[13px] font-medium mb-2">
 								{globalStore.user?.generated_videos_used} of{" "}
-								{globalStore.user?.generated_videos_quota} used
+								{globalStore?.activePlan?.soft_limit} used
 							</p>
 							<ProgressBar.FlatProgressBar
 								completed={progress()}
@@ -207,7 +211,7 @@ export const AIStudio = () => {
 								<PriceButton
 									plan_id={growthTier().id}
 									variant={
-										activePlan().name === growthTier().name
+										globalStore?.activePlan?.name === growthTier().name
 											? "current"
 											: "upgrade"
 									}
@@ -239,7 +243,7 @@ export const AIStudio = () => {
 								<PriceButton
 									plan_id={scaleTier().id}
 									variant={
-										activePlan().name === scaleTier().name
+										globalStore?.activePlan?.name === scaleTier().name
 											? "current"
 											: "upgrade"
 									}
@@ -272,7 +276,7 @@ export const AIStudio = () => {
 								<PriceButton
 									plan_id={ultimateTier().id}
 									variant={
-										activePlan().name === ultimateTier().name
+										globalStore?.activePlan?.name === ultimateTier().name
 											? "current"
 											: "upgrade"
 									}

@@ -26,7 +26,7 @@ import {
 import { createStore } from "solid-js/store"
 import { fetchFiles, fetchFolders } from "./api"
 
-import { User, Workspace } from "./api.type"
+import { Plan, User, Workspace } from "./api.type"
 import { createPath, ROUTE } from "./routing"
 import { SidenavBtn } from "./ui/Sidenav/ActionBtn"
 import { Portal } from "solid-js/web"
@@ -76,6 +76,7 @@ const EditorPage = lazy(() => import("@/views/Editor"))
 export const [globalStore, setGlobalStore] = createStore<{
 	user?: User
 	workspaces: Workspace[]
+	activePlan?: Plan
 }>({
 	workspaces: [],
 })
@@ -139,6 +140,35 @@ const App: Component = () => {
 						setActiveWorkspace(workspaces.value.data[0]?.id)
 					}
 				}
+				if (user.value.data?.plan_id) {
+					const user_plan = await Server.fetchPlan({
+						plan_id: user.value.data?.plan_id,
+					})
+					console.log("User Plan", user_plan)
+					setGlobalStore("activePlan", user_plan[0])
+				} else {
+					setGlobalStore("activePlan", {
+						name: "Free plan",
+						is_free: true,
+						quota: 15,
+						soft_limit: 15,
+						price: "0",
+						created_at: "",
+						extra_videos_cost: "0.9",
+						id: "a",
+						stripe_plan_id: "aa",
+						is_metred_plan: false,
+						metred_stripe_plan_id: "ad",
+						updated_at: "ad",
+					})
+				}
+				// 	if (!plan.loading) setGlobalStore("activePlan", plan())
+				// 	let plan
+				// 	if (globalStore?.user) {
+				// 		plan = await fetchPlan({
+				// 			plan_id: globalStore.user?.plan_id,
+				// 		})
+				// 		return plan
 			}
 		} else {
 			navigate(
