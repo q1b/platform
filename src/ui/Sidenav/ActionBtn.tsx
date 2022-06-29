@@ -4,6 +4,21 @@ type SidenavBtnProps<P = {}> = P & {
 	svg: boolean
 	notificationCount: Accessor<number>
 	active: boolean
+	tooltipLabel?: string
+}
+
+const SidebarTooltip = (props: { label?: string }) => {
+	return (
+		<>
+			{props?.label ? (
+				<div class="absolute w-auto top-0 p-2 m-2 min-w-max z-10 left-[52px] rounded-md shadow-md shadow-slate-300 text-white bg-slate-800 text-xs font-bold transition-transform group-hover:delay-1000 duration-100 origin-left scale-0 group-hover:scale-100">
+					{props.label}
+				</div>
+			) : (
+				<></>
+			)}
+		</>
+	)
 }
 
 export const SidenavBtn = (
@@ -16,6 +31,7 @@ export const SidenavBtn = (
 		"children",
 		"class",
 		"classList",
+		"tooltipLabel",
 	])
 	return (
 		<button
@@ -66,12 +82,13 @@ export const SidenavBtn = (
 					</div>
 				</Show>
 			</div>
+			<SidebarTooltip label={props?.tooltipLabel} />
 			<div
 				classList={{
 					"h-8 scale-x-100": props.active,
 					"h-6 scale-x-0": !props.active,
 				}}
-				class="absolute left-0 top-1/2 w-1 origin-left -translate-y-1/2 bg-slate-800 rounded-r-3xl transition-all group-hover:scale-x-100 group-focus:scale-x-100"
+				class="absolute left-0 top-1/2 w-1 origin-left -translate-y-1/2 rounded-r-3xl transition-all group-hover:scale-x-100 group-focus:scale-x-100 bg-slate-800"
 			></div>
 		</button>
 	)

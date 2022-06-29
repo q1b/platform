@@ -74,7 +74,11 @@ const RequiredIcons = [
 		</svg>
 		`,
 		name: "CubeTab",
-	},
+    },
+    {
+        path: "material-symbols:question-mark-rounded",
+        name: "Question"
+    },
 	{
 		path: "material-symbols:library-books-rounded",
 		name: "LibraryTab",
